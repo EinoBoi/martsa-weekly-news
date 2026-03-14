@@ -85,14 +85,14 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .fields input:focus,.fields select:focus,.fields textarea:focus{border-color:var(--red)}
 .fields textarea{resize:vertical;min-height:110px}
 .ea{margin-top:.9rem;display:flex;gap:.7rem;align-items:center}
-footer{border-top:4px double var(--rule);padding:.9rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
+footer{border-top:4px double var(--rule);padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
 @media(max-width:650px){
   .grid{grid-template-columns:1fr}
   .divider{display:none}
   .col{padding:.4rem 0;border-bottom:1px dashed #b0a090}
   .masthead{flex-direction:column;gap:.2rem}
   .fields{grid-template-columns:1fr}
-  footer{flex-direction:column;gap:.4rem;text-align:center}
+  footer{flex-direction:column;gap:.2rem;text-align:center}
 }
 </style>
 </head>
@@ -191,7 +191,7 @@ function render() {
 
   const tickerItems = articles.length > 0
     ? articles.map(a => esc(a.title)).join(' &nbsp;⬥&nbsp; ')
-    : 'Tervetuloa Martsa Weekly Newsiin &nbsp;⬥&nbsp; Luo tunnus tai kirjaudu sisään footerin kautta';
+    : 'Tervetuloa Martsa Weekly Newsiin &nbsp;⬥&nbsp; Kirjaudu sisään footerin kautta';
 
   let mainHtml = '';
 
@@ -269,13 +269,9 @@ function render() {
   }
 
   const n = articles.length;
-  const footerRight = loggedIn
+  const footerUser = loggedIn
     ? `<span>Kirjautunut: ${esc(currentUser)} &nbsp;·&nbsp; <span id="logout-btn" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu ulos</span></span>`
-    : `<span>
-        <span id="atrig" style="cursor:default;user-select:none">toimitus@martsaweekly.fi</span>
-        &nbsp;·&nbsp;
-        <span id="login-link" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu / Luo tunnus</span>
-       </span>`;
+    : `<span id="atrig" style="cursor:default;user-select:none">toimitus@martsaweekly.fi</span>`;
 
   app.className = admin ? 'admin-on' : '';
   app.innerHTML = `
@@ -300,7 +296,7 @@ function render() {
     <footer>
       <span>© 2026 Martsa Weekly News</span>
       <span>${n} artikkeli${n === 1 ? '' : 'a'} julkaistu</span>
-      ${footerRight}
+      ${footerUser}
     </footer>`;
 
   attachEvents();
@@ -345,10 +341,8 @@ function attachEvents() {
 
   const exitBtn   = document.getElementById('exit-admin-btn');
   const logoutBtn = document.getElementById('logout-btn');
-  const loginLink = document.getElementById('login-link');
   if (exitBtn)   exitBtn.addEventListener('click', () => { admin = false; loggedIn = false; currentUser = ''; showEditor = false; render(); });
   if (logoutBtn) logoutBtn.addEventListener('click', () => { loggedIn = false; currentUser = ''; render(); });
-  if (loginLink) loginLink.addEventListener('click', () => { showLogin = true; loginErr = ''; render(); });
 
   const np = document.getElementById('nameplate');
   if (np) np.addEventListener('click', () => { page = 'front'; render(); });
