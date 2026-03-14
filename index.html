@@ -452,7 +452,7 @@ async function save() {
 async function load() {
   try {
     const res = await fetch(BIN_URL + '/latest', {
-      headers: { 'X-Master-Key': API_KEY, 'X-Access-Key' : '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' master }
+      headers: { 'X-Master-Key': API_KEY, 'X-Access-Key' : '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' }
     });
     const d = await res.json();
     articles = d.record.articles || [];
