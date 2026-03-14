@@ -459,7 +459,7 @@ async function load() {
     nextId   = d.record.nextId   || 1;
   } catch(e) { articles = []; nextId = 1; }
 }
-load().then(render);
+load().then(render).catch(() => render());
 </script>
 </body>
 </html>
