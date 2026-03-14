@@ -110,6 +110,7 @@ let page = 'front', openId = null;
 let showLogin = false, loginErr = '';
 let showRegister = false, regErr = '';
 let showEditor = false;
+let showModPanel = false;
 let confirmPending = null;
 let tapCount = 0, tapTimer = null;
 
@@ -118,6 +119,11 @@ function getUsers() {
 }
 function saveUsers(users) {
   try { localStorage.setItem('martsa_users', JSON.stringify(users)); } catch(e) {}
+}
+function isModerator(username) {
+  const users = getUsers();
+  const u = users.find(x => x.user === username);
+  return u && u.moderator === true;
 }
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -142,7 +148,23 @@ function render() {
         </div>
       </div>
     </div>` : '';
-
+  const modHtml = (typeof showModPanel !== 'undefined' && showModPanel && admin) ? `
+    <div class="modal-bg">
+      <div class="modal">
+        <h2>Hallitse käyttäjiä</h2>
+        <p>Anna tai poista moderaattorioikeudet</p>
+        ${getUsers().filter(u => u.user !== ADMIN_USER).map(u => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid #c8bba0">
+            <span style="font-size:.85rem">${esc(u.user)}</span>
+            <button id="mod-toggle-${esc(u.user)}" style="background:${u.moderator ? 'var(--red)' : 'var(--ink)'};color:#fff;border:none;padding:.2rem .7rem;cursor:pointer;font-family:\'Bebas Neue\',sans-serif;font-size:.75rem;letter-spacing:.08em">
+              ${u.moderator ? 'Poista oikeudet' : 'Anna oikeudet'}
+            </button>
+          </div>`).join('')}
+        <div style="margin-top:1rem">
+          <button class="btn-secondary" id="close-mod-btn">Sulje</button>
+        </div>
+      </div>
+    </div>` : '';
   const loginHtml = showLogin ? `
     <div class="modal-bg">
       <div class="modal">
@@ -183,9 +205,10 @@ function render() {
       </div>
     </div>` : '';
 
-  const adminBarHtml = admin ? `
+  const adminBarHtml = (admin || isModerator(currentUser)) ? `
     <div class="admin-bar">
-      <span>⚙ HALLINTAMOODI PÄÄLLÄ</span>
+      <span>⚙ ${admin ? 'HALLINTAMOODI' : 'MODERAATTORI'} PÄÄLLÄ</span>
+      ${admin ? `<button id="open-mod-btn">👥 Hallitse käyttäjiä</button>` : ''}
       <button id="exit-admin-btn">✕ Kirjaudu ulos</button>
     </div>` : '';
 
@@ -269,13 +292,14 @@ function render() {
   }
 
   const n = articles.length;
-  const footerUser = loggedIn
-    ? `<span>Kirjautunut: ${esc(currentUser)} &nbsp;·&nbsp; <span id="logout-btn" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu ulos</span></span>`
-    : `<span id="atrig" style="cursor:default;user-select:none">toimitus@martsaweekly.fi</span>`;
-
-  app.className = admin ? 'admin-on' : '';
+ const isMod = admin || isModerator(currentUser);
+const footerUser = loggedIn
+    ? `<span>Kirjautunut: ${esc(currentUser)}${isMod && !admin ? ' ★' : ''} &nbsp;·&nbsp; <span id="logout-btn" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu ulos</span></span>`
+    : `<span><span id="atrig" style="cursor:default;user-select:none">toimitus@martsaweekly.fi</span> &nbsp;·&nbsp; <span id="login-link" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu / Luo tunnus</span></span>`;
+  app.className = (admin || isModerator(currentUser)) ? 'admin-on' : '';
   app.innerHTML = `
     ${confirmHtml}
+    ${modHtml}
     ${loginHtml}
     ${adminBarHtml}
     <div class="masthead">
@@ -343,6 +367,22 @@ function attachEvents() {
   const logoutBtn = document.getElementById('logout-btn');
   if (exitBtn)   exitBtn.addEventListener('click', () => { admin = false; loggedIn = false; currentUser = ''; showEditor = false; render(); });
   if (logoutBtn) logoutBtn.addEventListener('click', () => { loggedIn = false; currentUser = ''; render(); });
+  const openModBtn  = document.getElementById('open-mod-btn');
+  const closeModBtn = document.getElementById('close-mod-btn');
+  if (openModBtn)  openModBtn.addEventListener('click', () => { showModPanel = true; render(); });
+  if (closeModBtn) closeModBtn.addEventListener('click', () => { showModPanel = false; render(); });
+
+  // Moderaattori-toggle napit
+  getUsers().filter(u => u.user !== ADMIN_USER).forEach(u => {
+    const btn = document.getElementById('mod-toggle-' + u.user);
+    if (btn) btn.addEventListener('click', () => {
+      const users = getUsers();
+      const target = users.find(x => x.user === u.user);
+      if (target) target.moderator = !target.moderator;
+      saveUsers(users);
+      render();
+    });
+  });
   const loginLink = document.getElementById('login-link');
   if (loginLink) loginLink.addEventListener('click', () => { showLogin = true; loginErr = ''; render(); });
   const np = document.getElementById('nameplate');
