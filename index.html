@@ -115,10 +115,11 @@ let confirmPending = null;
 let tapCount = 0, tapTimer = null;
 
 function getUsers() {
-  try { return JSON.parse(localStorage.getItem('martsa_users') || '[]'); } catch(e) { return []; }
+  return window._users || [];
 }
 function saveUsers(users) {
-  try { localStorage.setItem('martsa_users', JSON.stringify(users)); } catch(e) {}
+  window._users = users;
+  save();
 }
 function isModerator(username) {
   const users = getUsers();
@@ -486,7 +487,7 @@ async function save() {
     await fetch(BIN_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi', 'X-Access-Key' : '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' },
-      body: JSON.stringify({ articles, nextId })
+      body: JSON.stringify({ articles, nextId, users: window._users || [] })
     });
   } catch(e) { console.warn('Tallennus epäonnistui:', e); }
 }
@@ -496,8 +497,9 @@ async function load() {
       headers: { 'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi', 'X-Access-Key': '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' }
     });
     const d = await res.json();
-    articles = d.record.articles || [];
-    nextId   = d.record.nextId   || 1;
+    articles       = d.record.articles || [];
+    nextId         = d.record.nextId   || 1;
+    window._users  = d.record.users    || [];
   } catch(e) { articles = []; nextId = 1; }
 }
 load().then(render).catch(() => render());
