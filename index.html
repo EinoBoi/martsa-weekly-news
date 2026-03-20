@@ -180,6 +180,9 @@ function render() {
             <button id="mod-toggle-${esc(u.user)}" style="background:${u.moderator ? 'var(--red)' : 'var(--ink)'};color:#fff;border:none;padding:.2rem .7rem;cursor:pointer;font-family:\'Bebas Neue\',sans-serif;font-size:.75rem;letter-spacing:.08em">
               ${u.moderator ? 'Poista oikeudet' : 'Anna oikeudet'}
             </button>
+            <button id="del-user-${esc(u.user)}" style="background:none;border:1px solid var(--red);color:var(--red);padding:.2rem .6rem;cursor:pointer;font-family:'Source Serif 4',serif;font-size:.72rem;margin-left:.4rem">
+              Poista käyttäjä
+            </button>
           </div>`).join('')}
         <div style="margin-top:1rem">
           <button class="btn-secondary" id="close-mod-btn">Sulje</button>
@@ -422,6 +425,12 @@ function attachEvents() {
       saveUsers(users);
       render();
     });
+    const delBtn = document.getElementById('del-user-' + u.user);
+    if (delBtn) delBtn.addEventListener('click', () => {
+      window._users = getUsers().filter(x => x.user !== u.user);
+      save();
+      render();
+    });
   });
   const loginLink = document.getElementById('login-link');
   if (loginLink) loginLink.addEventListener('click', () => { showLogin = true; loginErr = ''; render(); });
@@ -464,7 +473,13 @@ function attachEvents() {
   if (addBtn)    addBtn.addEventListener('click', () => { showEditor = !showEditor; render(); });
   if (cancelBtn) cancelBtn.addEventListener('click', () => { showEditor = false; render(); });
 
-  const id = nextId++;
+  const pubBtn = document.getElementById('pub-btn');
+  if (pubBtn) pubBtn.addEventListener('click', () => {
+    const title = (document.getElementById('ft').value || '').trim();
+    const body  = (document.getElementById('fb').value || '').trim();
+    if (!title) { alert('Kirjoita otsikko.'); return; }
+    if (!body)  { alert('Kirjoita teksti.'); return; }
+    const id = nextId++;
     const article = {
       id, title,
       author:  (document.getElementById('fa').value || '').trim(),
@@ -484,8 +499,8 @@ function attachEvents() {
       alert('Artikkeli lähetetty tarkastettavaksi!');
     }
     render();
-  };
-
+  });
+}
 
 function doLogin() {
   const u = (document.getElementById('lu').value || '').trim();
