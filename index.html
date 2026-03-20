@@ -111,6 +111,7 @@ let showLogin = false, loginErr = '';
 let showRegister = false, regErr = '';
 let showEditor = false;
 let showModPanel = false;
+let showInbox = false;
 let confirmPending = null;
 let tapCount = 0, tapTimer = null;
 
@@ -138,6 +139,7 @@ function todayFI() {
 
 function render() {
   const app = document.getElementById('app');
+  const pendingList = window._pending || [];
 
   const confirmHtml = confirmPending ? `
     <div class="confirm-bg">
@@ -147,6 +149,24 @@ function render() {
           <button class="cbtn-yes" id="cbtn-yes">Poista</button>
           <button class="cbtn-no" id="cbtn-no">Peruuta</button>
         </div>
+      </div>
+    </div>` : '';
+  const inboxHtml = (showInbox && admin) ? `
+    <div class="modal-bg">
+      <div class="modal" style="width:500px;max-width:95vw">
+        <h2>Saapuneet artikkelit</h2>
+        <p>${pendingList.length === 0 ? 'Ei odottavia artikkeleita.' : pendingList.length + ' artikkelia odottaa hyväksyntää'}</p>
+        ${pendingList.map(a => `
+          <div style="border:1px solid #c8bba0;padding:.8rem;margin-bottom:.8rem">
+            <strong style="font-family:'Playfair Display',serif;font-size:.95rem">${esc(a.title)}</strong>
+            <p style="font-size:.72rem;color:var(--muted);margin:.2rem 0">${esc(a.author || '')} · ${esc(a.date)}</p>
+            <p style="font-size:.8rem;margin:.4rem 0">${esc(a.body.substring(0,120))}…</p>
+            <div style="display:flex;gap:.5rem;margin-top:.6rem">
+              <button id="approve-${a.id}" style="background:var(--ink);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.08em">✓ Hyväksy</button>
+              <button id="reject-${a.id}" style="background:var(--red);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.08em">✕ Hylkää</button>
+            </div>
+          </div>`).join('')}
+        <button class="btn-secondary" id="close-inbox-btn">Sulje</button>
       </div>
     </div>` : '';
   const modHtml = (typeof showModPanel !== 'undefined' && showModPanel && admin) ? `
@@ -209,6 +229,7 @@ function render() {
   const adminBarHtml = (admin || isModerator(currentUser)) ? `
     <div class="admin-bar">
       <span>⚙ ${admin ? 'HALLINTAMOODI' : 'MODERAATTORI'} PÄÄLLÄ</span>
+      ${admin ? `<button id="open-inbox-btn">📬 Saapuneet${(window._pending||[]).length > 0 ? ' ('+window._pending.length+')' : ''}</button>` : ''}
       ${admin ? `<button id="open-mod-btn">👥 Hallitse käyttäjiä</button>` : ''}
       <button id="exit-admin-btn">✕ Kirjaudu ulos</button>
     </div>` : '';
@@ -300,6 +321,7 @@ const footerUser = loggedIn
   app.className = (admin || isModerator(currentUser)) ? 'admin-on' : '';
   app.innerHTML = `
     ${confirmHtml}
+    ${inboxHtml}
     ${modHtml}
     ${loginHtml}
     ${adminBarHtml}
@@ -368,6 +390,23 @@ function attachEvents() {
   const logoutBtn = document.getElementById('logout-btn');
   if (exitBtn)   exitBtn.addEventListener('click', () => { admin = false; loggedIn = false; currentUser = ''; showEditor = false; render(); });
   if (logoutBtn) logoutBtn.addEventListener('click', () => { loggedIn = false; currentUser = ''; render(); });
+  const openInboxBtn  = document.getElementById('open-inbox-btn');
+  const closeInboxBtn = document.getElementById('close-inbox-btn');
+  if (openInboxBtn)  openInboxBtn.addEventListener('click', () => { showInbox = true; render(); });
+  if (closeInboxBtn) closeInboxBtn.addEventListener('click', () => { showInbox = false; render(); });
+  (window._pending || []).forEach(a => {
+    const approveBtn = document.getElementById('approve-' + a.id);
+    const rejectBtn  = document.getElementById('reject-'  + a.id);
+    if (approveBtn) approveBtn.addEventListener('click', () => {
+      articles.push(a);
+      window._pending = window._pending.filter(p => p.id !== a.id);
+      save(); render();
+    });
+    if (rejectBtn) rejectBtn.addEventListener('click', () => {
+      window._pending = window._pending.filter(p => p.id !== a.id);
+      save(); render();
+    });
+  });
   const openModBtn  = document.getElementById('open-mod-btn');
   const closeModBtn = document.getElementById('close-mod-btn');
   if (openModBtn)  openModBtn.addEventListener('click', () => { showModPanel = true; render(); });
@@ -425,26 +464,28 @@ function attachEvents() {
   if (addBtn)    addBtn.addEventListener('click', () => { showEditor = !showEditor; render(); });
   if (cancelBtn) cancelBtn.addEventListener('click', () => { showEditor = false; render(); });
 
-  const pubBtn = document.getElementById('pub-btn');
-  if (pubBtn) pubBtn.addEventListener('click', () => {
-    const title = (document.getElementById('ft').value || '').trim();
-    const body  = (document.getElementById('fb').value || '').trim();
-    if (!title) { alert('Kirjoita otsikko.'); return; }
-    if (!body)  { alert('Kirjoita teksti.'); return; }
-    const id = nextId++;
-    articles.push({
+  const id = nextId++;
+    const article = {
       id, title,
       author:  (document.getElementById('fa').value || '').trim(),
       section: (document.getElementById('fs').value || '').trim(),
       column:  document.getElementById('fc').value,
       body,
       date: todayFI()
-    });
-    showEditor = false; save();
-    page = 'article'; openId = id;
+    };
+    if (admin || isModerator(currentUser)) {
+      articles.push(article);
+      showEditor = false; save();
+      page = 'article'; openId = id;
+    } else {
+      window._pending = window._pending || [];
+      window._pending.push(article);
+      showEditor = false; save();
+      alert('Artikkeli lähetetty tarkastettavaksi!');
+    }
     render();
-  });
-}
+  };
+
 
 function doLogin() {
   const u = (document.getElementById('lu').value || '').trim();
@@ -487,7 +528,7 @@ async function save() {
     await fetch(BIN_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi', 'X-Access-Key' : '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' },
-      body: JSON.stringify({ articles, nextId, users: window._users || [] })
+      body: JSON.stringify({ articles, nextId, users: window._users || [], pending: window._pending || [] })
     });
   } catch(e) { console.warn('Tallennus epäonnistui:', e); }
 }
@@ -499,7 +540,8 @@ async function load() {
     const d = await res.json();
     articles       = d.record.articles || [];
     nextId         = d.record.nextId   || 1;
-    window._users  = d.record.users    || [];
+    window._users   = d.record.users   || [];
+    window._pending = d.record.pending || [];
   } catch(e) { articles = []; nextId = 1; }
 }
 load().then(render).catch(() => render());
