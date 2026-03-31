@@ -1,147 +1,742 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Martsan Uutiset</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--ink:#1a1208;--paper:#f5f0e8;--cream:#ede7d6;--red:#c0392b;--muted:#6b5f4e;--rule:#2c2416}
-body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:15px;line-height:1.6;min-height:100vh}
-.masthead{border-top:4px solid var(--rule);border-bottom:1px solid var(--rule);padding:.35rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
-.nameplate{text-align:center;padding:1rem 1rem .5rem;border-bottom:3px double var(--rule);cursor:pointer;user-select:none}
-.nameplate h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,7vw,5rem);font-weight:900;line-height:.9}
-.nameplate h1 em{font-style:italic;color:var(--red)}
-.np-rule{display:flex;align-items:center;gap:.8rem;margin:.5rem 0 .2rem;justify-content:center}
-.np-rule span{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.np-rule::before,.np-rule::after{content:'';flex:1;max-width:160px;height:1px;background:var(--rule)}
-.tagline{font-style:italic;font-size:.82rem;color:var(--muted);margin-bottom:.3rem}
-.ticker{background:var(--red);color:#fff;padding:.35rem 0;overflow:hidden;white-space:nowrap;border-bottom:2px solid var(--rule)}
-.ticker-label{display:inline-block;background:var(--ink);color:#fff;padding:0 .8rem;font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:.1em;margin-right:.8rem;vertical-align:middle}
-.ticker-inner{display:inline-block;animation:tick 28s linear infinite;font-size:.75rem}
-@keyframes tick{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
-.admin-bar{background:var(--ink);color:#e8c070;padding:.4rem 1.5rem;display:flex;justify-content:center;align-items:center;gap:1.5rem;font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.15em;position:sticky;top:0;z-index:100}
-.admin-bar button{background:var(--red);color:#fff;border:none;padding:.2rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:.1em}
-.confirm-bg{position:fixed;inset:0;background:rgba(26,18,8,.6);z-index:500;display:flex;align-items:center;justify-content:center}
-.confirm-box{background:var(--paper);border:2px solid var(--rule);padding:1.8rem;width:300px;max-width:90vw;box-shadow:5px 5px 0 var(--rule);text-align:center}
-.confirm-box p{font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:1.4rem;line-height:1.4}
-.confirm-btns{display:flex;gap:.8rem;justify-content:center}
-.cbtn-yes{background:var(--red);color:#fff;border:none;padding:.5rem 1.4rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.12em}
-.cbtn-no{background:none;border:1px solid var(--muted);color:var(--muted);padding:.45rem 1rem;cursor:pointer;font-family:'Source Serif 4',serif;font-size:.82rem}
-.cbtn-no:hover{border-color:var(--ink);color:var(--ink)}
-.modal-bg{position:fixed;inset:0;background:rgba(26,18,8,.65);z-index:300;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--paper);border:2px solid var(--rule);padding:2rem;width:320px;max-width:92vw;box-shadow:6px 6px 0 var(--rule)}
-.modal h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;margin-bottom:.2rem}
-.modal p{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid #c8bba0}
-.modal label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
-.modal input{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.45rem .6rem;font-family:'Source Serif 4',serif;font-size:.9rem;color:var(--ink);outline:none;margin-bottom:.9rem}
-.modal input:focus{border-color:var(--red)}
-.modal-err{color:var(--red);font-size:.75rem;font-style:italic;min-height:1.1em;margin-bottom:.6rem}
-.modal-btns{display:flex;gap:.6rem}
-.btn-primary{flex:1;background:var(--ink);color:var(--paper);border:none;padding:.55rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.12em}
-.btn-primary:hover{background:var(--red)}
-.btn-secondary{background:none;border:1px solid var(--muted);color:var(--muted);padding:.5rem .9rem;cursor:pointer;font-family:'Source Serif 4',serif;font-size:.75rem}
-.btn-secondary:hover{border-color:var(--ink);color:var(--ink)}
-.container{max-width:1050px;margin:0 auto;padding:0 1.2rem}
-.grid{display:grid;grid-template-columns:1fr 2px 2fr 2px 1fr;padding:1.2rem 0}
-.divider{background:repeating-linear-gradient(to bottom,var(--rule) 0,var(--rule) 5px,transparent 5px,transparent 9px);margin:0 .7rem}
-.col{padding:0 .9rem}
-.sec-label{font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border-bottom:2px solid var(--red);padding-bottom:.18rem;margin-bottom:.7rem}
-.card{margin-bottom:1.1rem;padding-bottom:.9rem;border-bottom:1px dashed #b0a090;position:relative;cursor:pointer}
-.card:last-child{border-bottom:none}
-.card h3{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;line-height:1.2;margin-bottom:.2rem;transition:color .15s}
-.card.lead h2{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,2.3vw,1.9rem);font-weight:900;line-height:1.1;margin-bottom:.35rem;transition:color .15s}
-.card:hover h2,.card:hover h3{color:var(--red)}
-.card .excerpt{font-size:.78rem;color:#3d3020;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.byline{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.25rem}
-.hint{font-size:.65rem;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-top:.35rem;display:inline-block}
-.del-btn{background:var(--red);color:#fff;border:none;cursor:pointer;font-size:.65rem;padding:.2rem .5rem;position:absolute;top:0;right:0;display:none}
-.admin-on .del-btn{display:block}
-.empty{font-style:italic;font-size:.78rem;color:#b0a090;text-align:center;padding:1.5rem .5rem;border:1px dashed #c8bba0}
-.divh{border:none;border-top:2px solid var(--rule);margin:1rem 0}
-.art-wrap{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
-.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);cursor:pointer;border:none;background:none;padding:.4rem 0;margin-bottom:1.8rem;border-bottom:1px solid transparent;transition:color .15s,border-color .15s}
-.back-btn:hover{color:var(--red);border-bottom-color:var(--red)}
-.art-badge{font-family:'Bebas Neue',sans-serif;font-size:.68rem;letter-spacing:.2em;color:#fff;background:var(--red);padding:.18rem .6rem;display:inline-block;margin-bottom:.9rem}
-.art-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:900;line-height:1.05;margin-bottom:.9rem}
-.art-byline{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding-bottom:1rem;margin-bottom:1.5rem;border-bottom:2px solid var(--rule);display:flex;gap:1.2rem;flex-wrap:wrap}
-.art-body{font-size:1rem;line-height:1.82;color:#2c2416;hyphens:auto}
-.art-body p{margin-bottom:1.2em}
-.art-body p:first-child::first-letter{font-family:'Playfair Display',serif;font-size:3.5em;font-weight:900;float:left;line-height:.75;margin:.05em .1em 0 0;color:var(--red)}
-.art-end{border:none;border-top:3px double var(--rule);margin:2rem 0 1.2rem}
-.art-del-btn{background:var(--red);color:#fff;border:none;font-size:.78rem;padding:.5rem 1.2rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:.1em;display:none}
-.admin-on .art-del-btn{display:inline-block}
-.add-btn{display:none;margin:1.2rem auto 0;background:var(--ink);color:var(--paper);border:none;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.15em;padding:.55rem 1.8rem;transition:background .2s}
-.admin-on .add-btn{display:block}
-.add-btn:hover{background:var(--red)}
-.editor{display:none;background:var(--cream);border-top:3px double var(--rule);border-bottom:3px double var(--rule);padding:1.3rem 1.5rem}
-.editor.open{display:block}
-.editor h2{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:.9rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.3rem}
-.fields .fw{grid-column:1/-1}
-.fields label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
-.fields input,.fields select,.fields textarea{width:100%;background:var(--paper);border:1px solid #b0a090;padding:.4rem .55rem;font-family:'Source Serif 4',serif;font-size:.85rem;color:var(--ink);outline:none;transition:border-color .15s}
-.fields input:focus,.fields select:focus,.fields textarea:focus{border-color:var(--red)}
-.fields textarea{resize:vertical;min-height:110px}
-.ea{margin-top:.9rem;display:flex;gap:.7rem;align-items:center}
-footer{border-top:4px double var(--rule);padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
-@media(max-width:650px){
-  .grid{grid-template-columns:1fr}
-  .divider{display:none}
-  .col{padding:.4rem 0;border-bottom:1px dashed #b0a090}
-  .masthead{flex-direction:column;gap:.2rem}
-  .fields{grid-template-columns:1fr}
-  footer{flex-direction:column;gap:.2rem;text-align:center}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Martsan Uutiset</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box
+    }
+
+    :root {
+        --ink: #1a1208;
+        --paper: #f5f0e8;
+        --cream: #ede7d6;
+        --red: #c0392b;
+        --muted: #6b5f4e;
+        --rule: #2c2416
+    }
+
+    body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-size: 15px;
+        line-height: 1.6;
+        min-height: 100vh
+    }
+
+    .masthead {
+        border-top: 4px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        padding: .35rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: .68rem;
+        letter-spacing: .08em;
+        color: var(--muted);
+        text-transform: uppercase
+    }
+
+    .nameplate {
+        text-align: center;
+        padding: 1rem 1rem .5rem;
+        border-bottom: 3px double var(--rule);
+        cursor: pointer;
+        user-select: none
+    }
+
+    .nameplate h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.2rem, 7vw, 5rem);
+        font-weight: 900;
+        line-height: .9
+    }
+
+    .nameplate h1 em {
+        font-style: italic;
+        color: var(--red)
+    }
+
+    .np-rule {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+        margin: .5rem 0 .2rem;
+        justify-content: center
+    }
+
+    .np-rule span {
+        font-size: .6rem;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--muted)
+    }
+
+    .np-rule::before, .np-rule::after {
+        content: '';
+        flex: 1;
+        max-width: 160px;
+        height: 1px;
+        background: var(--rule)
+    }
+
+    .tagline {
+        font-style: italic;
+        font-size: .82rem;
+        color: var(--muted);
+        margin-bottom: .3rem
+    }
+
+    .ticker {
+        background: var(--red);
+        color: #fff;
+        padding: .35rem 0;
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 2px solid var(--rule)
+    }
+
+    .ticker-label {
+        display: inline-block;
+        background: var(--ink);
+        color: #fff;
+        padding: 0 .8rem;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .85rem;
+        letter-spacing: .1em;
+        margin-right: .8rem;
+        vertical-align: middle
+    }
+
+    .ticker-inner {
+        display: inline-block;
+        animation: tick 28s linear infinite;
+        font-size: .75rem
+    }
+
+    @keyframes tick {
+        0% {
+            transform:translateX(100vw)
+        }
+
+        100% {
+            transform: translateX(-100%)
+        }
+    }
+
+    .admin-bar {
+        background: var(--ink);
+        color: #e8c070;
+        padding: .4rem 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .82rem;
+        letter-spacing: .15em;
+        position: sticky;
+        top: 0;
+        z-index: 100
+    }
+
+    .admin-bar button {
+        background: var(--red);
+        color: #fff;
+        border: none;
+        padding: .2rem .9rem;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .78rem;
+        letter-spacing: .1em
+    }
+
+    .confirm-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 18, 8, .6);
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .confirm-box {
+        background: var(--paper);
+        border: 2px solid var(--rule);
+        padding: 1.8rem;
+        width: 300px;
+        max-width: 90vw;
+        box-shadow: 5px 5px 0 var(--rule);
+        text-align: center
+    }
+
+    .confirm-box p {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        margin-bottom: 1.4rem;
+        line-height: 1.4
+    }
+
+    .confirm-btns {
+        display: flex;
+        gap: .8rem;
+        justify-content: center
+    }
+
+    .cbtn-yes {
+        background: var(--red);
+        color: #fff;
+        border: none;
+        padding: .5rem 1.4rem;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .95rem;
+        letter-spacing: .12em
+    }
+
+    .cbtn-no {
+        background: none;
+        border: 1px solid var(--muted);
+        color: var(--muted);
+        padding: .45rem 1rem;
+        cursor: pointer;
+        font-family: 'Source Serif 4', serif;
+        font-size: .82rem
+    }
+
+    .cbtn-no:hover {
+        border-color: var(--ink);
+        color: var(--ink)
+    }
+
+    .modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 18, 8, .65);
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .modal {
+        background: var(--paper);
+        border: 2px solid var(--rule);
+        padding: 2rem;
+        width: 320px;
+        max-width: 92vw;
+        box-shadow: 6px 6px 0 var(--rule)
+    }
+
+    .modal h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin-bottom: .2rem
+    }
+
+    .modal p {
+        font-size: .75rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-bottom: 1.2rem;
+        padding-bottom: .8rem;
+        border-bottom: 1px solid #c8bba0
+    }
+
+    .modal label {
+        display: block;
+        font-size: .62rem;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        color: var(--muted);
+        margin-bottom: .2rem
+    }
+
+    .modal input {
+        width: 100%;
+        background: var(--cream);
+        border: 1px solid #b0a090;
+        padding: .45rem .6rem;
+        font-family: 'Source Serif 4', serif;
+        font-size: .9rem;
+        color: var(--ink);
+        outline: none;
+        margin-bottom: .9rem
+    }
+
+    .modal input:focus {
+        border-color: var(--red)
+    }
+
+    .modal-err {
+        color: var(--red);
+        font-size: .75rem;
+        font-style: italic;
+        min-height: 1.1em;
+        margin-bottom: .6rem
+    }
+
+    .modal-btns {
+        display: flex;
+        gap: .6rem
+    }
+
+    .btn-primary {
+        flex: 1;
+        background: var(--ink);
+        color: var(--paper);
+        border: none;
+        padding: .55rem;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .95rem;
+        letter-spacing: .12em
+    }
+
+    .btn-primary:hover {
+        background: var(--red)
+    }
+
+    .btn-secondary {
+        background: none;
+        border: 1px solid var(--muted);
+        color: var(--muted);
+        padding: .5rem .9rem;
+        cursor: pointer;
+        font-family: 'Source Serif 4', serif;
+        font-size: .75rem
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--ink);
+        color: var(--ink)
+    }
+
+    .container {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 0 1.2rem
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 2px 2fr 2px 1fr;
+        padding: 1.2rem 0
+    }
+
+    .divider {
+        background: repeating-linear-gradient(to bottom, var(--rule) 0, var(--rule) 5px, transparent 5px, transparent 9px);
+        margin: 0 .7rem
+    }
+
+    .col {
+        padding: 0 .9rem
+    }
+
+    .sec-label {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .7rem;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--red);
+        border-bottom: 2px solid var(--red);
+        padding-bottom: .18rem;
+        margin-bottom: .7rem
+    }
+
+    .card {
+        margin-bottom: 1.1rem;
+        padding-bottom: .9rem;
+        border-bottom: 1px dashed #b0a090;
+        position: relative;
+        cursor: pointer
+    }
+
+    .card:last-child {
+        border-bottom: none
+    }
+
+    .card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: .95rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: .2rem;
+        transition: color .15s
+    }
+
+    .card.lead h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.3rem, 2.3vw, 1.9rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: .35rem;
+        transition: color .15s
+    }
+
+    .card:hover h2, .card:hover h3 {
+        color: var(--red)
+    }
+
+    .card .excerpt {
+        font-size: .78rem;
+        color: #3d3020;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden
+    }
+
+    .byline {
+        font-size: .65rem;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--muted);
+        margin-bottom: .25rem
+    }
+
+    .hint {
+        font-size: .65rem;
+        color: var(--red);
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        margin-top: .35rem;
+        display: inline-block
+    }
+
+    .del-btn {
+        background: var(--red);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: .65rem;
+        padding: .2rem .5rem;
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: none
+    }
+
+    .admin-on .del-btn {
+        display: block
+    }
+
+    .empty {
+        font-style: italic;
+        font-size: .78rem;
+        color: #b0a090;
+        text-align: center;
+        padding: 1.5rem .5rem;
+        border: 1px dashed #c8bba0
+    }
+
+    .divh {
+        border: none;
+        border-top: 2px solid var(--rule);
+        margin: 1rem 0
+    }
+
+    .art-wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 1.5rem 1.2rem 3rem
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--muted);
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: .4rem 0;
+        margin-bottom: 1.8rem;
+        border-bottom: 1px solid transparent;
+        transition: color .15s, border-color .15s
+    }
+
+    .back-btn:hover {
+        color: var(--red);
+        border-bottom-color: var(--red)
+    }
+
+    .art-badge {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .68rem;
+        letter-spacing: .2em;
+        color: #fff;
+        background: var(--red);
+        padding: .18rem .6rem;
+        display: inline-block;
+        margin-bottom: .9rem
+    }
+
+    .art-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+        font-weight: 900;
+        line-height: 1.05;
+        margin-bottom: .9rem
+    }
+
+    .art-byline {
+        font-size: .7rem;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--muted);
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--rule);
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap
+    }
+
+    .art-body {
+        font-size: 1rem;
+        line-height: 1.82;
+        color: #2c2416;
+        hyphens: auto
+    }
+
+    .art-body p {
+        margin-bottom: 1.2em
+    }
+
+    .art-body p:first-child::first-letter {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5em;
+        font-weight: 900;
+        float: left;
+        line-height: .75;
+        margin: .05em .1em 0 0;
+        color: var(--red)
+    }
+
+    .art-end {
+        border: none;
+        border-top: 3px double var(--rule);
+        margin: 2rem 0 1.2rem
+    }
+
+    .art-del-btn {
+        background: var(--red);
+        color: #fff;
+        border: none;
+        font-size: .78rem;
+        padding: .5rem 1.2rem;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        letter-spacing: .1em;
+        display: none
+    }
+
+    .admin-on .art-del-btn {
+        display: inline-block
+    }
+
+    .add-btn {
+        display: none;
+        margin: 1.2rem auto 0;
+        background: var(--ink);
+        color: var(--paper);
+        border: none;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: .95rem;
+        letter-spacing: .15em;
+        padding: .55rem 1.8rem;
+        transition: background .2s
+    }
+
+    .admin-on .add-btn {
+        display: block
+    }
+
+    .add-btn:hover {
+        background: var(--red)
+    }
+
+    .editor {
+        display: none;
+        background: var(--cream);
+        border-top: 3px double var(--rule);
+        border-bottom: 3px double var(--rule);
+        padding: 1.3rem 1.5rem
+    }
+
+    .editor.open {
+        display: block
+    }
+
+    .editor h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        margin-bottom: .9rem;
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: .4rem
+    }
+
+    .fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .7rem 1.3rem
+    }
+
+    .fields .fw {
+        grid-column: 1/-1
+    }
+
+    .fields label {
+        display: block;
+        font-size: .62rem;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        color: var(--muted);
+        margin-bottom: .2rem
+    }
+
+    .fields input, .fields select, .fields textarea {
+        width: 100%;
+        background: var(--paper);
+        border: 1px solid #b0a090;
+        padding: .4rem .55rem;
+        font-family: 'Source Serif 4', serif;
+        font-size: .85rem;
+        color: var(--ink);
+        outline: none;
+        transition: border-color .15s
+    }
+
+    .fields input:focus, .fields select:focus, .fields textarea:focus {
+        border-color: var(--red)
+    }
+
+    .fields textarea {
+        resize: vertical;
+        min-height: 110px
+    }
+
+    .ea {
+        margin-top: .9rem;
+        display: flex;
+        gap: .7rem;
+        align-items: center
+    }
+
+    footer {
+        border-top: 4px double var(--rule);
+        padding: .9rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: .65rem;
+        color: var(--muted);
+        letter-spacing: .06em
+    }
+
+    @media (max-width: 650px) {
+        .grid {
+            grid-template-columns: 1fr
+        }
+
+        .divider {
+            display: none
+        }
+
+        .col {
+            padding: .4rem 0;
+            border-bottom: 1px dashed #b0a090
+        }
+
+        .masthead {
+            flex-direction: column;
+            gap: .2rem
+        }
+
+        .fields {
+            grid-template-columns: 1fr
+        }
+
+        footer {
+            flex-direction: column;
+            gap: .2rem;
+            text-align: center
+        }
+    }
+    </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-const ADMIN_USER = 'martsa';
-const ADMIN_PASS = 'weekly2026';
-const BIN_ID = '69b43dcec3097a1dd521a842';
-const API_KEY = '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm';
-const BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+    <div id="app"></div>
+    <script>
+    const ADMIN_USER = 'martsa';
+    const ADMIN_PASS = 'weekly2026';
+    const BIN_ID = '69b43dcec3097a1dd521a842';
+    const API_KEY = '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm';
+    const BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
 
-let articles = [], nextId = 1, admin = false, loggedIn = false, currentUser = '';
-let page = 'front', openId = null;
-let showLogin = false, loginErr = '';
-let showRegister = false, regErr = '';
-let showEditor = false;
-let showModPanel = false;
-let showInbox = false;
-let confirmPending = null;
-let tapCount = 0, tapTimer = null;
+    let articles = [],
+        nextId = 1,
+        admin = false,
+        loggedIn = false,
+        currentUser = '';
+    let page = 'front',
+        openId = null;
+    let showLogin = false,
+        loginErr = '';
+    let showRegister = false,
+        regErr = '';
+    let showEditor = false;
+    let showModPanel = false;
+    let showInbox = false;
+    let confirmPending = null;
+    let tapCount = 0,
+        tapTimer = null;
 
-function getUsers() {
-  return window._users || [];
-}
-function saveUsers(users) {
-  window._users = users;
-  save();
-}
-function isModerator(username) {
-  const users = getUsers();
-  const u = users.find(x => x.user === username);
-  return u && u.moderator === true;
-}
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function dateFI() {
-  return new Date().toLocaleDateString('fi-FI',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-}
-function todayFI() {
-  return new Date().toLocaleDateString('fi-FI');
-}
+    function getUsers() {
+        return window._users || [];
+    }
+    function saveUsers(users) {
+        window._users = users;
+        save();
+    }
+    function isModerator(username) {
+        const users = getUsers();
+        const u = users.find(x => x.user === username);
+        return u && u.moderator === true;
+    }
+    function esc(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function dateFI() {
+        return new Date().toLocaleDateString('fi-FI', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+    function todayFI() {
+        return new Date().toLocaleDateString('fi-FI');
+    }
 
-function render() {
-  const app = document.getElementById('app');
-  const pendingList = window._pending || [];
+    function render() {
+        const app = document.getElementById('app');
+        const pendingList = window._pending || [];
 
-  const confirmHtml = confirmPending ? `
+        const confirmHtml = confirmPending ? `
     <div class="confirm-bg">
       <div class="confirm-box">
         <p>Poistetaanko artikkeli pysyvästi?</p>
@@ -150,46 +745,77 @@ function render() {
           <button class="cbtn-no" id="cbtn-no">Peruuta</button>
         </div>
       </div>
-    </div>` : '';
-  const inboxHtml = (showInbox && admin) ? `
+    </div>`
+
+
+
+
+
+
+
+
+        : '';
+        const inboxHtml = (showInbox && admin) ? `
     <div class="modal-bg">
       <div class="modal" style="width:500px;max-width:95vw">
         <h2>Saapuneet artikkelit</h2>
-        <p>${pendingList.length === 0 ? 'Ei odottavia artikkeleita.' : pendingList.length + ' artikkelia odottaa hyväksyntää'}</p>
+        <p>${
+
+
+        pendingList.length === 0 ? 'Ei odottavia artikkeleita.' : pendingList.length + ' artikkelia odottaa hyväksyntää'}</p>
         ${pendingList.map(a => `
           <div style="border:1px solid #c8bba0;padding:.8rem;margin-bottom:.8rem">
-            <strong style="font-family:'Playfair Display',serif;font-size:.95rem">${esc(a.title)}</strong>
+            <strong style="font-family:'Playfair Display',serif;font-size:.95rem">${
+        esc(a.title)}</strong>
             <p style="font-size:.72rem;color:var(--muted);margin:.2rem 0">${esc(a.author || '')} · ${esc(a.date)}</p>
-            <p style="font-size:.8rem;margin:.4rem 0">${esc(a.body.substring(0,120))}…</p>
+            <p style="font-size:.8rem;margin:.4rem 0">${esc(a.body.substring(0, 120))}…</p>
             <div style="display:flex;gap:.5rem;margin-top:.6rem">
-              <button id="approve-${a.id}" style="background:var(--ink);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.08em">✓ Hyväksy</button>
+              <button id="approve-${
+        a.id}" style="background:var(--ink);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.08em">✓ Hyväksy</button>
               <button id="reject-${a.id}" style="background:var(--red);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.08em">✕ Hylkää</button>
             </div>
-          </div>`).join('')}
+          </div>`
+        ).join('')}
         <button class="btn-secondary" id="close-inbox-btn">Sulje</button>
       </div>
-    </div>` : '';
-  const modHtml = (typeof showModPanel !== 'undefined' && showModPanel && admin) ? `
+    </div>`
+
+
+        : '';
+        const modHtml = (typeof showModPanel !== 'undefined' && showModPanel && admin) ? `
     <div class="modal-bg">
       <div class="modal">
         <h2>Hallitse käyttäjiä</h2>
         <p>Anna tai poista moderaattorioikeudet</p>
-        ${getUsers().filter(u => u.user !== ADMIN_USER).map(u => `
+        ${
+
+
+
+        getUsers().filter(u => u.user !== ADMIN_USER).map(u => `
           <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid #c8bba0">
-            <span style="font-size:.85rem">${esc(u.user)}</span>
+            <span style="font-size:.85rem">${
+        esc(u.user)}</span>
             <button id="mod-toggle-${esc(u.user)}" style="background:${u.moderator ? 'var(--red)' : 'var(--ink)'};color:#fff;border:none;padding:.2rem .7rem;cursor:pointer;font-family:\'Bebas Neue\',sans-serif;font-size:.75rem;letter-spacing:.08em">
               ${u.moderator ? 'Poista oikeudet' : 'Anna oikeudet'}
             </button>
-            <button id="del-user-${esc(u.user)}" style="background:none;border:1px solid var(--red);color:var(--red);padding:.2rem .6rem;cursor:pointer;font-family:'Source Serif 4',serif;font-size:.72rem;margin-left:.4rem">
+            <button id="del-user-${
+        esc(u.user)}" style="background:none;border:1px solid var(--red);color:var(--red);padding:.2rem .6rem;cursor:pointer;font-family:'Source Serif 4',serif;font-size:.72rem;margin-left:.4rem">
               Poista käyttäjä
             </button>
-          </div>`).join('')}
+          </div>`
+
+        ).join('')}
         <div style="margin-top:1rem">
           <button class="btn-secondary" id="close-mod-btn">Sulje</button>
         </div>
       </div>
-    </div>` : '';
-  const loginHtml = showLogin ? `
+    </div>`
+
+
+
+
+        : '';
+        const loginHtml = showLogin ? `
     <div class="modal-bg">
       <div class="modal">
         <h2>Kirjaudu sisään</h2>
@@ -198,7 +824,15 @@ function render() {
         <input id="lu" type="text" placeholder="käyttäjätunnus">
         <label>Salasana</label>
         <input id="lp" type="password" placeholder="••••••••">
-        <div class="modal-err">${esc(loginErr)}</div>
+        <div class="modal-err">${
+
+
+
+
+
+
+
+        esc(loginErr)}</div>
         <div class="modal-btns">
           <button class="btn-primary" id="lbtn">Kirjaudu sisään</button>
           <button class="btn-secondary" id="lcbtn">Peruuta</button>
@@ -207,7 +841,16 @@ function render() {
           Ei tiliä? <span id="go-reg" style="color:var(--red);cursor:pointer;text-decoration:underline">Luo tunnus</span>
         </p>
       </div>
-    </div>` : showRegister ? `
+    </div>`
+
+
+
+
+
+
+
+
+        : showRegister ? `
     <div class="modal-bg">
       <div class="modal">
         <h2>Luo tunnus</h2>
@@ -218,7 +861,17 @@ function render() {
         <input id="rp" type="password" placeholder="••••••••">
         <label>Salasana uudelleen</label>
         <input id="rp2" type="password" placeholder="••••••••">
-        <div class="modal-err">${esc(regErr)}</div>
+        <div class="modal-err">${
+
+
+
+
+
+
+
+
+
+        esc(regErr)}</div>
         <div class="modal-btns">
           <button class="btn-primary" id="rbtn">Luo tunnus</button>
           <button class="btn-secondary" id="rcbtn">Peruuta</button>
@@ -227,69 +880,95 @@ function render() {
           Onko jo tunnus? <span id="go-login" style="color:var(--red);cursor:pointer;text-decoration:underline">Kirjaudu</span>
         </p>
       </div>
-    </div>` : '';
+    </div>`
 
-  const adminBarHtml = (admin || isModerator(currentUser)) ? `
+
+
+
+
+
+
+
+        : '';
+
+        const adminBarHtml = (admin || isModerator(currentUser)) ? `
     <div class="admin-bar">
-      <span>⚙ ${admin ? 'HALLINTAMOODI' : 'MODERAATTORI'} PÄÄLLÄ</span>
-      ${admin ? `<button id="open-inbox-btn">📬 Saapuneet${(window._pending||[]).length > 0 ? ' ('+window._pending.length+')' : ''}</button>` : ''}
+      <span>⚙ ${
+        admin ? 'HALLINTAMOODI' : 'MODERAATTORI'} PÄÄLLÄ</span>
+      ${admin ? `<button id="open-inbox-btn">📬 Saapuneet${(window._pending || []).length > 0 ? ' (' + window._pending.length + ')' : ''}</button>` : ''}
       ${admin ? `<button id="open-mod-btn">👥 Hallitse käyttäjiä</button>` : ''}
       <button id="exit-admin-btn">✕ Kirjaudu ulos</button>
-    </div>` : '';
+    </div>`
 
-  const tickerItems = articles.length > 0
-    ? articles.map(a => esc(a.title)).join(' &nbsp;⬥&nbsp; ')
-    : 'Tervetuloa Martsan Uutisiin &nbsp;⬥&nbsp; Kirjaudu sisään footerin kautta';
+        : '';
 
-  let mainHtml = '';
+        const tickerItems = articles.length > 0
+        ? articles.map(a => esc(a.title)).join(' &nbsp;⬥&nbsp; ')
+        : 'Tervetuloa Martsan Uutisiin &nbsp;⬥&nbsp; Kirjaudu sisään footerin kautta';
 
-  if (page === 'article') {
-    const a = articles.find(x => x.id === openId);
-    if (a) {
-      const byline = [a.author, a.section, a.date].filter(Boolean).map(esc).join(' · ');
-      const body = a.body.split(/\n\n+/).filter(p => p.trim())
-        .map(p => `<p>${esc(p.trim().replace(/\n/g,' '))}</p>`).join('');
-      mainHtml = `
+        let mainHtml = '';
+
+        if (page === 'article') {
+            const a = articles.find(x => x.id === openId);
+            if (a) {
+                const byline = [a.author, a.section, a.date].filter(Boolean).map(esc).join(' · ');
+                const body = a.body.split(/\n\n+/).filter(p => p.trim())
+                .map(p => `<p>${esc(p.trim().replace(/\n/g, ' '))}</p>`).join('');
+                mainHtml = `
         <div class="art-wrap">
           <button class="back-btn" id="back-btn">← Takaisin etusivulle</button>
-          ${a.section ? `<div class="art-badge">${esc(a.section)}</div>` : ''}
+          ${
+
+                a.section ? `<div class="art-badge">${esc(a.section)}</div>` : ''}
           <h1 class="art-title">${esc(a.title)}</h1>
           <div class="art-byline">${byline ? `<span>${byline}</span>` : ''}</div>
           <div class="art-body">${body}</div>
           <hr class="art-end">
-          <button class="art-del-btn" id="art-del-btn" data-id="${a.id}">✕ Poista artikkeli</button>
-        </div>`;
-    }
-  } else {
-    const renderCol = col => {
-      const list = articles.filter(a => a.column === col);
-      if (!list.length) return `<div class="empty">Ei artikkeleita vielä.</div>`;
-      return list.map(a => {
-        const isLead = a.column === 'center', tag = isLead ? 'h2' : 'h3';
-        const excerpt = a.body.replace(/\n/g,' ').substring(0,150) + (a.body.length > 150 ? '…' : '');
-        const byline = [a.author, a.section, a.date].filter(Boolean).map(esc).join(' · ');
-        return `
+          <button class="art-del-btn" id="art-del-btn" data-id="${
+                a.id}">✕ Poista artikkeli</button>
+        </div>`
+                ;
+            }
+        } else {
+            const renderCol = col => {
+                const list = articles.filter(a => a.column === col);
+                if (!list.length)
+                    return `<div class="empty">Ei artikkeleita vielä.</div>`;
+                return list.map(a => {
+                    const isLead = a.column === 'center',
+                        tag = isLead ? 'h2' : 'h3';
+                    const excerpt = a.body.replace(/\n/g, ' ').substring(0, 150) + (a.body.length > 150 ? '…' : '');
+                    const byline = [a.author, a.section, a.date].filter(Boolean).map(esc).join(' · ');
+                    return `
           <div class="card${isLead ? ' lead' : ''}" data-open="${a.id}">
             <button class="del-btn" data-del="${a.id}">✕ Poista</button>
             <${tag}>${esc(a.title)}</${tag}>
             ${byline ? `<p class="byline">${byline}</p>` : ''}
             <p class="excerpt">${esc(excerpt)}</p>
             <span class="hint">Lue artikkeli →</span>
-          </div>`;
-      }).join(col === 'center' ? '<hr class="divh">' : '');
-    };
+          </div>`
 
-    mainHtml = `
+                    ;
+                }).join(col === 'center' ? '<hr class="divh">' : '');
+            };
+
+            mainHtml = `
       <div class="container">
         <div class="grid">
-          <div class="col"><div class="sec-label">Uutiset</div>${renderCol('left')}</div>
+          <div class="col"><div class="sec-label">Uutiset</div>${
+
+            renderCol('left')}</div>
           <div class="divider"></div>
-          <div class="col"><div class="sec-label">Pääuutinen</div>${renderCol('center')}</div>
+          <div class="col"><div class="sec-label">Pääuutinen</div>${
+            renderCol('center')}</div>
           <div class="divider"></div>
-          <div class="col"><div class="sec-label">Lisää</div>${renderCol('right')}</div>
+          <div class="col"><div class="sec-label">Lisää</div>${
+            renderCol('right')}</div>
         </div>
       </div>
-      <button class="add-btn" id="add-btn">${showEditor ? '✕ Sulje lomake' : '+ Lisää uutinen'}</button>
+      <button class="add-btn" id="add-btn">${
+
+            showEditor ? '✕ Sulje lomake' : '+ Lisää uutinen'}</button>
       <div class="editor${showEditor ? ' open' : ''}">
         <div style="max-width:1050px;margin:0 auto">
           <h2>✍ Kirjoita uusi uutinen</h2>
@@ -313,16 +992,39 @@ function render() {
             <button class="btn-secondary" id="cancel-btn">Peruuta</button>
           </div>
         </div>
-      </div>`;
-  }
+      </div>`
 
-  const n = articles.length;
- const isMod = admin || isModerator(currentUser);
-const footerUser = loggedIn
-    ? `<span>Kirjautunut: ${esc(currentUser)}${isMod && !admin ? ' ★' : ''} &nbsp;·&nbsp; <span id="logout-btn" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu ulos</span></span>`
-    : `<span><span id="atrig" style="cursor:default;user-select:none">toimitus@martsanuutiset.fi</span> &nbsp;·&nbsp; <span id="login-link" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu / Luo tunnus</span></span>`;
-  app.className = (admin || isModerator(currentUser)) ? 'admin-on' : '';
-  app.innerHTML = `
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ;
+        }
+
+        const n = articles.length;
+        const isMod = admin || isModerator(currentUser);
+        const footerUser = loggedIn
+        ? `<span>Kirjautunut: ${esc(currentUser)}${isMod && !admin ? ' ★' : ''} &nbsp;·&nbsp; <span id="logout-btn" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu ulos</span></span>`
+        : `<span><span id="atrig" style="cursor:default;user-select:none">toimitus@martsanuutiset.fi</span> &nbsp;·&nbsp; <span id="login-link" style="cursor:pointer;text-decoration:underline;color:var(--red)">Kirjaudu / Luo tunnus</span></span>`;
+        app.className = (admin || isModerator(currentUser)) ? 'admin-on' : '';
+        app.innerHTML = `
     ${confirmHtml}
     ${inboxHtml}
     ${modHtml}
@@ -331,7 +1033,10 @@ const footerUser = loggedIn
     <div class="masthead">
       <span>Perustettu 2026</span>
       <span style="flex:1;text-align:center">★ Luotettavaa uutisointia joka viikko ★</span>
-      <span>${dateFI()}</span>
+      <span>${
+
+
+        dateFI()}</span>
     </div>
     <div class="nameplate" id="nameplate">
       <h1>Martsan <em>Uutiset</em></h1>
@@ -340,227 +1045,424 @@ const footerUser = loggedIn
     </div>
     <div class="ticker">
       <span class="ticker-label">UUTISET NYT</span>
-      <span class="ticker-inner">${tickerItems} &nbsp;⬥&nbsp; </span>
+      <span class="ticker-inner">${
+
+
+
+
+
+
+
+        tickerItems} &nbsp;⬥&nbsp; </span>
     </div>
-    ${mainHtml}
+    ${
+        mainHtml}
     <footer>
       <span>© 2026 Martsan Uutiset</span>
-      <span>${n} artikkeli${n === 1 ? '' : 'a'} julkaistu</span>
+      <span>${
+
+        n} artikkeli${n === 1 ? '' : 'a'} julkaistu</span>
       ${footerUser}
-    </footer>`;
+    </footer>`
+        ;
 
-  attachEvents();
-  if (showLogin) setTimeout(() => { const el = document.getElementById('lu'); if (el) el.focus(); }, 30);
-  if (showRegister) setTimeout(() => { const el = document.getElementById('ru'); if (el) el.focus(); }, 30);
-}
-
-function attachEvents() {
-  const cyes = document.getElementById('cbtn-yes');
-  const cno  = document.getElementById('cbtn-no');
-  if (cyes) cyes.addEventListener('click', () => {
-    if (confirmPending) {
-      const { id, goBack } = confirmPending;
-      confirmPending = null;
-      articles = articles.filter(a => a.id !== id);
-      save();
-      if (goBack) page = 'front';
-      render();
+        attachEvents();
+        if (showLogin)
+            setTimeout(() => {
+                const el = document.getElementById('lu');
+                if (el)
+                    el.focus();
+            }, 30);
+        if (showRegister)
+            setTimeout(() => {
+                const el = document.getElementById('ru');
+                if (el)
+                    el.focus();
+            }, 30);
     }
-  });
-  if (cno) cno.addEventListener('click', () => { confirmPending = null; render(); });
 
-  const lbtn  = document.getElementById('lbtn');
-  const lcbtn = document.getElementById('lcbtn');
-  const lu    = document.getElementById('lu');
-  const lp    = document.getElementById('lp');
-  if (lbtn)  lbtn.addEventListener('click', doLogin);
-  if (lcbtn) lcbtn.addEventListener('click', () => { showLogin = false; render(); });
-  if (lu)    lu.addEventListener('keydown', e => { if (e.key === 'Enter' && lp) lp.focus(); });
-  if (lp)    lp.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    function attachEvents() {
+        const cyes = document.getElementById('cbtn-yes');
+        const cno = document.getElementById('cbtn-no');
+        if (cyes)
+            cyes.addEventListener('click', () => {
+                if (confirmPending) {
+                    const {id, goBack} = confirmPending;
+                    confirmPending = null;
+                    articles = articles.filter(a => a.id !== id);
+                    save();
+                    if (goBack)
+                        page = 'front';
+                    render();
+                }
+            });
+        if (cno)
+            cno.addEventListener('click', () => {
+                confirmPending = null;
+                render();
+            });
 
-  const goReg   = document.getElementById('go-reg');
-  const goLogin = document.getElementById('go-login');
-  const rbtn    = document.getElementById('rbtn');
-  const rcbtn   = document.getElementById('rcbtn');
-  const rp2     = document.getElementById('rp2');
-  if (goReg)   goReg.addEventListener('click', switchToRegister);
-  if (goLogin) goLogin.addEventListener('click', switchToLogin);
-  if (rbtn)    rbtn.addEventListener('click', doRegister);
-  if (rcbtn)   rcbtn.addEventListener('click', () => { showRegister = false; render(); });
-  if (rp2)     rp2.addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+        const lbtn = document.getElementById('lbtn');
+        const lcbtn = document.getElementById('lcbtn');
+        const lu = document.getElementById('lu');
+        const lp = document.getElementById('lp');
+        if (lbtn)
+            lbtn.addEventListener('click', doLogin);
+        if (lcbtn)
+            lcbtn.addEventListener('click', () => {
+                showLogin = false;
+                render();
+            });
+        if (lu)
+            lu.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && lp)
+                    lp.focus();
+            });
+        if (lp)
+            lp.addEventListener('keydown', e => {
+                if (e.key === 'Enter')
+                    doLogin();
+            });
 
-  const exitBtn   = document.getElementById('exit-admin-btn');
-  const logoutBtn = document.getElementById('logout-btn');
-  if (exitBtn)   exitBtn.addEventListener('click', () => { admin = false; loggedIn = false; currentUser = ''; showEditor = false; render(); });
-  if (logoutBtn) logoutBtn.addEventListener('click', () => { loggedIn = false; currentUser = ''; render(); });
-  const openInboxBtn  = document.getElementById('open-inbox-btn');
-  const closeInboxBtn = document.getElementById('close-inbox-btn');
-  if (openInboxBtn)  openInboxBtn.addEventListener('click', () => { showInbox = true; render(); });
-  if (closeInboxBtn) closeInboxBtn.addEventListener('click', () => { showInbox = false; render(); });
-  (window._pending || []).forEach(a => {
-    const approveBtn = document.getElementById('approve-' + a.id);
-    const rejectBtn  = document.getElementById('reject-'  + a.id);
-    if (approveBtn) approveBtn.addEventListener('click', () => {
-      articles.push(a);
-      window._pending = window._pending.filter(p => p.id !== a.id);
-      save(); render();
-    });
-    if (rejectBtn) rejectBtn.addEventListener('click', () => {
-      window._pending = window._pending.filter(p => p.id !== a.id);
-      save(); render();
-    });
-  });
-  const openModBtn  = document.getElementById('open-mod-btn');
-  const closeModBtn = document.getElementById('close-mod-btn');
-  if (openModBtn)  openModBtn.addEventListener('click', () => { showModPanel = true; render(); });
-  if (closeModBtn) closeModBtn.addEventListener('click', () => { showModPanel = false; render(); });
+        const goReg = document.getElementById('go-reg');
+        const goLogin = document.getElementById('go-login');
+        const rbtn = document.getElementById('rbtn');
+        const rcbtn = document.getElementById('rcbtn');
+        const rp2 = document.getElementById('rp2');
+        if (goReg)
+            goReg.addEventListener('click', switchToRegister);
+        if (goLogin)
+            goLogin.addEventListener('click', switchToLogin);
+        if (rbtn)
+            rbtn.addEventListener('click', doRegister);
+        if (rcbtn)
+            rcbtn.addEventListener('click', () => {
+                showRegister = false;
+                render();
+            });
+        if (rp2)
+            rp2.addEventListener('keydown', e => {
+                if (e.key === 'Enter')
+                    doRegister();
+            });
 
-  // Moderaattori-toggle napit
-  getUsers().filter(u => u.user !== ADMIN_USER).forEach(u => {
-    const btn = document.getElementById('mod-toggle-' + u.user);
-    if (btn) btn.addEventListener('click', () => {
-      const users = getUsers();
-      const target = users.find(x => x.user === u.user);
-      if (target) target.moderator = !target.moderator;
-      saveUsers(users);
-      render();
-    });
-    const delBtn = document.getElementById('del-user-' + u.user);
-    if (delBtn) delBtn.addEventListener('click', () => {
-      window._users = getUsers().filter(x => x.user !== u.user);
-      save();
-      render();
-    });
-  });
-  const loginLink = document.getElementById('login-link');
-  if (loginLink) loginLink.addEventListener('click', () => { showLogin = true; loginErr = ''; render(); });
-  const np = document.getElementById('nameplate');
-  if (np) np.addEventListener('click', () => { page = 'front'; render(); });
+        const exitBtn = document.getElementById('exit-admin-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (exitBtn)
+            exitBtn.addEventListener('click', () => {
+                admin = false;
+                loggedIn = false;
+                currentUser = '';
+                showEditor = false;
+                render();
+            });
+        if (logoutBtn)
+            logoutBtn.addEventListener('click', () => {
+                loggedIn = false;
+                currentUser = '';
+                render();
+            });
+        const openInboxBtn = document.getElementById('open-inbox-btn');
+        const closeInboxBtn = document.getElementById('close-inbox-btn');
+        if (openInboxBtn)
+            openInboxBtn.addEventListener('click', () => {
+                showInbox = true;
+                render();
+            });
+        if (closeInboxBtn)
+            closeInboxBtn.addEventListener('click', () => {
+                showInbox = false;
+                render();
+            });
+        (window._pending || []).forEach(a => {
+            const approveBtn = document.getElementById('approve-' + a.id);
+            const rejectBtn = document.getElementById('reject-' + a.id);
+            if (approveBtn)
+                approveBtn.addEventListener('click', () => {
+                    articles.push(a);
+                    window._pending = window._pending.filter(p => p.id !== a.id);
+                    save();
+                    render();
+                });
+            if (rejectBtn)
+                rejectBtn.addEventListener('click', () => {
+                    window._pending = window._pending.filter(p => p.id !== a.id);
+                    save();
+                    render();
+                });
+        });
+        const openModBtn = document.getElementById('open-mod-btn');
+        const closeModBtn = document.getElementById('close-mod-btn');
+        if (openModBtn)
+            openModBtn.addEventListener('click', () => {
+                showModPanel = true;
+                render();
+            });
+        if (closeModBtn)
+            closeModBtn.addEventListener('click', () => {
+                showModPanel = false;
+                render();
+            });
 
-  const atrig = document.getElementById('atrig');
-  if (atrig) atrig.addEventListener('click', () => {
-    tapCount++;
-    clearTimeout(tapTimer);
-    if (tapCount >= 5) { tapCount = 0; showLogin = true; loginErr = ''; render(); }
-    else tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
-  });
+        // Moderaattori-toggle napit
+        getUsers().filter(u => u.user !== ADMIN_USER).forEach(u => {
+            const btn = document.getElementById('mod-toggle-' + u.user);
+            if (btn)
+                btn.addEventListener('click', () => {
+                    const users = getUsers();
+                    const target = users.find(x => x.user === u.user);
+                    if (target)
+                        target.moderator = !target.moderator;
+                    saveUsers(users);
+                    render();
+                });
+            const delBtn = document.getElementById('del-user-' + u.user);
+            if (delBtn)
+                delBtn.addEventListener('click', () => {
+                    window._users = getUsers().filter(x => x.user !== u.user);
+                    save();
+                    render();
+                });
+        });
+        const loginLink = document.getElementById('login-link');
+        if (loginLink)
+            loginLink.addEventListener('click', () => {
+                showLogin = true;
+                loginErr = '';
+                render();
+            });
+        const np = document.getElementById('nameplate');
+        if (np)
+            np.addEventListener('click', () => {
+                page = 'front';
+                render();
+            });
 
-  const back = document.getElementById('back-btn');
-  if (back) back.addEventListener('click', () => { page = 'front'; render(); });
+        const atrig = document.getElementById('atrig');
+        if (atrig)
+            atrig.addEventListener('click', () => {
+                tapCount++;
+                clearTimeout(tapTimer);
+                if (tapCount >= 5) {
+                    tapCount = 0;
+                    showLogin = true;
+                    loginErr = '';
+                    render();
+                }
+                else
+                    tapTimer = setTimeout(() => {
+                        tapCount = 0;
+                    }, 2000);
+            });
 
-  const artDel = document.getElementById('art-del-btn');
-  if (artDel) artDel.addEventListener('click', () => {
-    confirmPending = { id: parseInt(artDel.dataset.id), goBack: true };
-    render();
-  });
+        const back = document.getElementById('back-btn');
+        if (back)
+            back.addEventListener('click', () => {
+                page = 'front';
+                render();
+            });
 
-  document.querySelectorAll('[data-open]').forEach(el => {
-    el.addEventListener('click', e => {
-      if (e.target.closest('[data-del]')) return;
-      page = 'article'; openId = parseInt(el.dataset.open); render();
-    });
-  });
-  document.querySelectorAll('[data-del]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      confirmPending = { id: parseInt(btn.dataset.del), goBack: false };
-      render();
-    });
-  });
+        const artDel = document.getElementById('art-del-btn');
+        if (artDel)
+            artDel.addEventListener('click', () => {
+                confirmPending = {
+                    id: parseInt(artDel.dataset.id),
+                    goBack: true
+                };
+                render();
+            });
 
-  const addBtn    = document.getElementById('add-btn');
-  const cancelBtn = document.getElementById('cancel-btn');
-  if (addBtn)    addBtn.addEventListener('click', () => { showEditor = !showEditor; render(); });
-  if (cancelBtn) cancelBtn.addEventListener('click', () => { showEditor = false; render(); });
+        document.querySelectorAll('[data-open]').forEach(el => {
+            el.addEventListener('click', e => {
+                if (e.target.closest('[data-del]'))
+                    return;
+                page = 'article';
+                openId = parseInt(el.dataset.open);
+                render();
+            });
+        });
+        document.querySelectorAll('[data-del]').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                confirmPending = {
+                    id: parseInt(btn.dataset.del),
+                    goBack: false
+                };
+                render();
+            });
+        });
 
-  const pubBtn = document.getElementById('pub-btn');
-  if (pubBtn) pubBtn.addEventListener('click', () => {
-    const title = (document.getElementById('ft').value || '').trim();
-    const body  = (document.getElementById('fb').value || '').trim();
-    if (!title) { alert('Kirjoita otsikko.'); return; }
-    if (!body)  { alert('Kirjoita teksti.'); return; }
-    const id = nextId++;
-    const article = {
-      id, title,
-      author:  (document.getElementById('fa').value || '').trim(),
-      section: (document.getElementById('fs').value || '').trim(),
-      column:  document.getElementById('fc').value,
-      body,
-      date: todayFI()
-    };
-    console.log('admin:', admin, 'mod:', isModerator(currentUser), 'user:', currentUser, 'loggedIn:', loggedIn);
-    if (admin || isModerator(currentUser)) {
-      articles.push(article);
-      showEditor = false; save();
-      page = 'article'; openId = id;
-    } else {
-      window._pending = window._pending || [];
-      window._pending.push(article);
-      showEditor = false; save();
-      alert('Artikkeli lähetetty tarkastettavaksi!');
+        const addBtn = document.getElementById('add-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        if (addBtn)
+            addBtn.addEventListener('click', () => {
+                showEditor = !showEditor;
+                render();
+            });
+        if (cancelBtn)
+            cancelBtn.addEventListener('click', () => {
+                showEditor = false;
+                render();
+            });
+
+        const pubBtn = document.getElementById('pub-btn');
+        if (pubBtn)
+            pubBtn.addEventListener('click', () => {
+                const title = (document.getElementById('ft').value || '').trim();
+                const body = (document.getElementById('fb').value || '').trim();
+                if (!title) {
+                    alert('Kirjoita otsikko.');
+                    return;
+                }
+                if (!body) {
+                    alert('Kirjoita teksti.');
+                    return;
+                }
+                const id = nextId++;
+                const article = {
+                    id,
+                    title,
+                    author: (document.getElementById('fa').value || '').trim(),
+                    section: (document.getElementById('fs').value || '').trim(),
+                    column: document.getElementById('fc').value,
+                    body,
+                    date: todayFI()
+                };
+                console.log('admin:', admin, 'mod:', isModerator(currentUser), 'user:', currentUser, 'loggedIn:', loggedIn);
+                if (admin || isModerator(currentUser)) {
+                    articles.push(article);
+                    showEditor = false;
+                    save();
+                    page = 'article';
+                    openId = id;
+                } else {
+                    window._pending = window._pending || [];
+                    window._pending.push(article);
+                    showEditor = false;
+                    save();
+                    alert('Artikkeli lähetetty tarkastettavaksi!');
+                }
+                render();
+            });
     }
-    render();
-  });
-}
 
-function doLogin() {
-  const u = (document.getElementById('lu').value || '').trim();
-  const p = (document.getElementById('lp').value || '');
-  if (u === ADMIN_USER && p === ADMIN_PASS) {
-    showLogin = false; admin = true; loggedIn = true; currentUser = u; render(); return;
-  }
-  const users = getUsers();
-  const match = users.find(x => x.user === u && x.pass === p);
-  if (match) {
-    showLogin = false; loggedIn = true; currentUser = u; render(); return;
-  }
-  loginErr = 'Väärä käyttäjätunnus tai salasana.'; render();
-}
+    function doLogin() {
+        const u = (document.getElementById('lu').value || '').trim();
+        const p = (document.getElementById('lp').value || '');
+        if (u === ADMIN_USER && p === ADMIN_PASS) {
+            showLogin = false;
+            admin = true;
+            loggedIn = true;
+            currentUser = u;
+            render();
+            return;
+        }
+        const users = getUsers();
+        const match = users.find(x => x.user === u && x.pass === p);
+        if (match) {
+            showLogin = false;
+            loggedIn = true;
+            currentUser = u;
+            render();
+            return;
+        }
+        loginErr = 'Väärä käyttäjätunnus tai salasana.';
+        render();
+    }
 
-function doRegister() {
-  const u  = (document.getElementById('ru').value || '').trim();
-  const p  = (document.getElementById('rp').value || '');
-  const p2 = (document.getElementById('rp2').value || '');
-  if (!u) { regErr = 'Kirjoita käyttäjätunnus.'; render(); return; }
-  if (u === ADMIN_USER) { regErr = 'Tämä käyttäjätunnus ei ole saatavilla.'; render(); return; }
-  if (p.length < 4) { regErr = 'Salasanan pitää olla vähintään 4 merkkiä.'; render(); return; }
-  if (p !== p2) { regErr = 'Salasanat eivät täsmää.'; render(); return; }
-  const users = getUsers();
-  if (users.find(x => x.user === u)) { regErr = 'Käyttäjätunnus on jo käytössä.'; render(); return; }
-  users.push({ user: u, pass: p });
-  saveUsers(users);
-  showRegister = false; loggedIn = true; currentUser = u; render();
-}
+    function doRegister() {
+        const u = (document.getElementById('ru').value || '').trim();
+        const p = (document.getElementById('rp').value || '');
+        const p2 = (document.getElementById('rp2').value || '');
+        if (!u) {
+            regErr = 'Kirjoita käyttäjätunnus.';
+            render();
+            return;
+        }
+        if (u === ADMIN_USER) {
+            regErr = 'Tämä käyttäjätunnus ei ole saatavilla.';
+            render();
+            return;
+        }
+        if (p.length < 4) {
+            regErr = 'Salasanan pitää olla vähintään 4 merkkiä.';
+            render();
+            return;
+        }
+        if (p !== p2) {
+            regErr = 'Salasanat eivät täsmää.';
+            render();
+            return;
+        }
+        const users = getUsers();
+        if (users.find(x => x.user === u)) {
+            regErr = 'Käyttäjätunnus on jo käytössä.';
+            render();
+            return;
+        }
+        users.push({
+            user: u,
+            pass: p
+        });
+        saveUsers(users);
+        showRegister = false;
+        loggedIn = true;
+        currentUser = u;
+        render();
+    }
 
-function switchToRegister() {
-  showLogin = false; showRegister = true; regErr = ''; render();
-}
-function switchToLogin() {
-  showRegister = false; showLogin = true; loginErr = ''; render();
-}
+    function switchToRegister() {
+        showLogin = false;
+        showRegister = true;
+        regErr = '';
+        render();
+    }
+    function switchToLogin() {
+        showRegister = false;
+        showLogin = true;
+        loginErr = '';
+        render();
+    }
 
-async function save() {
-  try {
-    await fetch(BIN_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi', 'X-Access-Key' : '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' },
-      body: JSON.stringify({ articles, nextId, users: window._users || [], pending: window._pending || [] })
-    });
-  } catch(e) { console.warn('Tallennus epäonnistui:', e); }
-}
-async function load() {
-  try {
-    const res = await fetch(BIN_URL, {
-      headers: { 'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi', 'X-Access-Key': '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm' }
-    });
-    const d = await res.json();
-    articles       = d.record.articles || [];
-    nextId         = d.record.nextId   || 1;
-    window._users   = d.record.users   || [];
-    window._pending = d.record.pending || [];
-  } catch(e) { articles = []; nextId = 1; }
-}
-load().then(render).catch(() => render());
-</script>
+    async function save() {
+        try {
+            await fetch(BIN_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi',
+                    'X-Access-Key': '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm'
+                },
+                body: JSON.stringify({
+                    articles,
+                    nextId,
+                    users: window._users || [],
+                    pending: window._pending || []
+                })
+            });
+        } catch (e) {
+            console.warn('Tallennus epäonnistui:', e);
+        }
+    }
+    async function load() {
+        try {
+            const res = await fetch(BIN_URL, {
+                headers: {
+                    'X-Master-Key': '$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi',
+                    'X-Access-Key': '$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm'
+                }
+            });
+            const d = await res.json();
+            articles = d.record.articles || [];
+            nextId = d.record.nextId || 1;
+            window._users = d.record.users || [];
+            window._pending = d.record.pending || [];
+        } catch (e) {
+            articles = [];
+            nextId = 1;
+        }
+    }
+    load().then(render).catch(() => render());
+    </script>
 </body>
 </html>
