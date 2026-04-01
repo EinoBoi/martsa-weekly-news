@@ -1,3 +1,179 @@
+
+
+<!DOCTYPE html> <html lang="fi"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <title>Martsan Uutiset</title> <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Seri
+PASTED
+tässä koodi. kerro miten saan viesti ominaisuuden toimimaan.
+31.3.
+Tarkastelen koodiasi ja mietin, minkälaisen viestiominaisuuden haluat.
+Mitä tarkoitat viesti-ominaisuudella?
+Q: Mitä viesti-ominaisuutta tarkoitat?
+A: tarkoitan sitä että julkaistavat artikkelit täytyy hyväksyä käyttäjällä: martsa
+31.3.
+Se toiminto on jo koodissa! Ongelma on todennäköisesti jossain muualla. Testataan:
+Kun tavallinen käyttäjä kirjoittaa artikkelin ja painaa "Julkaise", artikkeli menee _pending-listalle. Sitten admin (martsa) näkee sen "Saapuneet"-napista.
+Mahdolliset ongelmat:
+Moderaattorit ohittavat hyväksynnän — jos käyttäjällä on moderaattorioikeudet, artikkeli julkaistaan suoraan ilman hyväksyntää. Onko jollain käyttäjällä vahingossa moderaattori-status?
+Kirjautunut käyttäjä ei näe "Lisää uutinen" -nappia — nappi näkyy vain jos admin-on-luokka on päällä, eli vain adminille/moderaattorille. Tavalliset käyttäjät eivät pysty edes kirjoittamaan artikkeleita tällä hetkellä!
+Kumpi on ongelma:
+Q: Mikä ei toimi?
+A: 2 ja 3
+31.3.
+Selvä! Kaksi bugia korjattavana:
+Bug 1: "Lisää uutinen" -nappi on piilotettu CSS:llä niin että vain admin-on-luokka näyttää sen — tavallinen kirjautunut käyttäjä ei pysty kirjoittamaan artikkeleita ollenkaan.
+Bug 2: Saapuneet-inboxissa artikkelin hyväksyminen kutsuu save():a mutta _pending tallennetaan vasta seuraavalla renderöinnillä — voi aiheuttaa tilanteen missä hyväksytty artikkeli katoaa.
+Korjaan molemmat. Tässä on päivitetty koodi — muutokset ovat kolmessa kohdassa:
+
+Tarkistan alkuperäisen koodin rakenne
+Tarkistan alkuperäisen koodin rakenne
+Kirjoitan korjatun version suoraan:
+Muutos 1 — Näytä "Lisää uutinen" kirjautuneille käyttäjille (ei vain admineille). Etsi tämä rivi CSS:stä:
+css
+.admin-on .add-btn {
+    display: block
+}
+Korvaa:
+css
+.admin-on .add-btn, .logged-in .add-btn {
+    display: block
+}
+Muutos 2 — Lisää logged-in-luokka app:iin kun kirjauduttu. Etsi:
+js
+app.className = (admin || isModerator(currentUser)) ? 'admin-on' : '';
+Korvaa:
+js
+app.className = (admin || isModerator(currentUser)) ? 'admin-on' : (loggedIn ? 'logged-in' : '');
+Muutos 3 — Korjaa inbox-hyväksyntä niin että _pending päivittyy ennen save():a. Etsi:
+js
+if (approveBtn)
+    approveBtn.addEventListener('click', () => {
+        articles.push(a);
+        window._pending = window._pending.filter(p => p.id !== a.id);
+        save();
+        render();
+    });
+if (rejectBtn)
+    rejectBtn.addEventListener('click', () => {
+        window._pending = window._pending.filter(p => p.id !== a.id);
+        save();
+        render();
+    });
+Tuo näyttää oikealta — ongelma on muualla. Todellinen syy miksi martsa ei näe saapuneita: showInbox nollaantuu kun render() kutsutaan uudestaan muualta. Lisää tämä tarkistus — etsi:
+js
+const closeInboxBtn = document.getElementById('close-inbox-btn');
+if (openInboxBtn)
+    openInboxBtn.addEventListener('click', () => {
+        showInbox = true;
+        render();
+    });
+Ja tarkista onko sinulla sivustolla useampi render()-kutsu joka resetoi tilan. Voitko kertoa: näkyykö "Saapuneet"-nappi ollenkaan martsalle kun kirjaudut sisään? Se auttaa paikantamaan tarkalleen missä kohtaa menee pieleen.
+kerro mitä kotvata ja millä
+31.3.
+Näytä ensin mitä tapahtuu käytännössä:
+Q: Kun kirjaudut sisään käyttäjällä 'martsa' — näkyykö yläpalkissa 'Saapuneet'-nappi?
+A: Kyllä näkyy
+Q: Kun tavallinen käyttäjä kirjautuu sisään — näkyykö 'Lisää uutinen' -nappi?
+A: Ei näy ollenkaan
+31.3.
+Selvä! Yksi korjaus tarvitaan.
+Ongelma: "Lisää uutinen" -nappi on piilotettu CSS:llä niin että se näkyy vain admin/moderaattori-tilassa.
+Korjaus 1 — CSS
+Etsi tämä:
+css
+.admin-on .add-btn {
+    display: block
+}
+Korvaa tällä:
+css
+.admin-on .add-btn, .logged-in .add-btn {
+    display: block
+}
+Korjaus 2 — JavaScript
+Etsi tämä:
+js
+app.className = (admin || isModerator(currentUser)) ? 'admin-on' : '';
+Korvaa tällä:
+js
+app.className = (admin || isModerator(currentUser)) ? 'admin-on' : (loggedIn ? 'logged-in' : '');
+Näiden kahden muutoksen jälkeen kirjautunut käyttäjä näkee napin, kirjoittaa artikkelin, ja se menee automaattisesti martsan saapuneisiin odottamaan hyväksyntää. Artikkeli ei julkaistu suoraan koska isModerator() palauttaa false tavalliselle käyttäjälle.
+en ole kirjautunut mutta pystyn silti käyttämään pää oikeuksia ei tällaista
+31.3.
+Ymmärrän! Ongelma on tässä koodissa — admin-tila ei nollaudu oikein. Etsi tämä:
+js
+let articles = [],
+    nextId = 1,
+    admin = false,
+    loggedIn = false,
+    currentUser = '';
+Tämä on oikein, mutta ongelma on todennäköisesti siinä että sivu lataa datan JSONbin:stä ja jokin tila jää päälle.
+Kerro tarkemmin — miten pääset pääoikeuksiin ilman kirjautumista?
+Q: Miten pääoikeudet näkyvät ilman kirjautumista?
+A: kun ensin kirjaudun niin sitten admin palkki ei poistu
+31.3.
+Selvä! Ongelma on logout-napissa. Etsi tämä:
+js
+if (exitBtn)
+    exitBtn.addEventListener('click', () => {
+        admin = false;
+        loggedIn = false;
+        currentUser = '';
+        showEditor = false;
+        render();
+    });
+Korvaa tällä:
+js
+if (exitBtn)
+    exitBtn.addEventListener('click', () => {
+        admin = false;
+        loggedIn = false;
+        currentUser = '';
+        showEditor = false;
+        showInbox = false;
+        showModPanel = false;
+        render();
+    });
+Ja etsi tämä:
+js
+if (logoutBtn)
+    logoutBtn.addEventListener('click', () => {
+        loggedIn = false;
+        currentUser = '';
+        render();
+    });
+Korvaa tällä:
+js
+if (logoutBtn)
+    logoutBtn.addEventListener('click', () => {
+        admin = false;
+        loggedIn = false;
+        currentUser = '';
+        showEditor = false;
+        showInbox = false;
+        showModPanel = false;
+        render();
+    });
+Selitys: logoutBtn ei nollaa admin = false ollenkaan, joten admin-tila jää päälle vaikka kirjautuisi ulos. Molemmat napit tarvitsevat saman nollauksen.
+alhaalla oleva nappi ei vieläkään toimi
+31.3.
+Tarkoitat siis "Kirjaudu ulos" -nappia footerissa? Se on logoutBtn.
+Onko sinulla jo tehty se korjaus jonka annoin (admin = false lisätty logoutBtn-handleriin)? Jos kyllä, niin ongelma on muualla.
+Kokeile lisätä tämä — etsi:
+js
+const exitBtn = document.getElementById('exit-admin-btn');
+const logoutBtn = document.getElementById('logout-btn');
+Ja heti sen jälkeen lisää konsoliloki testausta varten:
+js
+console.log('exitBtn:', exitBtn, 'logoutBtn:', logoutBtn);
+Avaa sitten selaimen Developer Tools → Console (F12) ja kerro mitä siellä lukee kun sivu latautuu. Se näyttää löytyvätkö napit ylipäätään.
+
+
+Claude works directly with your codebase
+Let Claude edit files, run commands, and ship changes right inside your terminal or IDE.
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Pasted content
+41.07 KB •1,469 lines
+Formatting may be inconsistent from source
 <!DOCTYPE html>
 <html lang="fi">
 <head>
