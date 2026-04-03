@@ -91,10 +91,16 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .fields input:focus,.fields select:focus,.fields textarea:focus{border-color:var(--red)}
 .fields textarea{resize:vertical;min-height:110px}
 .ea{margin-top:.9rem;display:flex;gap:.7rem;align-items:center}
-.dl-bar{background:var(--ink);padding:.6rem 1.5rem;display:flex;justify-content:center;align-items:center;gap:.7rem;flex-wrap:wrap}
-.dl-bar-label{font-family:'Bebas Neue',sans-serif;font-size:.72rem;letter-spacing:.15em;color:#e8c070}
-.dl-btn{background:var(--paper);color:var(--ink);border:none;padding:.32rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:.1em;transition:background .15s,color .15s}
-.dl-btn:hover{background:var(--red);color:#fff}
+.dl-wrap{display:flex;justify-content:center;padding:.7rem 1.5rem;background:var(--paper);border-bottom:1px solid #c8bba0;position:relative}
+.dl-main-btn{background:var(--ink);color:var(--paper);border:none;padding:.45rem 1.4rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.15em;display:flex;align-items:center;gap:.5rem;transition:background .2s}
+.dl-main-btn:hover{background:var(--red)}
+.dl-main-btn .arrow{font-size:.6rem;transition:transform .2s}
+.dl-main-btn.open .arrow{transform:rotate(180deg)}
+.dl-dropdown{position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--ink);border:1px solid #444;min-width:180px;z-index:200;display:none;box-shadow:4px 4px 0 rgba(0,0,0,.3)}
+.dl-dropdown.open{display:block}
+.dl-dropdown button{display:block;width:100%;background:none;border:none;border-bottom:1px solid #333;color:var(--paper);padding:.5rem 1.1rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.12em;text-align:left;transition:background .15s}
+.dl-dropdown button:last-child{border-bottom:none}
+.dl-dropdown button:hover{background:var(--red)}
 .inst-bg{position:fixed;inset:0;background:rgba(26,18,8,.7);z-index:400;display:flex;align-items:center;justify-content:center}
 .inst-box{background:var(--paper);border:2px solid var(--rule);padding:1.8rem;width:340px;max-width:92vw;box-shadow:6px 6px 0 var(--rule)}
 .inst-box h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:.8rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
@@ -233,7 +239,7 @@ function render() {
       + '<button id="exit-admin-btn">Kirjaudu ulos</button></div>';
   }
 
-  var dlBarHtml = '<div class="dl-bar"><span class="dl-bar-label">Asenna sovellus:</span><button class="dl-btn" id="dl-android">Android</button><button class="dl-btn" id="dl-windows">Windows</button><button class="dl-btn" id="dl-mac">Mac</button></div>';
+  var dlBarHtml = '<div class="dl-wrap"><button class="dl-main-btn" id="dl-main-btn">⬇ Asenna sovellus <span class="arrow">▼</span></button><div class="dl-dropdown" id="dl-dropdown"><button id="dl-android">📱 Android</button><button id="dl-windows">🖥 Windows</button><button id="dl-mac">🍎 Mac</button></div></div>';
 
   var tickerItems = articles.length > 0
     ? articles.map(function(a){ return esc(a.title); }).join(' &nbsp;⬥&nbsp; ')
@@ -338,7 +344,26 @@ function attachEvents() {
   });
   on('cbtn-no', function(){ confirmPending = null; render(); });
 
-  on('dl-android', function(){
+  on('dl-main-btn', function(){
+    var btn = document.getElementById('dl-main-btn');
+    var dd  = document.getElementById('dl-dropdown');
+    if (!btn || !dd) return;
+    var isOpen = dd.classList.contains('open');
+    dd.classList.toggle('open');
+    btn.classList.toggle('open');
+    if (!isOpen) {
+      setTimeout(function(){
+        document.addEventListener('click', function closeDd(e){
+          if (!e.target.closest('.dl-wrap')) {
+            var d=document.getElementById('dl-dropdown'), b=document.getElementById('dl-main-btn');
+            if(d) d.classList.remove('open');
+            if(b) b.classList.remove('open');
+            document.removeEventListener('click', closeDd);
+          }
+        });
+      }, 10);
+    }
+  });
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(function(){ deferredPrompt = null; });
