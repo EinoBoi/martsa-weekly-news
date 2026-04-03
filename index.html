@@ -101,7 +101,11 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .inst-box ol{padding-left:1.2rem;font-size:.85rem;line-height:1.9;color:#2c2416}
 .inst-close{margin-top:1.2rem;background:var(--ink);color:var(--paper);border:none;padding:.45rem 1.4rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.12em}
 .inst-close:hover{background:var(--red)}
-footer{border-top:4px double var(--rule);padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
+.skeleton{background:linear-gradient(90deg,#e8e0d0 25%,#f0e8d8 50%,#e8e0d0 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:2px;display:inline-block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-title{height:1.6rem;width:80%;margin-bottom:.5rem}
+.sk-line{height:.75rem;width:100%;margin-bottom:.4rem}
+.sk-line.short{width:60%}padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
 @media(max-width:650px){
   .grid{grid-template-columns:1fr}
   .divider{display:none}
@@ -133,6 +137,7 @@ let showEditor = false, showModPanel = false, showInbox = false;
 let confirmPending = null, installModal = null;
 let tapCount = 0, tapTimer = null;
 let deferredPrompt = null;
+let dataLoaded = false;
 
 const INST = {
   android: {
@@ -254,6 +259,9 @@ function render() {
   } else {
     function renderCol(col) {
       var list = articles.filter(function(a){ return a.column === col; });
+      if (!list.length && !dataLoaded) {
+        return '<div class="skeleton sk-title"></div><div class="skeleton sk-line"></div><div class="skeleton sk-line"></div><div class="skeleton sk-line short"></div>';
+      }
       if (!list.length) return '<div class="empty">Ei artikkeleita vielä.</div>';
       return list.map(function(a) {
         var isLead = col === 'center';
@@ -330,22 +338,31 @@ function attachEvents() {
   });
   on('cbtn-no', function(){ confirmPending = null; render(); });
 
-  function triggerInstall() {
+  on('dl-android', function(){
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(function(){ deferredPrompt = null; });
     } else {
-      var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      if (isSafari) {
-        alert('Safarilla: paina jakamispainike → Lisää Koti-valikkoon');
-      } else {
-        alert('Avaa sivu Chrome-selaimella niin asennus käynnistyy automaattisesti.');
-      }
+      window.open('https://play.google.com/store/apps/details?id=com.android.chrome', '_blank');
     }
-  }
-  on('dl-android', triggerInstall);
-  on('dl-windows', triggerInstall);
-  on('dl-mac',     triggerInstall);
+  });
+  on('dl-windows', function(){
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(){ deferredPrompt = null; });
+    } else {
+      window.open('https://martsanuutiset.github.io/martsan-uutiset/', '_blank');
+      alert('Avaa sivu Chromessa ja paina osoitepalkin oikeasta reunasta asennuskuvaketta.');
+    }
+  });
+  on('dl-mac', function(){
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(){ deferredPrompt = null; });
+    } else {
+      alert('Safarilla: paina jakamispainike \u2192 Lis\u00e4\u00e4 Koti-valikkoon. Chromella: paina osoitepalkin asennuskuvaketta.');
+    }
+  });
   on('inst-close', function(){ installModal = null; render(); });
   var instBg = document.getElementById('inst-bg');
   if (instBg) instBg.addEventListener('click', function(e){ if(e.target === instBg){ installModal = null; render(); } });
@@ -486,12 +503,12 @@ async function load() {
     nextId=d.record.nextId||1;
     window._users=d.record.users||[];
     window._pending=d.record.pending||[];
-  } catch(e){ articles=[]; nextId=1; }
+    dataLoaded=true;
+  } catch(e){ articles=[]; nextId=1; dataLoaded=true; }
 }
 
-// Näytä rakenne heti — ei odoteta JSONbinia
+// Näytä UI heti tyhjänä, lataa data taustalla
 render();
-// Lataa data taustalla ja päivitä
 load().then(render).catch(function(){ render(); });
 </script>
 </body>
