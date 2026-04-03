@@ -103,6 +103,7 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .dl-dropdown button:hover{background:var(--red)}
 .skeleton{background:linear-gradient(90deg,#e8e0d0 25%,#f0e8d8 50%,#e8e0d0 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:2px;display:block;margin-bottom:.5rem}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+footer{border-top:4px double var(--rule);padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
 .loading-screen{position:fixed;inset:0;background:var(--paper);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .5s ease}
 .loading-screen.fade-out{opacity:0;pointer-events:none}
 .loading-logo{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:900;line-height:.9;text-align:center}
@@ -113,49 +114,38 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .loading-bar{width:min(200px,60vw);height:2px;background:#ddd;overflow:hidden}
 .loading-bar-inner{height:100%;background:var(--red);animation:loadbar 1.4s ease-in-out infinite}
 @keyframes loadbar{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
-.loading-bar-inner{height:100%;background:var(--red);width:0%;transition:width .05s linear}
-.loading-bar-inner.go{width:100%;transition:width 1.4s cubic-bezier(.4,0,.2,1)}padding:.9rem 1.5rem;display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);letter-spacing:.06em}
 @media(max-width:650px){
-.grid{grid-template-columns:1fr}
-.divider{display:none}
-@@ -510,17 +510,36 @@
+  .grid{grid-template-columns:1fr}
+  .divider{display:none}
+@@ -115,6 +124,11 @@
+</style>
+</head>
+<body>
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-logo">Martsan <em>Uutiset</em></div>
+  <div class="loading-rule"><span>ladataan</span></div>
+  <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+</div>
+<div id="app"></div>
+<script>
+var ADMIN_USER = 'martsa';
+@@ -496,7 +510,18 @@
 }
 
 render();
+load().then(render).catch(function(){ render(); });
 load().then(function(){
   render();
-
-// Käynnistä latauspalkki heti
-setTimeout(function(){
-  var bar = document.querySelector('.loading-bar-inner');
-  if(bar) bar.classList.add('go');
-}, 30);
-
-var dataReady = false;
-var barDone = false;
-
-function tryHide(){
-  if(!dataReady || !barDone) return;
-var ls = document.getElementById('loading-screen');
-if(ls){
-ls.classList.add('fade-out');
-setTimeout(function(){ ls.style.display='none'; }, 500);
-}
-}
-
-// Palkki valmis 1.4s kuluttua
-setTimeout(function(){ barDone = true; tryHide(); }, 1450);
-
-load().then(function(){
-  render();
-  dataReady = true;
-  tryHide();
+  var ls = document.getElementById('loading-screen');
+  if(ls){
+    ls.classList.add('fade-out');
+    setTimeout(function(){ ls.style.display='none'; }, 500);
+  }
 }).catch(function(){
-render();
+  render();
   var ls = document.getElementById('loading-screen');
   if(ls){ ls.classList.add('fade-out'); setTimeout(function(){ ls.style.display='none'; },500); }
-  dataReady = true;
-  tryHide();
 });
 </script>
 </body>
+</html>
