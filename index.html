@@ -330,9 +330,22 @@ function attachEvents() {
   });
   on('cbtn-no', function(){ confirmPending = null; render(); });
 
-  on('dl-android', function(){ installModal = 'android'; render(); });
-  on('dl-windows', function(){ installModal = 'windows'; render(); });
-  on('dl-mac',     function(){ installModal = 'mac'; render(); });
+  function triggerInstall() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(){ deferredPrompt = null; });
+    } else {
+      var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      if (isSafari) {
+        alert('Safarilla: paina jakamispainike → Lisää Koti-valikkoon');
+      } else {
+        alert('Avaa sivu Chrome-selaimella niin asennus käynnistyy automaattisesti.');
+      }
+    }
+  }
+  on('dl-android', triggerInstall);
+  on('dl-windows', triggerInstall);
+  on('dl-mac',     triggerInstall);
   on('inst-close', function(){ installModal = null; render(); });
   var instBg = document.getElementById('inst-bg');
   if (instBg) instBg.addEventListener('click', function(e){ if(e.target === instBg){ installModal = null; render(); } });
@@ -476,6 +489,9 @@ async function load() {
   } catch(e){ articles=[]; nextId=1; }
 }
 
+// Näytä rakenne heti — ei odoteta JSONbinia
+render();
+// Lataa data taustalla ja päivitä
 load().then(render).catch(function(){ render(); });
 </script>
 </body>
