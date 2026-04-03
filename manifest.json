@@ -1,9 +1,10 @@
 {
   "name": "Martsan Uutiset",
-  "short_name": "Martsan Uutiset",
+  "short_name": "Martsan",
   "description": "Kaikki mitä sinun tarvitsee tietää — ja hieman enemmän",
-  "start_url": "/martsan-uutiset/",
-  "scope": "/martsan-uutiset/",
+  "lang": "fi-FI",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f5f0e8",
   "theme_color": "#1a1208",
