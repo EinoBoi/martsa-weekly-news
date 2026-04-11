@@ -236,9 +236,9 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 </div>
 <div id="app"></div>
 <script>
-var ADMIN_USER='martsa',ADMIN_PASS='weekly2026';
-var BIN_URL='https://api.jsonbin.io/v3/b/69b43dcec3097a1dd521a842';
-var HEADERS={'Content-Type':'application/json','X-Master-Key':'$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi','X-Access-Key':'$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm'};
+var SUPABASE_URL='https://jjtlhmbfrjtapksynyit.supabase.co';
+var SUPABASE_KEY='sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC';
+var SB={'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
 var CATS=['Urheilu','Kulttuuri','Koulu','Muut'];
 var CAT_CLS={'Urheilu':'cat-urheilu','Kulttuuri':'cat-kulttuuri','Koulu':'cat-koulu','Muut':'cat-muut'};
 var LANGS={fi:{all:'Kaikki',news:'Uutiset',main:'P\u00e4\u00e4uutinen',more:'Lis\u00e4\u00e4',readMore:'Lue artikkeli',back:'Takaisin',login:'Kirjaudu',logout:'Kirjaudu ulos',register:'Luo tunnus',send:'L\u00e4het\u00e4',cancel:'Peruuta',publish:'Julkaise',filter:'Suodata:',search:'Hae uutisia\u2026',bookmarks:'Kirjanmerkit',msgTo:'Viesti toimitukselle',saved:'Tallennettu',save:'Tallenna',comments:'Kommentit',noArticles:'Ei artikkeleita viel\u00e4.',noResults:'Ei tuloksia.',founded:'Perustettu',tagline:'\u201eKaikki mit\u00e4 sinun tarvitsee tiet\u00e4\u00e4 \u2014 ja hieman enemm\u00e4n\u201d',motto:'Viikon t\u00e4rkeimm\u00e4t uutiset \u2014 Totuus ennen kaikkea',install:'Asenna',loginErr:'V\u00e4\u00e4r\u00e4 k\u00e4ytt\u00e4j\u00e4tunnus tai salasana.',welcome:'Tervetuloa Martsan Uutisiin',approved:'Artikkeli l\u00e4hetetty tarkastettavaksi!',art1:'artikkeli julkaistu',artN:'artikkelia julkaistu',edit:'Muokkaa',profile:'Profiili',related:'Aiheeseen liittyv\u00e4\u00e4',readtime:'min lukuaika',like:'Tykkää',liked:'Tykätty'},
@@ -259,8 +259,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 
 function T(k){return(LANGS[lang]&&LANGS[lang][k])||LANGS.fi[k]||k;}
 function getUsers(){return window._users||[];}
-function saveUsers(u){window._users=u;save();}
-function isMod(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.moderator===true;}
+function isMod(u){return window._userRole==='moderator'||window._userRole==='admin';}
 function canSeeMsgs(){return admin||isMod(currentUser);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function dateFI(){return new Date().toLocaleDateString('fi-FI',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
@@ -286,14 +285,13 @@ function doInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.u
 function showNotif(msg){var el=document.getElementById('sync-ind');if(el){el.textContent=msg;el.classList.add('visible');setTimeout(function(){el.classList.remove('visible');},3500);}}
 function startAutoRefresh(){if(syncTimer)clearInterval(syncTimer);syncTimer=setInterval(silentRefresh,30000);}
 function silentRefresh(){
-  fetch(BIN_URL,{headers:HEADERS}).then(function(r){return r.json();}).then(function(d){
-    var changed=JSON.stringify(d.record.articles)!==JSON.stringify(articles);
-    articles=d.record.articles||[];nextId=d.record.nextId||1;
-    window._users=d.record.users||[];window._pending=d.record.pending||[];
-    window._messages=d.record.messages||[];window._comments=d.record.comments||[];
-    window._likes=d.record.likes||{};
-    if(changed){showNotif('\u21bb P\u00e4ivitetty '+new Date().toLocaleTimeString('fi-FI',{hour:'2-digit',minute:'2-digit'}));render();}
-  }).catch(function(){});
+  fetch(SUPABASE_URL+'/rest/v1/articles?select=*&order=id.asc',{headers:SB})
+    .then(function(r){return r.json();})
+    .then(function(rows){
+      var changed=JSON.stringify(rows)!==JSON.stringify(articles);
+      if(rows&&!rows.error)articles=rows.map(sbToArt);
+      if(changed){showNotif('\u21bb P\u00e4ivitetty '+new Date().toLocaleTimeString('fi-FI',{hour:'2-digit',minute:'2-digit'}));render();}
+    }).catch(function(){});
 }
 function buildComments(aid){
   var all=(window._comments||[]).filter(function(c){return c.articleId===aid;});
@@ -493,7 +491,9 @@ function render(){
 function attachEvents(){
   function on(id,fn){var el=document.getElementById(id);if(el)el.addEventListener('click',fn);}
 
-  on('cbtn-yes',function(){if(confirmPending){var id=confirmPending.id,gb=confirmPending.goBack;confirmPending=null;articles=articles.filter(function(a){return a.id!==id;});save();if(gb)page='front';render();}});
+  on('cbtn-yes',function(){if(confirmPending){var id=confirmPending.id,gb=confirmPending.goBack;confirmPending=null;
+    fetch(SUPABASE_URL+'/rest/v1/articles?id=eq.'+id,{method:'DELETE',headers:_authSB()});
+    articles=articles.filter(function(a){return a.id!==id;});if(gb)page='front';render();}});
   on('cbtn-no',function(){confirmPending=null;render();});
   on('err-dismiss',function(){errorMsg='';render();});
 
@@ -541,8 +541,19 @@ function attachEvents(){
   CATS.forEach(function(c){on('fcat-'+c,function(){filterCat=(filterCat===c?'':c);render();});});
 
   (window._pending||[]).forEach(function(a){
-    on('approve-'+a.id,function(){articles.push(a);window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});save();render();});
-    on('reject-'+a.id,function(){window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});save();render();});
+    on('approve-'+a.id,function(){
+      var authH=_authSB();
+      fetch(SUPABASE_URL+'/rest/v1/articles',{method:'POST',headers:Object.assign({},authH,{'Prefer':'return=representation'}),body:JSON.stringify({title:a.title,author:a.author,section:a.section,col:a.column,body:a.body})})
+        .then(function(r){return r.json();}).then(function(rows){
+          if(rows&&rows[0]){a.id=rows[0].id;articles.push(a);}
+          fetch(SUPABASE_URL+'/rest/v1/pending?id=eq.'+a.id,{method:'DELETE',headers:authH});
+          window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});render();
+        });
+    });
+    on('reject-'+a.id,function(){
+      fetch(SUPABASE_URL+'/rest/v1/pending?id=eq.'+a.id,{method:'DELETE',headers:_authSB()});
+      window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});render();
+    });
   });
 
   getUsers().filter(function(u){return u.user!==ADMIN_USER;}).forEach(function(u){
@@ -632,8 +643,16 @@ function attachEvents(){
     }
     var id=nextId++;
     var art={id:id,title:title,author:(document.getElementById('fa').value||'').trim(),section:(document.getElementById('fs').value||''),column:document.getElementById('fc').value,body:body,date:todayFI()};
-    if(admin){articles.push(art);showEditor=false;save();page='article';openId=id;trackView(id);}
-    else{window._pending=window._pending||[];window._pending.push(art);showEditor=false;save();showNotif(T('approved'));}
+    var authH=_authSB();
+    if(admin){
+      fetch(SUPABASE_URL+'/rest/v1/articles',{method:'POST',headers:Object.assign({},authH,{'Prefer':'return=representation'}),body:JSON.stringify({title:art.title,author:art.author,section:art.section,col:art.column,body:art.body})})
+        .then(function(r){return r.json();}).then(function(rows){
+          if(rows&&rows[0]){art.id=rows[0].id;articles.push(art);showEditor=false;page='article';openId=art.id;trackView(art.id);render();}
+        });
+    } else {
+      fetch(SUPABASE_URL+'/rest/v1/pending',{method:'POST',headers:authH,body:JSON.stringify({title:art.title,author:art.author,section:art.section,col:art.column,body:art.body,submitted_by:currentUser})})
+        .then(function(){window._pending=window._pending||[];window._pending.push(art);showEditor=false;showNotif(T('approved'));render();});
+    }
     render();
   });
 }
@@ -642,41 +661,69 @@ function trackView(id){window._views=window._views||{};window._views[id]=(window
 
 function doLogin(){
   var u=(document.getElementById('lu').value||'').trim(),p=(document.getElementById('lp').value||'');
-  if(u===ADMIN_USER&&p===ADMIN_PASS){showLogin=false;admin=true;loggedIn=true;currentUser=u;render();return;}
-  var m=getUsers().find(function(x){return x.user===u&&x.pass===p;});
-  if(m){showLogin=false;loggedIn=true;currentUser=u;render();return;}
-  loginErr=T('loginErr');render();
+  fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',headers:SB,
+    body:JSON.stringify({email:u,password:p})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.access_token){
+      window._sbToken=d.access_token;
+      window._sbUserId=d.user.id;
+      currentUser=d.user.email;
+      loggedIn=true;showLogin=false;loginErr='';
+      fetch(SUPABASE_URL+'/rest/v1/user_roles?user_id=eq.'+d.user.id+'&select=role',{
+        headers:Object.assign({},SB,{'Authorization':'Bearer '+d.access_token})
+      }).then(function(r){return r.json();}).then(function(roles){
+        window._userRole=(roles&&roles[0])?roles[0].role:'';
+        admin=window._userRole==='admin';
+        render();
+      });
+    } else {
+      loginErr=T('loginErr');render();
+    }
+  }).catch(function(){loginErr=T('loginErr');render();});
 }
 
 function doRegister(){
   var u=(document.getElementById('ru').value||'').trim(),p=(document.getElementById('rp').value||''),p2=(document.getElementById('rp2').value||'');
-  if(!u){regErr='Kirjoita k\u00e4ytt\u00e4j\u00e4tunnus.';render();return;}
-  if(u===ADMIN_USER){regErr='T\u00e4m\u00e4 k\u00e4ytt\u00e4j\u00e4tunnus ei ole saatavilla.';render();return;}
-  if(p.length<4){regErr='Salasanan pit\u00e4\u00e4 olla v\u00e4hint\u00e4\u00e4n 4 merkki\u00e4.';render();return;}
-  if(p!==p2){regErr='Salasanat eiv\u00e4t t\u00e4sm\u00e4\u00e4.';render();return;}
-  var users=getUsers();
-  if(users.find(function(x){return x.user===u;})){regErr='K\u00e4ytt\u00e4j\u00e4tunnus on jo k\u00e4yt\u00f6ss\u00e4.';render();return;}
-  users.push({user:u,pass:p});saveUsers(users);showRegister=false;loggedIn=true;currentUser=u;render();
+  if(!u||!u.includes('@')){regErr='Kirjoita sähköpostiosoite.';render();return;}
+  if(p.length<6){regErr='Salasanan pitää olla vähintään 6 merkkiä.';render();return;}
+  if(p!==p2){regErr='Salasanat eivät täsmää.';render();return;}
+  fetch(SUPABASE_URL+'/auth/v1/signup',{
+    method:'POST',headers:SB,
+    body:JSON.stringify({email:u,password:p})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.id||d.user){
+      showRegister=false;showNotif('Tunnus luotu! Kirjaudu sisään.');showLogin=true;render();
+    } else {
+      regErr=d.msg||d.message||'Rekisteröinti epäonnistui.';render();
+    }
+  }).catch(function(){regErr='Rekisteröinti epäonnistui.';render();});
 }
 
+function artToSb(a){return {title:a.title,author:a.author||'',section:a.section||'',col:a.column||'center',body:a.body,id:a.id};}
+function sbToArt(r){return {id:r.id,title:r.title,author:r.author||'',section:r.section||'',column:r.col||'center',body:r.body,date:r.created_at?r.created_at.substring(0,10):''};}
+var _authSB=function(){return Object.assign({},SB,{Authorization:'Bearer '+(window._sbToken||SUPABASE_KEY),'Prefer':'return=minimal'});};
+
 async function save(){
-  try{
-    await fetch(BIN_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({articles:articles,nextId:nextId,users:window._users||[],pending:window._pending||[],messages:window._messages||[],comments:window._comments||[],likes:window._likes||{}})});
-    errorMsg='';
-  }catch(e){errorMsg='Tallennus ep\u00e4onnistui. Tarkista yhteys.';render();}
+  // save ei tee mitään — yksittäiset operaatiot tallentavat itse suoraan Supabaseen
 }
 
 async function load(){
   try{
-    var res=await fetch(BIN_URL,{headers:HEADERS});
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    var d=await res.json();
-    articles=d.record.articles||[];nextId=d.record.nextId||1;
-    window._users=d.record.users||[];window._pending=d.record.pending||[];
-    window._messages=d.record.messages||[];window._comments=d.record.comments||[];
-    window._likes=d.record.likes||{};
+    var h=SB;
+    var [arts,pend,msgs,cmts]=await Promise.all([
+      fetch(SUPABASE_URL+'/rest/v1/articles?select=*&order=id.asc',{headers:h}).then(function(r){return r.json();}),
+      fetch(SUPABASE_URL+'/rest/v1/pending?select=*&order=id.asc',{headers:h}).then(function(r){return r.json();}),
+      fetch(SUPABASE_URL+'/rest/v1/messages?select=*&order=id.desc',{headers:h}).then(function(r){return r.json();}),
+      fetch(SUPABASE_URL+'/rest/v1/comments?select=*&order=id.asc',{headers:h}).then(function(r){return r.json();})
+    ]);
+    articles=(arts&&!arts.error)?arts.map(sbToArt):[];
+    window._pending=(pend&&!pend.error)?pend.map(function(p){return {id:p.id,title:p.title,author:p.author,section:p.section,column:p.col,body:p.body,date:p.created_at?p.created_at.substring(0,10):''};}):[];
+    window._messages=(msgs&&!msgs.error)?msgs.map(function(m){return {id:m.id,from:m.from_user,subject:m.subject,text:m.body,date:m.created_at?m.created_at.substring(0,10):''};}):[];
+    window._comments=(cmts&&!cmts.error)?cmts.map(function(c){return {id:c.id,articleId:c.article_id,author:c.author,text:c.body,date:c.created_at?c.created_at.substring(0,10):''};}):[];
+    window._likes={};window._users=[];
     dataLoaded=true;
-  }catch(e){errorMsg='Tietojen lataus ep\u00e4onnistui. Tarkista yhteys.';dataLoaded=true;}
+  }catch(e){errorMsg='Tietojen lataus ep\u00e4onnistui.';dataLoaded=true;}
 }
 
 render();
