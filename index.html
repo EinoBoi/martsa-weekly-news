@@ -226,9 +226,46 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 .loading-bar-inner{height:100%;background:var(--red);width:0%;transition:width .05s linear}
 .loading-bar-inner.go{width:100%;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.divider{display:none}.col{padding:.4rem 0;border-bottom:1px dashed #b0a090}.masthead{flex-direction:column;gap:.2rem}.fields{grid-template-columns:1fr}footer{flex-direction:column;gap:.2rem;text-align:center}.top-bar{gap:.5rem}.filter-bar{gap:.3rem}}
+
+.search-modal{background:var(--paper);border:2px solid var(--rule);padding:1.5rem;width:560px;max-width:95vw;box-shadow:6px 6px 0 var(--rule);max-height:80vh;overflow-y:auto}
+.search-modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:.8rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.search-inp{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.5rem .7rem;font-family:'Source Serif 4',serif;font-size:.95rem;color:var(--ink);outline:none;margin-bottom:.8rem}
+.search-inp:focus{border-color:var(--red)}
+.search-result{padding:.55rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;gap:.6rem;align-items:flex-start}
+.search-result:last-child{border-bottom:none}
+.search-result:hover .search-result-title{color:var(--red)}
+.search-result-cat{font-family:'Bebas Neue',sans-serif;font-size:.58rem;letter-spacing:.12em;padding:.06rem .35rem;color:#fff;white-space:nowrap;margin-top:.15rem;flex-shrink:0}
+.search-result-body{flex:1}
+.search-result-title{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;transition:color .15s;margin-bottom:.15rem}
+.search-result-excerpt{font-size:.72rem;color:var(--muted);line-height:1.4}
+.search-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.32rem .8rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:.12em;transition:all .15s}
+.search-btn:hover{border-color:var(--red);color:var(--red)}
+.dashboard-modal{background:var(--paper);border:2px solid var(--rule);padding:1.5rem;width:560px;max-width:95vw;box-shadow:6px 6px 0 var(--rule);max-height:80vh;overflow-y:auto}
+.dashboard-modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:.8rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.dash-section{margin-bottom:1.2rem}
+.dash-section h3{font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:.18em;color:var(--muted);margin-bottom:.5rem}
+.dash-row{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px dashed #e0d8c8;font-size:.8rem}
+.dash-row:last-child{border-bottom:none}
+.dash-row-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;transition:color .15s}
+.dash-row-title:hover{color:var(--red)}
+.dash-stat{font-family:'Bebas Neue',sans-serif;font-size:.75rem;color:var(--muted);letter-spacing:.08em;margin-left:.8rem;white-space:nowrap}
+.order-modal{background:var(--paper);border:2px solid var(--rule);padding:1.5rem;width:460px;max-width:95vw;box-shadow:6px 6px 0 var(--rule);max-height:80vh;overflow-y:auto}
+.order-modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:.8rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.order-item{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;border-bottom:1px dashed #c8bba0}
+.order-item:last-child{border-bottom:none}
+.order-handle{color:var(--muted);font-size:.9rem;user-select:none}
+.order-item-title{flex:1;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.order-up,.order-down{background:none;border:1px solid #c8bba0;color:var(--muted);cursor:pointer;padding:.1rem .4rem;font-size:.7rem;transition:all .15s}
+.order-up:hover,.order-down:hover{border-color:var(--ink);color:var(--ink)}
+.notif-toast{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--ink);color:var(--paper);padding:.5rem 1rem;font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.12em;box-shadow:4px 4px 0 rgba(0,0,0,.2);z-index:800;opacity:0;transition:opacity .3s;pointer-events:none}
+.notif-toast.show{opacity:1}
+.art-share-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.2rem .6rem;cursor:pointer;font-size:.7rem;transition:all .15s}
+.art-share-btn:hover,.art-share-btn.copied{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.notif-bar{background:var(--cream);padding:.35rem 1.5rem;text-align:center;font-size:.7rem;border-bottom:1px solid #c8bba0;display:none}
 </style>
 </head>
 <body>
+<div id="notif-toast" class="notif-toast"></div>
 <div id="loading-screen" class="loading-screen">
   <div class="loading-logo">Martsan <em>Uutiset</em></div>
   <div class="loading-rule"><span>ladataan</span></div>
@@ -236,19 +273,20 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 </div>
 <div id="app"></div>
 <script>
-var SUPABASE_URL='https://jjtlhmbfrjtapksynyit.supabase.co';
-var SUPABASE_KEY='sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC';
-var SB={'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+var ADMIN_USER='martsa',ADMIN_PASS='weekly2026';
+var BIN_URL='https://api.jsonbin.io/v3/b/69b43dcec3097a1dd521a842';
+var HEADERS={'Content-Type':'application/json','X-Master-Key':'$2a$10$ieSSnU4KK.dFnBkxCzLyD.s.mZW0RDCbSd20QRgRpRC8IxM99/rLi','X-Access-Key':'$2a$10$NUFpG7.Sc3phFIHRuPo/sezxgyB46SwsYFUuyQE4uye7FkZr0WDLm'};
 var CATS=['Urheilu','Kulttuuri','Koulu','Muut'];
 var CAT_CLS={'Urheilu':'cat-urheilu','Kulttuuri':'cat-kulttuuri','Koulu':'cat-koulu','Muut':'cat-muut'};
-var LANGS={fi:{all:'Kaikki',news:'Uutiset',main:'P\u00e4\u00e4uutinen',more:'Lis\u00e4\u00e4',readMore:'Lue artikkeli',back:'Takaisin',login:'Kirjaudu',logout:'Kirjaudu ulos',register:'Luo tunnus',send:'L\u00e4het\u00e4',cancel:'Peruuta',publish:'Julkaise',filter:'Suodata:',search:'Hae uutisia\u2026',bookmarks:'Kirjanmerkit',msgTo:'Viesti toimitukselle',saved:'Tallennettu',save:'Tallenna',comments:'Kommentit',noArticles:'Ei artikkeleita viel\u00e4.',noResults:'Ei tuloksia.',founded:'Perustettu',tagline:'\u201eKaikki mit\u00e4 sinun tarvitsee tiet\u00e4\u00e4 \u2014 ja hieman enemm\u00e4n\u201d',motto:'Viikon t\u00e4rkeimm\u00e4t uutiset \u2014 Totuus ennen kaikkea',install:'Asenna',loginErr:'V\u00e4\u00e4r\u00e4 k\u00e4ytt\u00e4j\u00e4tunnus tai salasana.',welcome:'Tervetuloa Martsan Uutisiin',approved:'Artikkeli l\u00e4hetetty tarkastettavaksi!',art1:'artikkeli julkaistu',artN:'artikkelia julkaistu',edit:'Muokkaa',profile:'Profiili',related:'Aiheeseen liittyv\u00e4\u00e4',readtime:'min lukuaika',like:'Tykkää',liked:'Tykätty'},
-en:{all:'All',news:'News',main:'Main Story',more:'More',readMore:'Read article',back:'Back',login:'Log in',logout:'Log out',register:'Register',send:'Send',cancel:'Cancel',publish:'Publish',filter:'Filter:',search:'Search\u2026',bookmarks:'Bookmarks',msgTo:'Message editors',saved:'Saved',save:'Save',comments:'Comments',noArticles:'No articles yet.',noResults:'No results.',founded:'Founded',tagline:'"Everything you need to know \u2014 and a little more"',motto:"Week's top news \u2014 Truth above all",install:'Install',loginErr:'Wrong username or password.',welcome:'Welcome',approved:'Article sent for review!',art1:'article published',artN:'articles published',edit:'Edit',profile:'Profile',related:'Related articles',readtime:'min read',like:'Like',liked:'Liked'},
-sv:{all:'Alla',news:'Nyheter',main:'Huvudnyhet',more:'Mer',readMore:'L\u00e4s artikel',back:'Tillbaka',login:'Logga in',logout:'Logga ut',register:'Skapa konto',send:'Skicka',cancel:'Avbryt',publish:'Publicera',filter:'Filtrera:',search:'S\u00f6k\u2026',bookmarks:'Bokhyllm\u00e4rken',msgTo:'Meddelande',saved:'Sparad',save:'Spara',comments:'Kommentarer',noArticles:'Inga artiklar.',noResults:'Inga resultat.',founded:'Grundad',tagline:'"Allt du beh\u00f6ver veta"',motto:'Sanningen f\u00f6rst',install:'Installera',loginErr:'Fel l\u00f6senord.',welcome:'V\u00e4lkommen',approved:'Skickad!',art1:'artikel',artN:'artiklar',edit:'Redigera',profile:'Profil',related:'Relaterade artiklar',readtime:'min l\u00e4sning',like:'Gilla',liked:'Gillad'}};
+var LANGS={fi:{all:'Kaikki',news:'Uutiset',main:'P\u00e4\u00e4uutinen',more:'Lis\u00e4\u00e4',readMore:'Lue artikkeli',back:'Takaisin',login:'Kirjaudu',logout:'Kirjaudu ulos',register:'Luo tunnus',send:'L\u00e4het\u00e4',cancel:'Peruuta',publish:'Julkaise',filter:'Suodata:',search:'Hae uutisia\u2026',bookmarks:'Kirjanmerkit',msgTo:'Viesti toimitukselle',saved:'Tallennettu',save:'Tallenna',comments:'Kommentit',noArticles:'Ei artikkeleita viel\u00e4.',noResults:'Ei tuloksia.',founded:'Perustettu',tagline:'\u201eKaikki mit\u00e4 sinun tarvitsee tiet\u00e4\u00e4 \u2014 ja hieman enemm\u00e4n\u201d',motto:'Viikon t\u00e4rkeimm\u00e4t uutiset \u2014 Totuus ennen kaikkea',install:'Asenna',loginErr:'V\u00e4\u00e4r\u00e4 k\u00e4ytt\u00e4j\u00e4tunnus tai salasana.',welcome:'Tervetuloa Martsan Uutisiin',approved:'Artikkeli l\u00e4hetetty tarkastettavaksi!',art1:'artikkeli julkaistu',artN:'artikkelia julkaistu',edit:'Muokkaa',profile:'Profiili',related:'Aiheeseen liittyv\u00e4\u00e4',readtime:'min lukuaika',like:'Tykkää',liked:'Tykätty',stats:'Tilastot',order:'Järjestys',share:'Jaa',copied:'Linkki kopioitu!',searchTitle:'Haku'},
+en:{all:'All',news:'News',main:'Main Story',more:'More',readMore:'Read article',back:'Back',login:'Log in',logout:'Log out',register:'Register',send:'Send',cancel:'Cancel',publish:'Publish',filter:'Filter:',search:'Search\u2026',bookmarks:'Bookmarks',msgTo:'Message editors',saved:'Saved',save:'Save',comments:'Comments',noArticles:'No articles yet.',noResults:'No results.',founded:'Founded',tagline:'"Everything you need to know \u2014 and a little more"',motto:"Week's top news \u2014 Truth above all",install:'Install',loginErr:'Wrong username or password.',welcome:'Welcome',approved:'Article sent for review!',art1:'article published',artN:'articles published',edit:'Edit',profile:'Profile',related:'Related articles',readtime:'min read',like:'Like',liked:'Liked',stats:'Stats',order:'Order',share:'Share',copied:'Link copied!',searchTitle:'Search'},
+sv:{all:'Alla',news:'Nyheter',main:'Huvudnyhet',more:'Mer',readMore:'L\u00e4s artikel',back:'Tillbaka',login:'Logga in',logout:'Logga ut',register:'Skapa konto',send:'Skicka',cancel:'Avbryt',publish:'Publicera',filter:'Filtrera:',search:'S\u00f6k\u2026',bookmarks:'Bokhyllm\u00e4rken',msgTo:'Meddelande',saved:'Sparad',save:'Spara',comments:'Kommentarer',noArticles:'Inga artiklar.',noResults:'Inga resultat.',founded:'Grundad',tagline:'"Allt du beh\u00f6ver veta"',motto:'Sanningen f\u00f6rst',install:'Installera',loginErr:'Fel l\u00f6senord.',welcome:'V\u00e4lkommen',approved:'Skickad!',art1:'artikel',artN:'artiklar',edit:'Redigera',profile:'Profil',related:'Relaterade artiklar',readtime:'min l\u00e4sning',like:'Gilla',liked:'Gillad',stats:'Statistik',order:'Ordning',share:'Dela',copied:'Länk kopierad!',searchTitle:'Sök'}};
 
 var articles=[],nextId=1,admin=false,loggedIn=false,currentUser='';
 var page='front',openId=null,editId=null;
 var showLogin=false,loginErr='',showRegister=false,regErr='';
-var showEditor=false,showModPanel=false,showInbox=false,showMsgList=false,showSendMsg=false,showBookmarks=false,showLangMenu=false,showProfile=false;
+var showEditor=false,showModPanel=false,showInbox=false,showMsgList=false,showSendMsg=false,showBookmarks=false,showLangMenu=false,showProfile=false,showSearch=false,showDash=false,showOrder=false;
+var searchQuery="";
 var openMsgId=null,openCommentIds={};
 var filterCat='',filterSearch='',msgSearch='',userSearch='';
 var confirmPending=null,tapCount=0,tapTimer=null,deferredPrompt=null,dataLoaded=false;
@@ -259,7 +297,8 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 
 function T(k){return(LANGS[lang]&&LANGS[lang][k])||LANGS.fi[k]||k;}
 function getUsers(){return window._users||[];}
-function isMod(u){return window._userRole==='moderator'||window._userRole==='admin';}
+function saveUsers(u){window._users=u;save();}
+function isMod(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.moderator===true;}
 function canSeeMsgs(){return admin||isMod(currentUser);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function dateFI(){return new Date().toLocaleDateString('fi-FI',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
@@ -282,16 +321,19 @@ function setBookmarks(bms){try{localStorage.setItem('mu_bm_'+(currentUser||'gues
 function isBookmarked(id){return getBookmarks().indexOf(id)!==-1;}
 function toggleBookmark(id){var bms=getBookmarks(),i=bms.indexOf(id);if(i===-1)bms.push(id);else bms.splice(i,1);setBookmarks(bms);render();}
 function doInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}else{var s=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);alert(s?'Safarilla: paina jakamispainike \u2192 Lis\u00e4\u00e4 Koti-valikkoon.':'Avaa Chrome, osoitepalkin oikeassa reunassa on asennuskuvake.');}}
+function showToast(msg){var el=document.getElementById('notif-toast');if(!el)return;el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},3000);}
+function sendNotif(title,body){if('Notification' in window&&Notification.permission==='granted'){try{new Notification('Martsan Uutiset: '+title,{body:body,icon:'icon-192.png'});}catch(e){}}}
 function showNotif(msg){var el=document.getElementById('sync-ind');if(el){el.textContent=msg;el.classList.add('visible');setTimeout(function(){el.classList.remove('visible');},3500);}}
 function startAutoRefresh(){if(syncTimer)clearInterval(syncTimer);syncTimer=setInterval(silentRefresh,30000);}
 function silentRefresh(){
-  fetch(SUPABASE_URL+'/rest/v1/articles?select=*&order=id.asc',{headers:SB})
-    .then(function(r){return r.json();})
-    .then(function(rows){
-      var changed=JSON.stringify(rows)!==JSON.stringify(articles);
-      if(rows&&!rows.error)articles=rows.map(sbToArt);
-      if(changed){showNotif('\u21bb P\u00e4ivitetty '+new Date().toLocaleTimeString('fi-FI',{hour:'2-digit',minute:'2-digit'}));render();}
-    }).catch(function(){});
+  fetch(BIN_URL,{headers:HEADERS}).then(function(r){return r.json();}).then(function(d){
+    var changed=JSON.stringify(d.record.articles)!==JSON.stringify(articles);
+    articles=d.record.articles||[];nextId=d.record.nextId||1;
+    window._users=d.record.users||[];window._pending=d.record.pending||[];
+    window._messages=d.record.messages||[];window._comments=d.record.comments||[];
+    window._likes=d.record.likes||{};
+    if(changed){showNotif('\u21bb P\u00e4ivitetty '+new Date().toLocaleTimeString('fi-FI',{hour:'2-digit',minute:'2-digit'}));render();}
+  }).catch(function(){});
 }
 function buildComments(aid){
   var all=(window._comments||[]).filter(function(c){return c.articleId===aid;});
@@ -363,6 +405,31 @@ function render(){
     profileHtml='<div class="modal-bg"><div class="profile-modal"><h2>'+T('profile')+': '+esc(currentUser)+'</h2><div class="profile-section"><h3>Kirjanmerkit ('+myBms.length+')</h3>'+(myBms.length===0?'<p style="font-size:.78rem;color:var(--muted);font-style:italic">Ei kirjanmerkkej\u00e4.</p>':myBms.map(function(id){var a=articles.find(function(x){return x.id===id;});return a?'<div class="profile-item" id="prof-bm-'+a.id+'">'+esc(a.title)+'</div>':'';}).join(''))+'</div><div class="profile-section"><h3>Kommentit ('+myComments.length+')</h3>'+cRows+'</div><div class="profile-section"><h3>Odottavat artikkelit ('+myPending.length+')</h3>'+pRows+'</div><div style="margin-top:1rem"><button class="btn-secondary" id="close-profile-btn">Sulje</button></div></div></div>';
   }
 
+
+  var searchHtml='';
+  if(showSearch){
+    var sq=searchQuery.toLowerCase();
+    var sRes=sq.length>1?articles.filter(function(a){return(a.title||'').toLowerCase().includes(sq)||(a.body||'').toLowerCase().includes(sq)||(a.author||'').toLowerCase().includes(sq);}):[];
+    var sRows=sRes.length===0?(sq.length>1?'<p style="font-size:.8rem;color:var(--muted);font-style:italic">'+T('noResults')+'</p>':''):sRes.map(function(a){var cc=getCatCls(a.section);return '<div class="search-result" id="sres-'+a.id+'"><div class="search-result-cat cat-badge '+cc+'">'+esc(a.section||'-')+'</div><div class="search-result-body"><div class="search-result-title">'+esc(a.title)+'</div><div class="search-result-excerpt">'+esc((a.body||'').replace(/\n/g,' ').substring(0,100))+'…</div></div></div>';}).join('');
+    searchHtml='<div class="modal-bg"><div class="search-modal"><h2>'+T('searchTitle')+'</h2><input class="search-inp" id="search-inp" placeholder="'+T('search')+'" value="'+esc(searchQuery)+'">'+sRows+'<div style="margin-top:1rem"><button class="btn-secondary" id="close-search-btn">Sulje</button></div></div></div>';
+  }
+  var dashHtml='';
+  if(showDash&&isAdmin){
+    var av=window._views||{},al=window._likes||{};
+    var sv=articles.slice().sort(function(a,b){return(av[b.id]||0)-(av[a.id]||0);}).slice(0,7);
+    var sl=articles.slice().sort(function(a,b){return(al[b.id]||0)-(al[a.id]||0);}).slice(0,7);
+    var tv=Object.values(av).reduce(function(s,v){return s+v;},0);
+    var tl=Object.values(al).reduce(function(s,v){return s+v;},0);
+    var vR=sv.map(function(a){return '<div class="dash-row"><span class="dash-row-title" id="da-'+a.id+'">'+esc(a.title)+'</span><span class="dash-stat">👁 '+(av[a.id]||0)+'</span></div>';}).join('');
+    var lR=sl.map(function(a){return '<div class="dash-row"><span class="dash-row-title" id="dl-'+a.id+'">'+esc(a.title)+'</span><span class="dash-stat">♥ '+(al[a.id]||0)+'</span></div>';}).join('');
+    dashHtml='<div class="modal-bg"><div class="dashboard-modal"><h2>📊 '+T('stats')+'</h2><div style="display:flex;gap:2rem;margin-bottom:1.2rem"><div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem">'+articles.length+'</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Artikkelia</div></div><div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem">'+tv+'</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Lukukertaa</div></div><div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem">'+tl+'</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Tykkäystä</div></div><div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem">'+getUsers().length+'</div><div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Käyttäjiä</div></div></div><div class="dash-section"><h3>Suosituimmat</h3>'+vR+'</div><div class="dash-section"><h3>Tykätyimmät</h3>'+lR+'</div><button class="btn-secondary" id="close-dash-btn">Sulje</button></div></div>';
+  }
+  var orderHtml='';
+  if(showOrder&&isAdmin){
+    var oI=articles.map(function(a,i){return '<div class="order-item"><span class="order-handle">☰</span><span class="order-item-title">'+esc(a.title)+'</span><button class="order-up" id="oup-'+a.id+'">▲</button><button class="order-down" id="odn-'+a.id+'">▼</button></div>';}).join('');
+    orderHtml='<div class="modal-bg"><div class="order-modal"><h2>↕ '+T('order')+'</h2>'+oI+'<div style="margin-top:1rem;display:flex;gap:.5rem"><button class="btn-primary" id="order-save-btn">Tallenna</button><button class="btn-secondary" id="close-order-btn">Sulje</button></div></div></div>';
+  }
+
   var loginHtml='';
   if(showLogin){loginHtml='<div class="modal-bg"><div class="modal"><h2>'+T('login')+'</h2><p>Kirjaudu Martsan Uutisiin</p><label>K\u00e4ytt\u00e4j\u00e4tunnus</label><input id="lu" type="text" placeholder="k\u00e4ytt\u00e4j\u00e4tunnus"><label>Salasana</label><input id="lp" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"><div class="modal-err">'+esc(loginErr)+'</div><div class="modal-btns"><button class="btn-primary" id="lbtn">'+T('login')+'</button><button class="btn-secondary" id="lcbtn">'+T('cancel')+'</button></div><p style="margin-top:1rem;font-size:.72rem;color:var(--muted);border:none;padding:0">Ei tili\u00e4? <span id="go-reg" style="color:var(--red);cursor:pointer;text-decoration:underline">'+T('register')+'</span></p></div></div>';}
   else if(showRegister){loginHtml='<div class="modal-bg"><div class="modal"><h2>'+T('register')+'</h2><p>Luo oma k\u00e4ytt\u00e4j\u00e4tunnus</p><label>K\u00e4ytt\u00e4j\u00e4tunnus</label><input id="ru" type="text" placeholder="k\u00e4ytt\u00e4j\u00e4tunnus"><label>Salasana</label><input id="rp" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"><label>Salasana uudelleen</label><input id="rp2" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"><div class="modal-err">'+esc(regErr)+'</div><div class="modal-btns"><button class="btn-primary" id="rbtn">'+T('register')+'</button><button class="btn-secondary" id="rcbtn">'+T('cancel')+'</button></div><p style="margin-top:1rem;font-size:.72rem;color:var(--muted);border:none;padding:0">Onko jo tunnus? <span id="go-login" style="color:var(--red);cursor:pointer;text-decoration:underline">'+T('login')+'</span></p></div></div>';}
@@ -377,7 +444,7 @@ function render(){
   var sendBtn=(!canMsg&&loggedIn)?'<button class="send-msg-top-btn" id="open-send-msg-btn">\u2709 '+T('msgTo')+'</button>':'';
   var bmBtn=loggedIn?'<button class="bookmarks-btn" id="open-bm-btn">\u2605 '+T('bookmarks')+'</button>':'';
   var profBtn=loggedIn?'<button class="bookmarks-btn" id="open-profile-btn">\ud83d\udce4 '+T('profile')+'</button>':'';
-  var topBar='<div class="top-bar"><div class="dl-wrap"><button class="dl-main-btn" id="dl-main-btn">\u2b07 '+T('install')+' <span class="dl-arrow">\u25bc</span></button><div class="dl-dropdown" id="dl-dropdown"><button id="dl-android">Android</button><button id="dl-windows">Windows</button><button id="dl-mac">Mac</button></div></div>'+langMenu+sendBtn+bmBtn+profBtn+'</div>';
+  var topBar='<div class="top-bar"><div class="dl-wrap"><button class="dl-main-btn" id="dl-main-btn">\u2b07 '+T('install')+' <span class="dl-arrow">\u25bc</span></button><div class="dl-dropdown" id="dl-dropdown"><button id="dl-android">Android</button><button id="dl-windows">Windows</button><button id="dl-mac">Mac</button></div></div>'+langMenu+'<button class="search-btn" id="open-search-btn">🔍</button>'+sendBtn+bmBtn+profBtn+(isAdmin?'<button class="bookmarks-btn" id="open-dash-btn">📊 '+T("stats")+'</button><button class="bookmarks-btn" id="open-order-btn">↕ '+T("order")+'</button>':'')+'</div>';
 
   var ticker=articles.length>0?articles.map(function(a){return esc(a.title);}).join(' &nbsp;\u2b26&nbsp; '):T('welcome');
 
@@ -475,12 +542,13 @@ function render(){
     ?'<span>Kirjautunut: '+esc(currentUser)+(isMU&&!isAdmin?' \u2605':'')+' &nbsp;\u00b7&nbsp; <span id="logout-btn" style="cursor:pointer;text-decoration:underline;color:var(--red)">'+T('logout')+'</span></span>'
     :'<span><span id="atrig" style="cursor:default;user-select:none">toimitus@martsanuutiset.fi</span> &nbsp;\u00b7&nbsp; <span id="login-link" style="cursor:pointer;text-decoration:underline;color:var(--red)">'+T('login')+' / '+T('register')+'</span></span>';
 
-  app.innerHTML=confirmHtml+errorHtml+inboxHtml+msgListHtml+sendMsgHtml+modHtml+bmHtml+profileHtml+loginHtml+adminBarHtml+topBar
+  app.innerHTML=confirmHtml+errorHtml+inboxHtml+msgListHtml+sendMsgHtml+modHtml+bmHtml+profileHtml+searchHtml+dashHtml+orderHtml+loginHtml+adminBarHtml+topBar
     +'<div id="sync-ind" class="sync-indicator"></div>'
     +'<div class="masthead"><span>'+T('founded')+' 2026</span><span style="flex:1;text-align:center">\u2605 Luotettavaa uutisointia joka viikko \u2605</span>'+mhr+'</div>'
     +'<div class="nameplate" id="nameplate"><h1>Martsan <em>Uutiset</em></h1><div class="np-rule"><span>'+T('motto')+'</span></div><p class="tagline">'+T('tagline')+'</p></div>'
     +'<div class="ticker-wrap"><div class="ticker"><span class="ticker-label">UUTISET NYT</span><span class="ticker-inner">'+ticker+' &nbsp;\u2b26&nbsp; </span></div></div>'
     +mainHtml
+    +'<div id="notif-bar" class="notif-bar">Salli ilmoitukset uusista artikkeleista &nbsp;<button onclick="Notification.requestPermission().then(function(){document.getElementById('notif-bar').style.display='none'})" style="background:var(--ink);color:var(--paper);border:none;padding:.15rem .6rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.68rem">Salli</button> <button onclick="document.getElementById('notif-bar').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer">✕</button></div>'
     +'<footer><span>\u00a9 2026 Martsan Uutiset</span><span>'+n+' '+(n===1?T('art1'):T('artN'))+'</span>'+fu+'</footer>';
 
   attachEvents();
@@ -491,9 +559,7 @@ function render(){
 function attachEvents(){
   function on(id,fn){var el=document.getElementById(id);if(el)el.addEventListener('click',fn);}
 
-  on('cbtn-yes',function(){if(confirmPending){var id=confirmPending.id,gb=confirmPending.goBack;confirmPending=null;
-    fetch(SUPABASE_URL+'/rest/v1/articles?id=eq.'+id,{method:'DELETE',headers:_authSB()});
-    articles=articles.filter(function(a){return a.id!==id;});if(gb)page='front';render();}});
+  on('cbtn-yes',function(){if(confirmPending){var id=confirmPending.id,gb=confirmPending.goBack;confirmPending=null;articles=articles.filter(function(a){return a.id!==id;});save();if(gb)page='front';render();}});
   on('cbtn-no',function(){confirmPending=null;render();});
   on('err-dismiss',function(){errorMsg='';render();});
 
@@ -521,7 +587,7 @@ function attachEvents(){
   on('rbtn',doRegister);on('rcbtn',function(){showRegister=false;render();});
   var rp2=document.getElementById('rp2');if(rp2)rp2.addEventListener('keydown',function(e){if(e.key==='Enter')doRegister();});
 
-  function fl(){admin=false;loggedIn=false;currentUser='';showEditor=false;showInbox=false;showModPanel=false;showMsgList=false;showSendMsg=false;showBookmarks=false;showProfile=false;openMsgId=null;filterCat='';filterSearch='';editId=null;render();}
+  function fl(){admin=false;loggedIn=false;currentUser='';showEditor=false;showInbox=false;showModPanel=false;showMsgList=false;showSendMsg=false;showBookmarks=false;showProfile=false;showSearch=false;showDash=false;showOrder=false;openMsgId=null;filterCat='';filterSearch='';editId=null;render();}
   on('exit-admin-btn',fl);on('logout-btn',fl);
 
   on('open-inbox-btn',function(){showInbox=true;render();});on('close-inbox-btn',function(){showInbox=false;render();});
@@ -541,19 +607,8 @@ function attachEvents(){
   CATS.forEach(function(c){on('fcat-'+c,function(){filterCat=(filterCat===c?'':c);render();});});
 
   (window._pending||[]).forEach(function(a){
-    on('approve-'+a.id,function(){
-      var authH=_authSB();
-      fetch(SUPABASE_URL+'/rest/v1/articles',{method:'POST',headers:Object.assign({},authH,{'Prefer':'return=representation'}),body:JSON.stringify({title:a.title,author:a.author,section:a.section,col:a.column,body:a.body})})
-        .then(function(r){return r.json();}).then(function(rows){
-          if(rows&&rows[0]){a.id=rows[0].id;articles.push(a);}
-          fetch(SUPABASE_URL+'/rest/v1/pending?id=eq.'+a.id,{method:'DELETE',headers:authH});
-          window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});render();
-        });
-    });
-    on('reject-'+a.id,function(){
-      fetch(SUPABASE_URL+'/rest/v1/pending?id=eq.'+a.id,{method:'DELETE',headers:_authSB()});
-      window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});render();
-    });
+    on('approve-'+a.id,function(){articles.push(a);window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});save();render();});
+    on('reject-'+a.id,function(){window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});save();render();});
   });
 
   getUsers().filter(function(u){return u.user!==ADMIN_USER;}).forEach(function(u){
@@ -604,6 +659,27 @@ function attachEvents(){
   document.querySelectorAll('[id^="prof-bm-"]').forEach(function(el){el.addEventListener('click',function(){var id=parseInt(el.id.replace('prof-bm-',''));showProfile=false;page='article';openId=id;trackView(id);render();});});
   document.querySelectorAll('[id^="rel-"]').forEach(function(el){el.addEventListener('click',function(){var id=parseInt(el.id.replace('rel-',''));page='article';openId=id;trackView(id);render();});});
 
+
+  on('open-search-btn',function(){showSearch=true;render();setTimeout(function(){var el=document.getElementById('search-inp');if(el)el.focus();},30);});
+  on('close-search-btn',function(){showSearch=false;searchQuery='';render();});
+  var sInp=document.getElementById('search-inp');
+  if(sInp){sInp.addEventListener('input',function(){searchQuery=this.value;var v=this.value;render();restoreFocus('search-inp',v);});}
+  document.querySelectorAll('[id^="sres-"]').forEach(function(el){el.addEventListener('click',function(){var id=parseInt(el.id.replace('sres-',''));showSearch=false;searchQuery='';page='article';openId=id;trackView(id);render();});});
+  on('open-dash-btn',function(){showDash=true;render();});
+  on('close-dash-btn',function(){showDash=false;render();});
+  document.querySelectorAll('[id^="da-"],[id^="dl-"]').forEach(function(el){el.addEventListener('click',function(){var raw=el.id.replace('da-','').replace('dl-','');var id=parseInt(raw);showDash=false;page='article';openId=id;trackView(id);render();});});
+  on('open-order-btn',function(){showOrder=true;render();});
+  on('close-order-btn',function(){showOrder=false;render();});
+  on('order-save-btn',function(){showOrder=false;showToast('Järjestys tallennettu!');render();});
+  articles.forEach(function(a,i){
+    on('oup-'+a.id,function(e){e.stopPropagation();if(i>0){var t=articles[i];articles[i]=articles[i-1];articles[i-1]=t;render();}});
+    on('odn-'+a.id,function(e){e.stopPropagation();if(i<articles.length-1){var t=articles[i];articles[i]=articles[i+1];articles[i+1]=t;render();}});
+  });
+  on('art-share-btn',function(){
+    var url=window.location.origin+window.location.pathname+'?art='+(openId||'');
+    if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){showToast(T('copied'));var b=document.getElementById('art-share-btn');if(b){b.classList.add('copied');setTimeout(function(){var bb=document.getElementById('art-share-btn');if(bb)bb.classList.remove('copied');},2000);}});}else{prompt('Kopioi linkki:',url);}
+  });
+
   on('masthead-login-btn',function(){showLogin=true;loginErr='';render();});
   on('login-link',function(){showLogin=true;loginErr='';render();});
   on('nameplate',function(){page='front';render();});
@@ -643,16 +719,8 @@ function attachEvents(){
     }
     var id=nextId++;
     var art={id:id,title:title,author:(document.getElementById('fa').value||'').trim(),section:(document.getElementById('fs').value||''),column:document.getElementById('fc').value,body:body,date:todayFI()};
-    var authH=_authSB();
-    if(admin){
-      fetch(SUPABASE_URL+'/rest/v1/articles',{method:'POST',headers:Object.assign({},authH,{'Prefer':'return=representation'}),body:JSON.stringify({title:art.title,author:art.author,section:art.section,col:art.column,body:art.body})})
-        .then(function(r){return r.json();}).then(function(rows){
-          if(rows&&rows[0]){art.id=rows[0].id;articles.push(art);showEditor=false;page='article';openId=art.id;trackView(art.id);render();}
-        });
-    } else {
-      fetch(SUPABASE_URL+'/rest/v1/pending',{method:'POST',headers:authH,body:JSON.stringify({title:art.title,author:art.author,section:art.section,col:art.column,body:art.body,submitted_by:currentUser})})
-        .then(function(){window._pending=window._pending||[];window._pending.push(art);showEditor=false;showNotif(T('approved'));render();});
-    }
+    if(admin){articles.push(art);showEditor=false;save();page='article';openId=id;trackView(id);}
+    else{window._pending=window._pending||[];window._pending.push(art);showEditor=false;save();showNotif(T('approved'));}
     render();
   });
 }
@@ -661,71 +729,44 @@ function trackView(id){window._views=window._views||{};window._views[id]=(window
 
 function doLogin(){
   var u=(document.getElementById('lu').value||'').trim(),p=(document.getElementById('lp').value||'');
-  fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
-    method:'POST',headers:SB,
-    body:JSON.stringify({email:u,password:p})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.access_token){
-      window._sbToken=d.access_token;
-      window._sbUserId=d.user.id;
-      currentUser=d.user.email;
-      loggedIn=true;showLogin=false;loginErr='';
-      fetch(SUPABASE_URL+'/rest/v1/user_roles?user_id=eq.'+d.user.id+'&select=role',{
-        headers:Object.assign({},SB,{'Authorization':'Bearer '+d.access_token})
-      }).then(function(r){return r.json();}).then(function(roles){
-        window._userRole=(roles&&roles[0])?roles[0].role:'';
-        admin=window._userRole==='admin';
-        render();
-      });
-    } else {
-      loginErr=T('loginErr');render();
-    }
-  }).catch(function(){loginErr=T('loginErr');render();});
+  if(u===ADMIN_USER&&p===ADMIN_PASS){showLogin=false;admin=true;loggedIn=true;currentUser=u;render();return;}
+  var m=getUsers().find(function(x){return x.user===u&&x.pass===p;});
+  if(m){showLogin=false;loggedIn=true;currentUser=u;render();return;}
+  loginErr=T('loginErr');render();
 }
 
 function doRegister(){
   var u=(document.getElementById('ru').value||'').trim(),p=(document.getElementById('rp').value||''),p2=(document.getElementById('rp2').value||'');
-  if(!u||!u.includes('@')){regErr='Kirjoita sähköpostiosoite.';render();return;}
-  if(p.length<6){regErr='Salasanan pitää olla vähintään 6 merkkiä.';render();return;}
-  if(p!==p2){regErr='Salasanat eivät täsmää.';render();return;}
-  fetch(SUPABASE_URL+'/auth/v1/signup',{
-    method:'POST',headers:SB,
-    body:JSON.stringify({email:u,password:p})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.id||d.user){
-      showRegister=false;showNotif('Tunnus luotu! Kirjaudu sisään.');showLogin=true;render();
-    } else {
-      regErr=d.msg||d.message||'Rekisteröinti epäonnistui.';render();
-    }
-  }).catch(function(){regErr='Rekisteröinti epäonnistui.';render();});
+  if(!u){regErr='Kirjoita k\u00e4ytt\u00e4j\u00e4tunnus.';render();return;}
+  if(u===ADMIN_USER){regErr='T\u00e4m\u00e4 k\u00e4ytt\u00e4j\u00e4tunnus ei ole saatavilla.';render();return;}
+  if(p.length<4){regErr='Salasanan pit\u00e4\u00e4 olla v\u00e4hint\u00e4\u00e4n 4 merkki\u00e4.';render();return;}
+  if(p!==p2){regErr='Salasanat eiv\u00e4t t\u00e4sm\u00e4\u00e4.';render();return;}
+  var users=getUsers();
+  if(users.find(function(x){return x.user===u;})){regErr='K\u00e4ytt\u00e4j\u00e4tunnus on jo k\u00e4yt\u00f6ss\u00e4.';render();return;}
+  users.push({user:u,pass:p});saveUsers(users);showRegister=false;loggedIn=true;currentUser=u;render();
 }
 
-function artToSb(a){return {title:a.title,author:a.author||'',section:a.section||'',col:a.column||'center',body:a.body,id:a.id};}
-function sbToArt(r){return {id:r.id,title:r.title,author:r.author||'',section:r.section||'',column:r.col||'center',body:r.body,date:r.created_at?r.created_at.substring(0,10):''};}
-var _authSB=function(){return Object.assign({},SB,{Authorization:'Bearer '+(window._sbToken||SUPABASE_KEY),'Prefer':'return=minimal'});};
-
 async function save(){
-  // save ei tee mitään — yksittäiset operaatiot tallentavat itse suoraan Supabaseen
+  try{
+    await fetch(BIN_URL,{method:'PUT',headers:HEADERS,body:JSON.stringify({articles:articles,nextId:nextId,users:window._users||[],pending:window._pending||[],messages:window._messages||[],comments:window._comments||[],likes:window._likes||{}})});
+    errorMsg='';
+  }catch(e){errorMsg='Tallennus ep\u00e4onnistui. Tarkista yhteys.';render();}
 }
 
 async function load(){
   try{
-    var h=SB;
-    var [arts,pend,msgs,cmts]=await Promise.all([
-      fetch(SUPABASE_URL+'/rest/v1/articles?select=*&order=id.asc',{headers:h}).then(function(r){return r.json();}),
-      fetch(SUPABASE_URL+'/rest/v1/pending?select=*&order=id.asc',{headers:h}).then(function(r){return r.json();}),
-      fetch(SUPABASE_URL+'/rest/v1/messages?select=*&order=id.desc',{headers:h}).then(function(r){return r.json();}),
-      fetch(SUPABASE_URL+'/rest/v1/comments?select=*&order=id.asc',{headers:h}).then(function(r){return r.json();})
-    ]);
-    articles=(arts&&!arts.error)?arts.map(sbToArt):[];
-    window._pending=(pend&&!pend.error)?pend.map(function(p){return {id:p.id,title:p.title,author:p.author,section:p.section,column:p.col,body:p.body,date:p.created_at?p.created_at.substring(0,10):''};}):[];
-    window._messages=(msgs&&!msgs.error)?msgs.map(function(m){return {id:m.id,from:m.from_user,subject:m.subject,text:m.body,date:m.created_at?m.created_at.substring(0,10):''};}):[];
-    window._comments=(cmts&&!cmts.error)?cmts.map(function(c){return {id:c.id,articleId:c.article_id,author:c.author,text:c.body,date:c.created_at?c.created_at.substring(0,10):''};}):[];
-    window._likes={};window._users=[];
+    var res=await fetch(BIN_URL,{headers:HEADERS});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var d=await res.json();
+    articles=d.record.articles||[];nextId=d.record.nextId||1;
+    window._users=d.record.users||[];window._pending=d.record.pending||[];
+    window._messages=d.record.messages||[];window._comments=d.record.comments||[];
+    window._likes=d.record.likes||{};
     dataLoaded=true;
-  }catch(e){errorMsg='Tietojen lataus ep\u00e4onnistui.';dataLoaded=true;}
+  }catch(e){errorMsg='Tietojen lataus ep\u00e4onnistui. Tarkista yhteys.';dataLoaded=true;}
 }
 
+(function(){var p=new URLSearchParams(window.location.search);var a=p.get('art');if(a){openId=parseInt(a);page='article';}})();
 render();
 setTimeout(function(){var b=document.querySelector('.loading-bar-inner');if(b)b.classList.add('go');},30);
 var dataReady=false,barDone=false;
@@ -733,7 +774,7 @@ function tryHide(){
   if(!dataReady||!barDone)return;
   var ls=document.getElementById('loading-screen');
   if(ls){ls.classList.add('fade-out');setTimeout(function(){ls.style.display='none';},500);}
-  startAutoRefresh();
+  startAutoRefresh();setTimeout(function(){if('Notification' in window&&Notification.permission==='default'){var nb=document.getElementById('notif-bar');if(nb)nb.style.display='block';}},4000);
 }
 setTimeout(function(){barDone=true;tryHide();},1450);
 load().then(function(){render();dataReady=true;tryHide();}).catch(function(){render();dataReady=true;tryHide();});
