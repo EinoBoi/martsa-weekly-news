@@ -336,7 +336,7 @@ function buildThumb(media){
 
 function buildComments(aid){
   var all=(window._comments||[]).filter(function(c){return c.articleId===aid;});
-  var rows=all.map(function(c){var op=openCommentIds[c.id];return "<div><div class=\"comment-row\" id=\"crow-"+c.id+"\"><span class=\"comment-row-author\">"+esc(c.author)+"</span><span class=\"comment-row-preview\">"+esc(c.text.substring(0,50))+(c.text.length>50?"\u2026":"")+"</span><button class=\"comment-del\" id=\"cdel-"+c.id+"\">\u2715</button></div><div class=\"comment-detail"+(op?" open":")+"\"\">"+esc(c.text)+"<div style=\"font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em\">"+esc(c.author)+" \u00b7 "+esc(c.date)+"</div></div></div>";}).join("");
+  var rows=all.map(function(c){var op=openCommentIds[c.id];return "<div><div class=\"comment-row\" id=\"crow-"+c.id+"\"><span class=\"comment-row-author\">"+esc(c.author)+"</span><span class=\"comment-row-preview\">"+esc(c.text.substring(0,50))+(c.text.length>50?"\u2026":"")+"</span><button class=\"comment-del\" id=\"cdel-"+c.id+"\">\u2715</button></div><div class=\"comment-detail"+(op?" open":"")+"\\">"+esc(c.text)+"<div style=\"font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em\">"+esc(c.author)+" \u00b7 "+esc(c.date)+"</div></div></div>";}).join("");
   var form=loggedIn?"<div class=\"comment-form\"><textarea id=\"comment-input\" placeholder=\""+T("comments")+"...\"></textarea><button id=\"comment-submit\" data-artid=\""+aid+"\">"+T("send")+"</button></div>":"<p style=\"font-size:.72rem;color:var(--muted);font-style:italic;margin-top:.6rem\">Kirjaudu sis\u00e4\u00e4n kommentoidaksesi.</p>";
   return "<div class=\"comments-section\"><div class=\"comments-title\">"+T("comments")+" ("+all.length+")</div>"+rows+form+"</div>";
 }
@@ -365,7 +365,7 @@ function render(){
   if(showMsgList&&canMsg){
     var allMsgs=window._messages||[];
     var msgs=msgSearch?allMsgs.filter(function(m){var q=msgSearch.toLowerCase();return(m.from||"").toLowerCase().includes(q)||(m.subject||"").toLowerCase().includes(q)||(m.text||"").toLowerCase().includes(q);}):allMsgs;
-    var mrows=msgs.length===0?"<p style=\"font-size:.8rem;color:var(--muted);font-style:italic\">Ei viestej\u00e4.</p>":msgs.map(function(m){var op=openMsgId===m.id;return "<div><div class=\"msg-row\" id=\"mrow-"+m.id+"\"><span class=\"msg-row-from\">"+esc(m.from)+"</span><span class=\"msg-row-subject\">"+esc(m.subject||m.text.substring(0,40))+"</span><button class=\"msg-row-del\" id=\"mdel-"+m.id+"\">\u2715</button></div><div class=\"msg-detail"+(op?" open":")+"\"\">"+esc(m.text)+"<div style=\"font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em\">"+esc(m.from)+" \u00b7 "+esc(m.date)+"</div></div></div>";}).join("");
+    var mrows=msgs.length===0?"<p style=\"font-size:.8rem;color:var(--muted);font-style:italic\">Ei viestej\u00e4.</p>":msgs.map(function(m){var op=openMsgId===m.id;return "<div><div class=\"msg-row\" id=\"mrow-"+m.id+"\"><span class=\"msg-row-from\">"+esc(m.from)+"</span><span class=\"msg-row-subject\">"+esc(m.subject||m.text.substring(0,40))+"</span><button class=\"msg-row-del\" id=\"mdel-"+m.id+"\">\u2715</button></div><div class=\"msg-detail"+(op?" open":"")+"\\">"+esc(m.text)+"<div style=\"font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em\">"+esc(m.from)+" \u00b7 "+esc(m.date)+"</div></div></div>";}).join("");
     msgListHtml="<div class=\"modal-bg\"><div class=\"msg-list-modal\"><h2>Viestit ("+allMsgs.length+")</h2><input class=\"admin-search\" id=\"msg-search-inp\" placeholder=\"Hae\u2026\" value=\""+esc(msgSearch)+"\">"+mrows+"<div style=\"margin-top:1rem\"><button class=\"btn-secondary\" id=\"close-msgs-btn\">Sulje</button></div></div></div>";
   }
   var sendMsgHtml="";
@@ -403,7 +403,7 @@ function render(){
     var ic=(window._pending||[]).length,mc=(window._messages||[]).length;
     adminBarHtml="<div class=\"admin-bar\"><span>"+(isAdmin?"HALLINTAMOODI":"MODERAATTORI")+" P\u00c4\u00c4LL\u00c4</span>"+(isAdmin?"<button id=\"open-inbox-btn\">Saapuneet"+(ic>0?" ("+ic+")":"")+"</button>":"")+(canMsg?"<button id=\"open-msgs-btn\">Viestit"+(mc>0?" ("+mc+")":"")+"</button>":"")+(isAdmin?"<button id=\"open-mod-btn\">K\u00e4ytt\u00e4j\u00e4t</button>":"")+"<button id=\"exit-admin-btn\">"+T("logout")+"</button></div>";
   }
-  var langMenu="<div class=\"lang-wrap\"><button class=\"lang-btn\" id=\"lang-btn\">\ud83c\udf10 "+lang.toUpperCase()+"</button><div class=\"lang-dropdown"+(showLangMenu?" open":")+"\"\"><button class=\"lang-option\" id=\"lang-fi\">\ud83c\uddeb\ud83c\uddee Suomi</button><button class=\"lang-option\" id=\"lang-en\">\ud83c\uddec\ud83c\udde7 English</button><button class=\"lang-option\" id=\"lang-sv\">\ud83c\uddf8\ud83c\uddea Svenska</button></div></div>";
+  var langMenu="<div class=\"lang-wrap\"><button class=\"lang-btn\" id=\"lang-btn\">\ud83c\udf10 "+lang.toUpperCase()+"</button><div class=\"lang-dropdown"+(showLangMenu?" open":"")+"\\"><button class=\"lang-option\" id=\"lang-fi\">\ud83c\uddeb\ud83c\uddee Suomi</button><button class=\"lang-option\" id=\"lang-en\">\ud83c\uddec\ud83c\udde7 English</button><button class=\"lang-option\" id=\"lang-sv\">\ud83c\uddf8\ud83c\uddea Svenska</button></div></div>";
   var sendBtn=(!canMsg&&loggedIn)?"<button class=\"send-msg-top-btn\" id=\"open-send-msg-btn\">\u2709 "+T("msgTo")+"</button>":"";
   var bmBtn=loggedIn?"<button class=\"bookmarks-btn\" id=\"open-bm-btn\">\u2605 "+T("bookmarks")+"</button>":"";
   var profBtn=loggedIn?"<button class=\"bookmarks-btn\" id=\"open-profile-btn\">\ud83d\udce4 "+T("profile")+"</button>":"";
@@ -489,7 +489,7 @@ function render(){
       return "<div class=\"media-preview-item\" style=\"position:relative;display:inline-block\">"+thumb+"<button class=\"media-preview-del\" data-mi=\""+i+"\">\u2715</button></div>";
     }).join("");
     var ed="<button class=\"add-btn\" id=\"add-btn\">"+(showEditor?(editId?"Sulje muokkaus":"Sulje lomake"):"+ Lis\u00e4\u00e4 uutinen")+"</button>"
-      +"<div class=\"editor"+(showEditor?" open":")+"\"\"><div style=\"max-width:1050px;margin:0 auto\">"
+      +"<div class=\"editor"+(showEditor?" open":"")+"\\"><div style=\"max-width:1050px;margin:0 auto\">"
       +"<h2>\u270d "+(editId?"Muokkaa artikkelia":"Kirjoita uusi uutinen")+"</h2><div class=\"fields\">"
       +"<div><label>Otsikko *</label><input id=\"ft\" placeholder=\"Otsikko\u2026\" value=\""+(edArticle?esc(edArticle.title):"")+"\"></div>"
       +"<div><label>Kirjoittaja</label><input id=\"fa\" placeholder=\"Toim. M. Salonen\" value=\""+(edArticle?esc(edArticle.author||""):"")+"\"></div>"
