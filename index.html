@@ -349,6 +349,19 @@ function buildRelated(a){
 }
 function restoreFocus(id,val){var el=document.getElementById(id);if(el){el.focus();try{el.setSelectionRange(val.length,val.length);}catch(e){}}}
 
+
+function updateMediaPreview(){
+  var prev=document.getElementById("media-preview-wrap");
+  if(!prev)return;
+  if(!pendingMedia.length){prev.innerHTML="";return;}
+  prev.innerHTML=pendingMedia.map(function(m,i){
+    var thumb=m.type==="video"
+      ? "<video style=\"height:80px;width:auto\" controls><source src=\""+m.url+"\"></video>"
+      : "<img src=\""+m.url+"\" style=\"height:80px;width:auto;object-fit:cover\">";
+    return "<div style=\"position:relative;display:inline-block;margin:.2rem\">"+thumb
+      +"<button onclick=\"pendingMedia.splice("+i+",1);updateMediaPreview()\" style=\"position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:.6rem\">\u2715</button></div>";
+  }).join("");
+}
 function render(){
   var app=document.getElementById("app");
   var isAdmin=admin,isMU=isMod(currentUser),canMsg=canSeeMsgs();
@@ -497,7 +510,7 @@ function render(){
       +"<div><label>Palsta</label><select id=\"fc\"><option value=\"left\""+(edArticle&&edArticle.column==="left"?" selected":"")+">Vasen</option><option value=\"center\""+( (!edArticle||edArticle.column==="center")?" selected":"")+">Keskell\u00e4</option><option value=\"right\""+(edArticle&&edArticle.column==="right"?" selected":"")+">Oikea</option></select></div>"
       +"<div class=\"fw\"><label>Teksti *</label><textarea id=\"fb\" placeholder=\"Kirjoita teksti t\u00e4h\u00e4n\u2026\">"+(edArticle?esc(edArticle.body):"")+"</textarea></div>"
       +"<div class=\"media-upload-area fw\"><p>\ud83d\udcf7 "+T("addMedia")+"</p><input type=\"file\" id=\"media-file-inp\" accept=\"image/*,video/*\" multiple style=\"margin-top:.5rem;width:100%;cursor:pointer\"></div>"
-      +(mediaPrevHtml?"<div class=\"media-preview fw\">"+mediaPrevHtml+"</div>":"")
+      +"<div class=\"media-preview fw\" id=\"media-preview-wrap\">"+mediaPrevHtml+"</div>"
       +"</div><div class=\"ea\"><button class=\"btn-primary\" id=\"pub-btn\" style=\"flex:0;padding:.5rem 1.5rem\">"+(editId?T("edit"):T("publish"))+"</button>"
       +"<button class=\"btn-secondary\" id=\"cancel-btn\">"+T("cancel")+"</button></div></div></div>";
     mainHtml=filterBar+"<div class=\"container\"><div class=\"grid\">"
@@ -523,6 +536,7 @@ function render(){
   attachEvents();
   if(showLogin)setTimeout(function(){var el=document.getElementById("lu");if(el)el.focus();},30);
   if(showRegister)setTimeout(function(){var el=document.getElementById("ru");if(el)el.focus();},30);
+  if(showEditor)setTimeout(updateMediaPreview,10);
 }
 
 function attachEvents(){
@@ -647,13 +661,13 @@ function attachEvents(){
   if(mfi){
     mfi.addEventListener("change",function(){
       var files=Array.from(this.files);
+      if(!files.length)return;
+      showNotif("Ladataan mediaa\u2026");
       var uploads=files.map(function(f){
         return new Promise(function(resolve,reject){
           var ext=f.name.split(".").pop();
           var fname=Date.now()+"_"+Math.random().toString(36).slice(2)+"."+ext;
           var t=f.type.startsWith("video")?"video":"image";
-          // Show uploading indicator
-          showNotif("Ladataan mediaa\u2026");
           fetch(SUPABASE_URL+"/storage/v1/object/media/"+fname,{
             method:"POST",
             headers:Object.assign({},_authSB(),{"Content-Type":f.type,"x-upsert":"true"}),
@@ -670,8 +684,9 @@ function attachEvents(){
       });
       Promise.all(uploads).then(function(items){
         pendingMedia=pendingMedia.concat(items);
-        showNotif("Media ladattu!");
-        render();
+        showNotif("Media ladattu! ("+pendingMedia.length+" tiedostoa)");
+        // Update only the preview, don't re-render the whole page
+        updateMediaPreview();
       }).catch(function(){});
     });
   }
