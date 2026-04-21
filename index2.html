@@ -1,0 +1,124 @@
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>Puiden maailma</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(#0f3d2e, #1e6f5c);
+            color: #f0fdf4;
+        }
+
+        header {
+            height: 100vh;
+            background: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470") center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 4rem;
+            background: rgba(0,0,0,0.5);
+            padding: 20px 40px;
+            border-radius: 15px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        section {
+            padding: 80px 10%;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #b6f2c2;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #0b2f24;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Puiden maailma 🌳</h1>
+</header>
+
+<section>
+    <h2>Miksi puut ovat tärkeitä?</h2>
+    <div class="cards">
+        <div class="card">
+            <h3>🌬️ Puhdas ilma</h3>
+            <p>Puut tuottavat happea ja sitovat hiilidioksidia, auttaen torjumaan ilmastonmuutosta.</p>
+        </div>
+        <div class="card">
+            <h3>🐦 Elinympäristö</h3>
+            <p>Miljoonat eläinlajit ovat riippuvaisia puista suojana ja ravinnonlähteenä.</p>
+        </div>
+        <div class="card">
+            <h3>🧠 Hyvinvointi</h3>
+            <p>Metsät vähentävät stressiä ja parantavat keskittymiskykyä.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Puulajeja</h2>
+    <div class="cards">
+        <div class="card">
+            <h3>🌲 Mänty</h3>
+            <p>Suomen yleisimpiä puita, kestää karuja olosuhteita.</p>
+        </div>
+        <div class="card">
+            <h3>🌳 Koivu</h3>
+            <p>Vaalea ja kaunis puu, tärkeä osa suomalaista kulttuuria.</p>
+        </div>
+        <div class="card">
+            <h3>🍁 Tammi</h3>
+            <p>Hidas mutta vahva, voi elää satoja vuosia.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    © 2026 Puiden maailma – Luonto elää kanssamme
+</footer>
+
+</body>
+</html>
