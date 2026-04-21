@@ -578,15 +578,14 @@ function render(){
       +"<button id=\"exit-admin-btn\">"+T("logout")+"</button></div>";
   }
 
- var langMenu =
-  "<div class=\"lang-wrap\">" +
-  "<button class=\"lang-btn\" id=\"lang-btn\">🌐 "+lang.toUpperCase()+"</button>" +
-  "<div class=\"lang-dropdown"+(showLangMenu?" open":"")+"\">" +
-  "<button class=\"lang-option\" id=\"lang-fi\">🇫🇮 Suomi</button>" +
-  "<button class=\"lang-option\" id=\"lang-en\">🇬🇧 English</button>" +
-  "<button class=\"lang-option\" id=\"lang-sv\">🇸🇪 Svenska</button>" +
-  "</div></div>";
-
+var langMenu =
+  '<div class="lang-wrap">' +
+  '<button class="lang-btn" id="lang-btn">🌐 ' + lang.toUpperCase() + '</button>' +
+  '<div class="lang-dropdown' + (showLangMenu ? ' open' : '') + '">' +
+  '<button class="lang-option" id="lang-fi">🇫🇮 Suomi</button>' +
+  '<button class="lang-option" id="lang-en">🇬🇧 English</button>' +
+  '<button class="lang-option" id="lang-sv">🇸🇪 Svenska</button>' +
+  '</div></div>';
   // === PÄÄNÄKYMÄ ===
   var mainHtml="";
   if(page==="article"){
