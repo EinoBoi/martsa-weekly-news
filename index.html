@@ -578,12 +578,14 @@ function render(){
       +"<button id=\"exit-admin-btn\">"+T("logout")+"</button></div>";
   }
 
-  var langMenu="<div class=\"lang-wrap\"><button class=\"lang-btn\" id=\"lang-btn\">🌐 "+lang.toUpperCase()+"</button><div class=\"lang-dropdown"+(showLangMenu?" open":"")+"\"><button class=\"lang-option\" id=\"lang-fi\">🇫🇮 Suomi</button><button class=\"lang-option\" id=\"lang-en\">🇬🇧 English</button>button><button class=\"lang-option\" id=\"lang-sv\">🇸🇪 Svenska</button></div></div>";
-  var sendBtn=(!canMsg&&loggedIn)?"<button class=\"send-msg-top-btn\" id=\"open-send-msg-btn\">✉ "+T("msgTo")+"</button>":"";
-  var bmBtn=loggedIn?"<button class=\"bookmarks-btn\" id=\"open-bm-btn\">★ "+T("bookmarks")+"</button>":"";
-  var profBtn=loggedIn?"<button class=\"bookmarks-btn\" id=\"open-profile-btn\">📤 "+T("profile")+"</button>":"";
-  var topBar="<div class=\"top-bar\"><div class=\"dl-wrap\"><button class=\"dl-main-btn\" id=\"dl-main-btn\">⬇ "+T("install")+" <span class=\"dl-arrow\">▼</span></button><div class=\"dl-dropdown\" id=\"dl-dropdown\"><button id=\"dl-android\">Android</button><button id=\"dl-windows\">Windows</button><button id=\"dl-mac\">Mac</button></div></div>"+langMenu+sendBtn+bmBtn+profBtn+"</div>";
-  var ticker=articles.length>0?articles.map(function(a){return esc(a.title);}).join(" &nbsp;⬦&nbsp; "):T("welcome");
+ var langMenu =
+  "<div class=\"lang-wrap\">" +
+  "<button class=\"lang-btn\" id=\"lang-btn\">🌐 "+lang.toUpperCase()+"</button>" +
+  "<div class=\"lang-dropdown"+(showLangMenu?" open":"")+"\">" +
+  "<button class=\"lang-option\" id=\"lang-fi\">🇫🇮 Suomi</button>" +
+  "<button class=\"lang-option\" id=\"lang-en\">🇬🇧 English</button>" +
+  "<button class=\"lang-option\" id=\"lang-sv\">🇸🇪 Svenska</button>" +
+  "</div></div>";
 
   // === PÄÄNÄKYMÄ ===
   var mainHtml="";
