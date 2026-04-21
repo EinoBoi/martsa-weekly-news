@@ -318,11 +318,18 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
   <div class="loading-bar"><div class="loading-bar-inner"></div></div>
 </div>
 <div id="app"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+  // sinun oma JS alkaa tästä
+</script>
 var ADMIN_USER="martsa",ADMIN_PASS="weekly2026";
 var SUPABASE_URL="https://jjtlhmbfrjtapksynyit.supabase.co";
 var SUPABASE_KEY="sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC";
-var SB={"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY};
+
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
 var CATS=["Urheilu","Kulttuuri","Koulu","Muut"];
 var CAT_CLS={"Urheilu":"cat-urheilu","Kulttuuri":"cat-kulttuuri","Koulu":"cat-koulu","Muut":"cat-muut"};
 var POPULAR_THRESHOLD=300; // klikit joilla merkitään suosituksi
@@ -352,6 +359,19 @@ var filterCat="",filterSearch="",msgSearch="",userSearch="";
 var confirmPending=null,tapCount=0,tapTimer=null,deferredPrompt=null,dataLoaded=false;
 var syncTimer=null,errorMsg="",lang="fi";
 var pendingMedia=[];
+
+function sbToArt(r){
+  return {
+    id: r.id,
+    title: r.title,
+    body: r.body,
+    author: r.author,
+    section: r.section,
+    column: r.column,
+    date: r.date,
+    media: r.media || []
+  };
+}
 
 // Käyttäjien tallennus paikallisesti (ei tarvita Supabasea peruskäyttäjille)
 function getUsers(){return window._localUsers||[];}
@@ -407,16 +427,19 @@ function toggleBookmark(id){var bms=getBookmarks(),i=bms.indexOf(id);if(i===-1)b
 function doInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}else{var s=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);alert(s?"Safarilla: paina jakamispainike → Lisää Koti-valikkoon.":"Avaa Chrome, osoitepalkin oikeassa reunassa on asennuskuvake.");}}
 function showNotif(msg){var el=document.getElementById("sync-ind");if(el){el.textContent=msg;el.classList.add("visible");setTimeout(function(){el.classList.remove("visible");},3500);}}
 function startAutoRefresh(){if(syncTimer)clearInterval(syncTimer);syncTimer=setInterval(silentRefresh,30000);}
-function silentRefresh(){
-  fetch(SUPABASE_URL+"/rest/v1/articles?select=*&order=id.asc",{headers:SB})
-    .then(function(r){return r.json();})
-    .then(function(rows){
-      if(!rows||rows.error)return;
-      var na=rows.map(sbToArt);
-      var changed=JSON.stringify(na)!==JSON.stringify(articles);
-      articles=na;
-      if(changed){showNotif("↻ Päivitetty "+new Date().toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"}));render();}
-    }).catch(function(){});
+async function silentRefresh(){
+  const { data, error } = await supabase
+    .from("articles")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if(error){
+    console.log("Supabase error:", error);
+    return;
+  }
+
+  articles = data.map(sbToArt);
+  render();
 }
 
 // Tarkistaa onko käyttäjä ollut sisäänkirjautuneena yli 5 tuntia
