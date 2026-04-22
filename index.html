@@ -299,6 +299,15 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 </div>
 <div id="app"></div>
 <script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // Alusta Supabase (korvaa omilla osoitteillasi)
+  const supabaseUrl = 'https://jjtlhmbfrjtapksynyit.supabase.co';
+  const supabaseKey = 'sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  
+  // ... muu koodi jatkuu
 "use strict";
 // ===== VAKIOT =====
 var AU="martsa", AP="weekly2026";
@@ -329,25 +338,54 @@ var L={
 };
 function T(k){return(L[lang]&&L[lang][k])||L.fi[k]||k;}
 
-// ===== PAIKALLINEN DATA =====
-function getUsers(){try{return JSON.parse(localStorage.getItem("mu_u")||"[]");}catch(e){return[];}}
-function saveUsers(u){try{localStorage.setItem("mu_u",JSON.stringify(u));}catch(e){}}
-function getArticles(){try{return JSON.parse(localStorage.getItem("mu_arts")||"[]");}catch(e){return[];}}
-function saveArticles(a){try{localStorage.setItem("mu_arts",JSON.stringify(a));}catch(e){}}
-function getPending(){try{return JSON.parse(localStorage.getItem("mu_pend")||"[]");}catch(e){return[];}}
-function savePending(p){try{localStorage.setItem("mu_pend",JSON.stringify(p));}catch(e){}}
-function getMessages(){try{return JSON.parse(localStorage.getItem("mu_msgs")||"[]");}catch(e){return[];}}
-function saveMessages(m){try{localStorage.setItem("mu_msgs",JSON.stringify(m));}catch(e){}}
-function getComments(){try{return JSON.parse(localStorage.getItem("mu_cmts")||"[]");}catch(e){return[];}}
-function saveComments(c){try{localStorage.setItem("mu_cmts",JSON.stringify(c));}catch(e){}}
-function getViews(){try{return JSON.parse(localStorage.getItem("mu_views")||"{}"); }catch(e){return {};}}
-function saveViews(v){try{localStorage.setItem("mu_views",JSON.stringify(v));}catch(e){}}
-function getLikes(){try{return JSON.parse(localStorage.getItem("mu_likes")||"[]");}catch(e){return[];}}
-function saveLikes(l){try{localStorage.setItem("mu_likes",JSON.stringify(l));}catch(e){}}
-function getBm(){try{return JSON.parse(localStorage.getItem("mu_bm_"+(cu||"g"))||"[]");}catch(e){return[];}}
-function saveBm(b){try{localStorage.setItem("mu_bm_"+(cu||"g"),JSON.stringify(b));}catch(e){}}
-function getNextId(){var n=parseInt(localStorage.getItem("mu_nid")||"1");localStorage.setItem("mu_nid",n+1);return n;}
+// ===== ÄLÄ KOSKE TÄHÄN =====
+// ===== GLOBAALI TILA (Korvaa LocalStorage) =====
+var globalUsers = [], globalPending = [], globalMsgs = [], globalCmts = [];
+var globalViews = {}, globalLikes = [], globalBm = [];
 
+// Getterit lukevat nyt suoraan muistista (toimii välittömästi kuten ennenkin)
+function getUsers() { return globalUsers; }
+function getPending() { return globalPending; }
+function getMessages() { return globalMsgs; }
+function getComments() { return globalCmts; }
+function getViews() { return globalViews; }
+function getLikes() { return globalLikes; }
+function getBm() { return globalBm; }
+
+// Tallennus päivittää muistin JA lähettää tiedon Supabaseen taustalla
+async function saveUsers(u) {
+  globalUsers = u;
+  await supabase.from('users').upsert(u);
+}
+async function savePending(p) {
+  globalPending = p;
+  await supabase.from('pending').upsert(p);
+}
+async function saveMessages(m) {
+  globalMsgs = m;
+  await supabase.from('messages').upsert(m);
+}
+async function saveComments(c) {
+  globalCmts = c;
+  await supabase.from('comments').upsert(c);
+}
+async function saveViews(v) {
+  globalViews = v;
+  await supabase.from('site_data').upsert({ id: 'views', data: v });
+}
+async function saveLikes(l) {
+  globalLikes = l;
+  await supabase.from('site_data').upsert({ id: 'likes', data: l });
+}
+async function saveBm(b) {
+  globalBm = b;
+  if (cu) await supabase.from('site_data').upsert({ id: 'bm_' + cu, data: b });
+}
+
+// Uusille ID:ille kannattaa siirtyä käyttämään aikaleimaa, jotta ne ovat varmasti uniikkeja tietokannassa
+function getNextId() {
+  return Date.now(); 
+}
 // ===== APUFUNKTIOT =====
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function dateFI(){return new Date().toLocaleDateString("fi-FI",{weekday:"long",year:"numeric",month:"long",day:"numeric"});}
@@ -969,26 +1007,55 @@ function doPublish(direct){
   }
 }
 
-// ===== KÄYNNISTYS =====
-try{var st=localStorage.getItem("mu_theme");if(st)applyTheme(st);}catch(e){}
-articles=getArticles();
-dataLoaded=true;
-render();
+// ===== KÄYNNISTYS (Supabase Init) =====
+try { var st = localStorage.getItem("mu_theme"); if(st) applyTheme(st); } catch(e) {}
 
-// Loading screen
-setTimeout(function(){var b=document.getElementById("lbi");if(b)b.classList.add("go");},30);
-setTimeout(function(){
-  var ls=document.getElementById("ls");
-  if(ls){ls.classList.add("out");setTimeout(function(){ls.style.display="none";},500);}
-},1500);
+async function initApp() {
+  // Ladataan kaikki taulut rinnakkain, jotta sivu aukeaa nopeasti
+  const [arts, usrs, pend, msgs, cmts, views, likes] = await Promise.all([
+    supabase.from('articles').select('*'),
+    supabase.from('users').select('*'),
+    supabase.from('pending').select('*'),
+    supabase.from('messages').select('*'),
+    supabase.from('comments').select('*'),
+    supabase.from('site_data').select('*').eq('id', 'views').single(),
+    supabase.from('site_data').select('*').eq('id', 'likes').single()
+  ]);
 
-// Autorefresh (paikallinen — tarkistaa muutokset 30s välein)
-setInterval(function(){
-  var fresh=getArticles();
-  if(JSON.stringify(fresh)!==JSON.stringify(articles)){
-    articles=fresh;showNotif("Päivitetty");render();
+  // Siirretään Supabasetieto lokaaleihin muuttujiin (jos dataa löytyi)
+  if (arts.data) articles = arts.data;
+  if (usrs.data) globalUsers = usrs.data;
+  if (pend.data) globalPending = pend.data;
+  if (msgs.data) globalMsgs = msgs.data;
+  if (cmts.data) globalCmts = cmts.data;
+  if (views.data) globalViews = views.data.data;
+  if (likes.data) globalLikes = likes.data.data;
+
+  dataLoaded = true;
+  
+  // Loading screen piilotus
+  var b=document.getElementById("lbi"); if(b) b.classList.add("go");
+  setTimeout(function(){
+    var ls=document.getElementById("ls");
+    if(ls){ ls.classList.add("out"); setTimeout(function(){ ls.style.display="none"; }, 500); }
+  }, 1000);
+
+  // Piirretään UI vasta kun data on valmiina
+  render();
+}
+
+// Käynnistetään sovellus
+initApp();
+
+// Autorefresh taustalla 30 sekunnin välein (vain artikkelit)
+setInterval(async function() {
+  const { data } = await supabase.from('articles').select('*');
+  if (data && JSON.stringify(data) !== JSON.stringify(articles)) {
+    articles = data;
+    showNotif("Uusia artikkeleita päivitetty");
+    render();
   }
-},30000);
+}, 30000);
 </script>
 </body>
 </html>
