@@ -4,1061 +4,991 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Martsan Uutiset</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a1208">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Martsan Uutiset">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Bebas+Neue&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--ink:#1a1208;--paper:#f5f0e8;--cream:#ede7d6;--red:#c0392b;--muted:#6b5f4e;--rule:#2c2416;--theme-primary:#c0392b;--theme-secondary:#922b21}
+:root{--ink:#1a1208;--paper:#f5f0e8;--cream:#ede7d6;--red:#c0392b;--muted:#6b5f4e;--rule:#2c2416;--tp:#c0392b}
 body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georgia,serif;font-size:15px;line-height:1.6;min-height:100vh}
 
-/* ===== LASER/VALONPYYHKÄISY ===== */
-.laser-overlay{position:fixed;inset:0;z-index:10000;pointer-events:none;overflow:hidden;}
-.laser-beam{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent 0%,rgba(192,57,43,0.15) 20%,rgba(255,200,180,0.5) 45%,rgba(255,255,255,0.7) 50%,rgba(255,200,180,0.5) 55%,rgba(192,57,43,0.15) 80%,transparent 100%);animation:laserSweep 0.7s ease-in-out forwards;}
-.laser-beam:nth-child(2){animation-delay:0.15s;background:linear-gradient(90deg,transparent 0%,rgba(150,30,20,0.1) 20%,rgba(220,160,140,0.4) 45%,rgba(255,240,230,0.6) 50%,rgba(220,160,140,0.4) 55%,rgba(150,30,20,0.1) 80%,transparent 100%);}
-.laser-beam:nth-child(3){animation-delay:0.3s;background:linear-gradient(90deg,transparent 0%,rgba(192,57,43,0.08) 20%,rgba(255,200,180,0.3) 45%,rgba(255,255,255,0.5) 50%,rgba(255,200,180,0.3) 55%,rgba(192,57,43,0.08) 80%,transparent 100%);}
-@keyframes laserSweep{0%{left:-100%}100%{left:200%}}
+/* LOADING */
+.ls{position:fixed;inset:0;background:var(--paper);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .5s;overflow:hidden}
+.ls.out{opacity:0;pointer-events:none}
+.ll{font-family:"Playfair Display",Georgia,serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:900;line-height:.9;text-align:center;opacity:0;animation:rv .5s ease 1s forwards}
+.ll em{font-style:italic;color:var(--tp)}
+.lr{display:flex;align-items:center;gap:.8rem;width:min(300px,80vw);opacity:0;animation:rv .5s ease 1.2s forwards}
+.lr::before,.lr::after{content:"";flex:1;height:1px;background:var(--rule)}
+.lr span{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.lb{width:min(200px,60vw);height:2px;background:#ddd;overflow:hidden;opacity:0;animation:rv .3s ease .9s forwards}
+.lbi{height:100%;background:var(--tp);width:0%;transition:width .05s}
+.lbi.go{width:100%;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.llas{position:absolute;top:0;left:-120%;width:40%;height:100%;opacity:0}
+.llas.b1{background:linear-gradient(90deg,transparent,rgba(192,57,43,.25),rgba(255,200,180,.6),rgba(255,255,255,.8),rgba(255,200,180,.6),rgba(192,57,43,.25),transparent);animation:ll1 .6s ease-out .05s forwards}
+.llas.b2{background:linear-gradient(90deg,transparent,rgba(150,30,20,.15),rgba(220,150,130,.45),rgba(255,230,220,.65),rgba(220,150,130,.45),rgba(150,30,20,.15),transparent);animation:ll1 .6s ease-out .2s forwards}
+.llas.b3{background:linear-gradient(90deg,transparent,rgba(192,57,43,.1),rgba(255,180,160,.35),rgba(255,255,255,.55),rgba(255,180,160,.35),rgba(192,57,43,.1),transparent);animation:ll1 .6s ease-out .38s forwards}
+@keyframes ll1{0%{left:-120%;opacity:1}100%{left:200%;opacity:1}}
+@keyframes rv{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
 
+/* ADMIN BAR */
+.ab{background:var(--ink);color:#e8c070;padding:.4rem 1.5rem;display:flex;justify-content:center;align-items:center;gap:1rem;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.12em;position:sticky;top:0;z-index:200;flex-wrap:wrap}
+.ab button{background:var(--tp);color:#fff;border:none;padding:.2rem .8rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.74rem;letter-spacing:.1em}
+.ab.cc{animation:rc 8s infinite}
+@keyframes rc{0%,100%{background:var(--ink);color:#e8c070}12%{background:#8B0000;color:#ffcccc}25%{background:#C0392B;color:#fff5f5}37%{background:#922B21;color:#ffe0e0}50%{background:#6B0F1A;color:#ffd0d0}62%{background:#E74C3C;color:#fff}75%{background:#A93226;color:#ffeded}87%{background:#7B241C;color:#ffc8c8}}
+.ab.cc button{animation:rbc 8s infinite}
+@keyframes rbc{0%,100%,12%{background:#C0392B}25%{background:#6B0F1A}50%{background:#E74C3C}75%{background:#8B0000}}
+
+/* MASTHEAD */
 .masthead{border-top:4px solid var(--rule);border-bottom:1px solid var(--rule);padding:.35rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;background:var(--paper);position:relative;z-index:85}
-.masthead-login{background:var(--theme-primary);color:#fff;border:none;padding:.15rem .6rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.62rem;letter-spacing:.1em}
-.masthead-login:hover{background:var(--rule)}
+.mlogin{background:var(--tp);color:#fff;border:none;padding:.15rem .6rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.62rem;letter-spacing:.1em}
+.mlogin:hover{background:var(--rule)}
 .nameplate{text-align:center;padding:1rem 1rem .5rem;border-bottom:3px double var(--rule);cursor:pointer;user-select:none}
-.nameplate h1{font-family:"Playfair Display",serif;font-size:clamp(2.2rem,7vw,5rem);font-weight:900;line-height:.9}
-.nameplate h1 em{font-style:italic;color:var(--theme-primary)}
+.nameplate h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(2.2rem,7vw,5rem);font-weight:900;line-height:.9}
+.nameplate h1 em{font-style:italic;color:var(--tp)}
 .np-rule{display:flex;align-items:center;gap:.8rem;margin:.5rem 0 .2rem;justify-content:center}
 .np-rule span{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .np-rule::before,.np-rule::after{content:"";flex:1;max-width:160px;height:1px;background:var(--rule)}
 .tagline{font-style:italic;font-size:.82rem;color:var(--muted);margin-bottom:.3rem}
-.ticker-wrap{overflow:hidden;white-space:nowrap;border-bottom:2px solid var(--rule);position:relative;z-index:80}
-.ticker{background:var(--theme-primary);color:#fff;padding:.35rem 0;display:block}
-.ticker-label{display:inline-block;background:var(--ink);color:#fff;padding:0 .8rem;font-family:"Bebas Neue",sans-serif;font-size:.85rem;letter-spacing:.1em;margin-right:.8rem;vertical-align:middle}
+
+/* TICKER */
+.ticker-wrap{overflow:hidden;white-space:nowrap;border-bottom:2px solid var(--rule)}
+.ticker{background:var(--tp);color:#fff;padding:.35rem 0;display:block}
+.ticker-label{display:inline-block;background:var(--ink);color:#fff;padding:0 .8rem;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.85rem;letter-spacing:.1em;margin-right:.8rem;vertical-align:middle}
 .ticker-inner{display:inline-block;animation:tick 28s linear infinite;font-size:.75rem}
 @keyframes tick{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 
-/* ===== ADMIN BAR — normaali punainen ===== */
-.admin-bar{background:var(--ink);color:#e8c070;padding:.4rem 1.5rem;display:flex;justify-content:center;align-items:center;gap:1rem;font-family:"Bebas Neue",sans-serif;font-size:.78rem;letter-spacing:.12em;position:sticky;top:0;z-index:200;flex-wrap:wrap}
-.admin-bar button{background:var(--theme-primary);color:#fff;border:none;padding:.2rem .8rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.74rem;letter-spacing:.1em}
-
-/* ===== VÄRIVAIHTAVA YLÄPALKKI (yli 5h) — punaiset sävyt ===== */
-.admin-bar.color-cycling{animation:redCycle 8s infinite;}
-@keyframes redCycle{
-  0%  {background:var(--ink);color:#e8c070;}
-  12% {background:#8B0000;color:#ffcccc;}
-  25% {background:#C0392B;color:#fff5f5;}
-  37% {background:#922B21;color:#ffe0e0;}
-  50% {background:#6B0F1A;color:#ffd0d0;}
-  62% {background:#E74C3C;color:#fff;}
-  75% {background:#A93226;color:#ffeded;}
-  87% {background:#7B241C;color:#ffc8c8;}
-  100%{background:var(--ink);color:#e8c070;}
-}
-.admin-bar.color-cycling button{animation:btnRedCycle 8s infinite;}
-@keyframes btnRedCycle{
-  0%,100%{background:#C0392B;}
-  12%    {background:#C0392B;}
-  25%    {background:#6B0F1A;}
-  50%    {background:#E74C3C;}
-  75%    {background:#8B0000;}
-}
-
-.confirm-bg{position:fixed;inset:0;background:rgba(26,18,8,.6);z-index:600;display:flex;align-items:center;justify-content:center}
-.confirm-box{background:var(--paper);border:2px solid var(--rule);padding:1.8rem;width:300px;max-width:90vw;box-shadow:5px 5px 0 var(--rule);text-align:center}
-.confirm-box p{font-family:"Playfair Display",serif;font-size:1.05rem;margin-bottom:1.4rem;line-height:1.4}
-.confirm-btns{display:flex;gap:.8rem;justify-content:center}
-.cbtn-yes{background:var(--theme-primary);color:#fff;border:none;padding:.5rem 1.4rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.95rem;letter-spacing:.12em}
-.cbtn-no{background:none;border:1px solid var(--muted);color:var(--muted);padding:.45rem 1rem;cursor:pointer;font-family:"Source Serif 4",serif;font-size:.82rem}
-.cbtn-no:hover{border-color:var(--ink);color:var(--ink)}
-.modal-bg{position:fixed;inset:0;background:rgba(26,18,8,.65);z-index:400;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--paper);border:2px solid var(--rule);padding:2rem;width:340px;max-width:92vw;box-shadow:6px 6px 0 var(--rule)}
-.modal h2{font-family:"Playfair Display",serif;font-size:1.3rem;font-weight:900;margin-bottom:.2rem}
-.modal p{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid #c8bba0}
-.modal label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
-.modal input{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.45rem .6rem;font-family:"Source Serif 4",serif;font-size:.9rem;color:var(--ink);outline:none;margin-bottom:.9rem}
-.modal input:focus{border-color:var(--theme-primary)}
-.modal-err{color:var(--theme-primary);font-size:.75rem;font-style:italic;min-height:1.1em;margin-bottom:.6rem}
-.modal-btns{display:flex;gap:.6rem}
-.btn-primary{flex:1;background:var(--ink);color:var(--paper);border:none;padding:.55rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.95rem;letter-spacing:.12em}
-.btn-primary:hover{background:var(--theme-primary)}
-.btn-secondary{background:none;border:1px solid var(--muted);color:var(--muted);padding:.5rem .9rem;cursor:pointer;font-family:"Source Serif 4",serif;font-size:.75rem}
-.btn-secondary:hover{border-color:var(--ink);color:var(--ink)}
-.container{max-width:1050px;margin:0 auto;padding:0 1.2rem}
-.filter-bar{max-width:1050px;margin:0 auto;padding:.6rem 1.2rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
-.filter-label{font-family:"Bebas Neue",sans-serif;font-size:.68rem;letter-spacing:.15em;color:var(--muted)}
-.filter-btn{background:none;border:1px solid #c8bba0;color:var(--ink);padding:.2rem .65rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.68rem;letter-spacing:.1em;transition:all .15s}
-.filter-btn:hover{background:var(--cream);border-color:var(--rule);color:var(--ink)}
-.filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.filter-btn.cat-urheilu:hover{background:#d4e8ff;border-color:#3a7fd4;color:#1a3a6a}
-.filter-btn.cat-kulttuuri:hover{background:#f0d4ff;border-color:#a855c8;color:#4a1a5a}
-.filter-btn.cat-koulu:hover{background:#d4ffe8;border-color:#2ea85a;color:#0a4a2a}
-.filter-btn.cat-muut:hover{background:#ffe8c8;border-color:#d4820a;color:#5a2a00}
-.filter-btn.cat-urheilu.active{background:#3a7fd4;border-color:#3a7fd4;color:#fff}
-.filter-btn.cat-kulttuuri.active{background:#a855c8;border-color:#a855c8;color:#fff}
-.filter-btn.cat-koulu.active{background:#2ea85a;border-color:#2ea85a;color:#fff}
-.filter-btn.cat-muut.active{background:#d4820a;border-color:#d4820a;color:#fff}
-.filter-search-wrap{margin-left:auto}
-.filter-search{background:var(--cream);border:1px solid #c8bba0;padding:.22rem .6rem;font-family:"Source Serif 4",serif;font-size:.78rem;color:var(--ink);outline:none;min-width:130px}
-.filter-search:focus{border-color:var(--theme-primary)}
-.grid{display:grid;grid-template-columns:1fr 2px 2fr 2px 1fr;padding:1.2rem 0}
-.divider{background:repeating-linear-gradient(to bottom,var(--rule) 0,var(--rule) 5px,transparent 5px,transparent 9px);margin:0 .7rem}
-.col{padding:0 .9rem}
-.sec-label{font-family:"Bebas Neue",sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--theme-primary);border-bottom:2px solid var(--theme-primary);padding-bottom:.18rem;margin-bottom:.7rem}
-.cat-badge{display:inline-block;font-family:"Bebas Neue",sans-serif;font-size:.58rem;letter-spacing:.12em;padding:.08rem .4rem;margin-bottom:.3rem;color:#fff}
-.cat-urheilu{background:#3a7fd4}.cat-kulttuuri{background:#a855c8}.cat-koulu{background:#2ea85a}.cat-muut{background:#d4820a}.cat-default{background:var(--muted)}
-
-/* ===== SUOSITTU-MERKINTÄ ===== */
-.popular-badge{display:inline-block;font-family:"Bebas Neue",sans-serif;font-size:.58rem;letter-spacing:.12em;padding:.08rem .5rem;margin-bottom:.3rem;color:#fff;background:#8B0000;border:1px solid #C0392B;animation:popularPulse 2s ease-in-out infinite;}
-@keyframes popularPulse{0%,100%{opacity:1;}50%{opacity:.7;}}
-
-.card{margin-bottom:1.1rem;padding-bottom:.9rem;border-bottom:1px dashed #b0a090;position:relative;cursor:pointer}
-.card:last-child{border-bottom:none}
-.card h3{font-family:"Playfair Display",serif;font-size:.95rem;font-weight:700;line-height:1.2;margin-bottom:.2rem;transition:color .15s}
-.card.lead h2{font-family:"Playfair Display",serif;font-size:clamp(1.3rem,2.3vw,1.9rem);font-weight:900;line-height:1.1;margin-bottom:.35rem;transition:color .15s}
-.card:hover h2,.card:hover h3{color:var(--theme-primary)}
-.card .excerpt{font-size:.78rem;color:#3d3020;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.byline{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.25rem}
-.hint{font-size:.65rem;color:var(--theme-primary);text-transform:uppercase;letter-spacing:.1em;margin-top:.35rem;display:inline-block}
-.card-meta{display:flex;gap:.8rem;align-items:center;margin-top:.25rem}
-.views,.readtime{font-size:.6rem;color:var(--muted);letter-spacing:.06em}
-.like-btn{background:none;border:none;cursor:pointer;font-size:.72rem;color:var(--muted);padding:0;transition:color .15s;letter-spacing:.04em}
-.like-btn:hover,.like-btn.liked{color:var(--theme-primary)}
-.card-thumb{width:100%;max-height:140px;object-fit:cover;margin-bottom:.5rem;display:block}
-.del-btn{background:var(--theme-primary);color:#fff;border:none;cursor:pointer;font-size:.65rem;padding:.2rem .5rem;position:absolute;top:0;right:0;display:none}
-.admin-on .del-btn{display:block}
-.edit-btn{background:var(--ink);color:#fff;border:none;cursor:pointer;font-size:.65rem;padding:.2rem .5rem;position:absolute;top:0;right:3.2rem;display:none;font-family:"Bebas Neue",sans-serif;letter-spacing:.08em}
-.admin-on .edit-btn{display:block}
-.bookmark-btn{background:none;border:none;cursor:pointer;font-size:.75rem;position:absolute;top:0;right:1.8rem;color:var(--muted);padding:.1rem .2rem;display:none;transition:color .15s}
-.bookmark-btn:hover,.bookmark-btn.bookmarked{color:var(--theme-primary)}
-.logged-in .bookmark-btn,.admin-on .bookmark-btn{display:block}
-.admin-on .bookmark-btn{right:5rem}
-.empty{font-style:italic;font-size:.78rem;color:#b0a090;text-align:center;padding:1.5rem .5rem;border:1px dashed #c8bba0}
-.divh{border:none;border-top:2px solid var(--rule);margin:1rem 0}
-.art-wrap{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 2rem}
-.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);cursor:pointer;border:none;background:none;padding:.4rem 0;margin-bottom:1.8rem;border-bottom:1px solid transparent;transition:color .15s,border-color .15s}
-.back-btn:hover{color:var(--theme-primary);border-bottom-color:var(--theme-primary)}
-.art-badge{font-family:"Bebas Neue",sans-serif;font-size:.68rem;letter-spacing:.2em;color:#fff;padding:.18rem .6rem;display:inline-block;margin-bottom:.9rem}
-.art-title{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:900;line-height:1.05;margin-bottom:.9rem}
-.art-byline{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding-bottom:1rem;margin-bottom:1.5rem;border-bottom:2px solid var(--rule);display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
-.art-views,.art-readtime{font-size:.65rem;color:var(--muted)}
-.art-like-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.2rem .6rem;cursor:pointer;font-size:.7rem;transition:all .15s}
-.art-like-btn:hover,.art-like-btn.liked{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
-.art-bookmark-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.2rem .6rem;cursor:pointer;font-size:.7rem;transition:all .15s;display:none}
-.art-bookmark-btn:hover,.art-bookmark-btn.bookmarked{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
-.logged-in .art-bookmark-btn,.admin-on .art-bookmark-btn{display:inline-block}
-.art-edit-btn{background:var(--ink);color:var(--paper);border:none;padding:.2rem .7rem;cursor:pointer;font-size:.7rem;font-family:"Bebas Neue",sans-serif;letter-spacing:.1em;transition:background .15s;display:none}
-.art-edit-btn:hover{background:var(--theme-primary)}
-.admin-on .art-edit-btn{display:inline-block}
-.art-hero{width:100%;max-height:420px;object-fit:cover;margin-bottom:1.5rem;display:block}
-.art-hero-video{width:100%;max-height:420px;margin-bottom:1.5rem;display:block;background:#000}
-.art-body{font-size:1rem;line-height:1.82;color:#2c2416;hyphens:auto}
-.art-body p{margin-bottom:1.2em}
-.art-body p:first-child::first-letter{font-family:"Playfair Display",serif;font-size:3.5em;font-weight:900;float:left;line-height:.75;margin:.05em .1em 0 0;color:var(--theme-primary)}
-.art-body img{max-width:100%;margin:1rem 0;display:block}
-.art-body video{max-width:100%;margin:1rem 0;display:block}
-.art-end{border:none;border-top:3px double var(--rule);margin:2rem 0 1.2rem}
-.art-del-btn{background:var(--theme-primary);color:#fff;border:none;font-size:.78rem;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;letter-spacing:.1em;display:none}
-.admin-on .art-del-btn{display:inline-block}
-.related-section{max-width:680px;margin:0 auto 2rem;padding:0 1.2rem}
-.related-title{font-family:"Bebas Neue",sans-serif;font-size:.75rem;letter-spacing:.2em;color:var(--muted);border-bottom:1px solid #c8bba0;padding-bottom:.2rem;margin-bottom:.7rem}
-.related-item{padding:.4rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;font-family:"Playfair Display",serif;font-size:.88rem;font-weight:700;transition:color .15s}
-.related-item:last-child{border-bottom:none}
-.related-item:hover{color:var(--theme-primary)}
-.add-btn{display:none;margin:1.2rem auto 0;background:var(--ink);color:var(--paper);border:none;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.95rem;letter-spacing:.15em;padding:.55rem 1.8rem;transition:background .2s}
-.admin-on .add-btn,.logged-in .add-btn{display:block}
-.add-btn:hover{background:var(--theme-primary)}
-.editor{display:none;background:var(--cream);border-top:3px double var(--rule);border-bottom:3px double var(--rule);padding:1.3rem 1.5rem}
-.editor.open{display:block}
-.editor h2{font-family:"Playfair Display",serif;font-size:1.2rem;margin-bottom:.9rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.3rem}
-.fields .fw{grid-column:1/-1}
-.fields label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
-.fields input,.fields select,.fields textarea{width:100%;background:var(--paper);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",serif;font-size:.85rem;color:var(--ink);outline:none;transition:border-color .15s}
-.fields input:focus,.fields select:focus,.fields textarea:focus{border-color:var(--theme-primary)}
-.fields textarea{resize:vertical;min-height:110px}
-.media-upload-area{grid-column:1/-1;border:2px dashed #b0a090;padding:1rem;text-align:center;transition:border-color .2s}
-.media-upload-area:hover{border-color:var(--theme-primary)}
-.media-upload-area input[type=file]{cursor:pointer;font-family:"Source Serif 4",serif;font-size:.78rem;color:var(--muted)}
-.media-upload-area p{font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
-.media-preview{grid-column:1/-1;display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}
-.media-preview-item{position:relative;display:inline-block}
-.media-preview-item img{height:80px;width:auto;max-width:120px;object-fit:cover;display:block;border:1px solid #c8bba0}
-.media-preview-item video{height:80px;width:auto;max-width:120px;display:block;border:1px solid #c8bba0}
-.media-preview-del{position:absolute;top:-6px;right:-6px;background:var(--theme-primary);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:.55rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-
-/* Julkaisupainikkeet toimittajalle */
-.pub-btns-wrap{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
-.btn-pub-direct{background:#1a5c2e;color:#fff;border:none;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.9rem;letter-spacing:.1em;transition:background .15s}
-.btn-pub-direct:hover{background:#0f3d1e}
-.btn-pub-via{background:var(--ink);color:var(--paper);border:none;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.9rem;letter-spacing:.1em;transition:background .15s}
-.btn-pub-via:hover{background:var(--theme-primary)}
-
-.ea{margin-top:.9rem;display:flex;gap:.7rem;align-items:center}
+/* TOP BAR */
 .top-bar{display:flex;justify-content:center;align-items:center;gap:.8rem;padding:.5rem 1.5rem;background:var(--cream);border-bottom:1px solid #c8bba0;position:relative;z-index:150;flex-wrap:wrap}
 .dl-wrap,.lang-wrap{position:relative;display:inline-block}
-.dl-main-btn{background:var(--ink);color:var(--paper);border:none;padding:.38rem 1.1rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.82rem;letter-spacing:.15em;display:flex;align-items:center;gap:.4rem;transition:background .2s}
-.dl-main-btn:hover{background:var(--theme-primary)}
+.dl-main-btn{background:var(--ink);color:var(--paper);border:none;padding:.38rem 1.1rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.82rem;letter-spacing:.15em;display:flex;align-items:center;gap:.4rem;transition:background .2s}
+.dl-main-btn:hover{background:var(--tp)}
 .dl-arrow{font-size:.5rem;transition:transform .2s;display:inline-block}
 .dl-main-btn.open .dl-arrow{transform:rotate(180deg)}
 .dl-dropdown{position:absolute;top:calc(100% + 2px);left:0;background:var(--ink);min-width:160px;display:none;box-shadow:4px 4px 0 rgba(0,0,0,.25);border:1px solid #3a3020;z-index:300}
 .dl-dropdown.open{display:block}
-.dl-dropdown button{display:block;width:100%;background:none;border:none;border-bottom:1px solid #2e2418;color:var(--paper);padding:.45rem 1rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.78rem;letter-spacing:.12em;text-align:left;transition:background .15s}
+.dl-dropdown button{display:block;width:100%;background:none;border:none;border-bottom:1px solid #2e2418;color:var(--paper);padding:.45rem 1rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.12em;text-align:left;transition:background .15s}
 .dl-dropdown button:last-child{border-bottom:none}
-.dl-dropdown button:hover{background:var(--theme-primary)}
-.lang-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.32rem .8rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.78rem;letter-spacing:.12em;transition:all .15s}
+.dl-dropdown button:hover{background:var(--tp)}
+.lang-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.32rem .8rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.12em;transition:all .15s}
 .lang-btn:hover{border-color:var(--ink);color:var(--ink)}
 .lang-dropdown{position:absolute;top:calc(100% + 2px);left:0;background:var(--paper);border:1px solid var(--rule);box-shadow:4px 4px 0 rgba(0,0,0,.15);min-width:140px;display:none;z-index:300}
 .lang-dropdown.open{display:block}
-.lang-option{display:block;width:100%;background:none;border:none;border-bottom:1px dashed #c8bba0;color:var(--ink);padding:.4rem .8rem;cursor:pointer;font-family:"Source Serif 4",serif;font-size:.78rem;text-align:left;transition:background .15s}
+.lang-option{display:block;width:100%;background:none;border:none;border-bottom:1px dashed #c8bba0;color:var(--ink);padding:.4rem .8rem;cursor:pointer;font-family:"Source Serif 4",Georgia,serif;font-size:.78rem;text-align:left;transition:background .15s}
 .lang-option:last-child{border-bottom:none}
 .lang-option:hover{background:var(--cream)}
-.send-msg-top-btn,.bookmarks-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.32rem .8rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.78rem;letter-spacing:.12em;transition:all .15s}
-.send-msg-top-btn:hover{border-color:var(--theme-primary);color:var(--theme-primary)}
-.bookmarks-btn:hover{border-color:var(--ink);color:var(--ink)}
-.msg-list-modal,.inbox-modal,.users-modal,.bookmarks-modal,.profile-modal{background:var(--paper);border:2px solid var(--rule);padding:1.5rem;box-shadow:6px 6px 0 var(--rule);max-height:80vh;overflow-y:auto}
-.msg-list-modal{width:500px;max-width:95vw}
-.inbox-modal{width:500px;max-width:95vw}
-.users-modal{width:480px;max-width:95vw}
-.bookmarks-modal{width:420px;max-width:95vw}
-.profile-modal{width:460px;max-width:95vw}
-.msg-list-modal h2,.inbox-modal h2,.users-modal h2,.bookmarks-modal h2,.profile-modal h2{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:900;margin-bottom:.6rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
-.admin-search{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.35rem .6rem;font-family:"Source Serif 4",serif;font-size:.82rem;color:var(--ink);outline:none;margin-bottom:.8rem}
-.admin-search:focus{border-color:var(--theme-primary)}
-.msg-row{padding:.5rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;align-items:center;gap:.5rem}
-.msg-row:last-of-type{border-bottom:none}
-.msg-row-from{font-family:"Bebas Neue",sans-serif;font-size:.8rem;letter-spacing:.1em;color:var(--ink);transition:color .15s;white-space:nowrap}
-.msg-row:hover .msg-row-from{color:var(--theme-primary)}
-.msg-row-subject{font-size:.75rem;color:var(--muted);font-style:italic;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 .4rem}
-.msg-row-del{background:var(--theme-primary);color:#fff;border:none;cursor:pointer;font-size:.6rem;padding:.15rem .4rem;flex-shrink:0}
-.msg-detail{background:var(--cream);border:1px solid #c8bba0;padding:.8rem;margin-top:.3rem;font-size:.82rem;line-height:1.6;display:none}
-.msg-detail.open{display:block}
+.tbtn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.32rem .8rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.12em;transition:all .15s}
+.tbtn:hover{border-color:var(--tp);color:var(--tp)}
+
+/* MODALS */
+.modal-bg{position:fixed;inset:0;background:rgba(26,18,8,.65);z-index:400;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--paper);border:2px solid var(--rule);padding:2rem;width:340px;max-width:92vw;box-shadow:6px 6px 0 var(--rule)}
+.modal h2{font-family:"Playfair Display",Georgia,serif;font-size:1.3rem;font-weight:900;margin-bottom:.2rem}
+.modal p.sub{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid #c8bba0}
+.modal label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
+.modal input{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.45rem .6rem;font-family:"Source Serif 4",Georgia,serif;font-size:.9rem;color:var(--ink);outline:none;margin-bottom:.9rem}
+.modal input:focus{border-color:var(--tp)}
+.modal-err{color:var(--tp);font-size:.75rem;font-style:italic;min-height:1.1em;margin-bottom:.6rem}
+.modal-btns{display:flex;gap:.6rem}
+.btn-p{flex:1;background:var(--ink);color:var(--paper);border:none;padding:.55rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.95rem;letter-spacing:.12em}
+.btn-p:hover{background:var(--tp)}
+.btn-s{background:none;border:1px solid var(--muted);color:var(--muted);padding:.5rem .9rem;cursor:pointer;font-family:"Source Serif 4",Georgia,serif;font-size:.75rem}
+.btn-s:hover{border-color:var(--ink);color:var(--ink)}
+
+/* LARGE MODALS */
+.big-modal{background:var(--paper);border:2px solid var(--rule);padding:1.5rem;box-shadow:6px 6px 0 var(--rule);max-height:80vh;overflow-y:auto;width:480px;max-width:95vw}
+.big-modal h2{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;font-weight:900;margin-bottom:.6rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.msearch{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.35rem .6rem;font-family:"Source Serif 4",Georgia,serif;font-size:.82rem;color:var(--ink);outline:none;margin-bottom:.8rem}
+.msearch:focus{border-color:var(--tp)}
+
+/* USER ROWS */
+.urow{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid #c8bba0;flex-wrap:wrap;gap:.3rem}
+.urow span{font-size:.85rem}
+.ubadge{display:inline-block;font-size:.6rem;padding:.05rem .3rem;margin-left:.4rem;background:#1a5c2e;color:#fff;font-family:"Bebas Neue","Arial Narrow",sans-serif;letter-spacing:.08em}
+.ub{background:var(--ink);color:var(--paper);border:none;padding:.2rem .7rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.72rem}
+.ub.red{background:var(--tp)}
+.ub.green{background:#1E8449}
+.ub.dim{background:#555}
+.ub.outline{background:none;border:1px solid var(--tp);color:var(--tp)}
+
+/* MSG ROWS */
+.mrow{padding:.5rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.mrow-from{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.8rem;letter-spacing:.1em;color:var(--ink);transition:color .15s;white-space:nowrap}
+.mrow:hover .mrow-from{color:var(--tp)}
+.mrow-sub{font-size:.75rem;color:var(--muted);font-style:italic;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 .4rem}
+.mrow-del{background:var(--tp);color:#fff;border:none;cursor:pointer;font-size:.6rem;padding:.15rem .4rem;flex-shrink:0}
+.mdetail{background:var(--cream);border:1px solid #c8bba0;padding:.8rem;margin-top:.3rem;font-size:.82rem;line-height:1.6;display:none}
+.mdetail.open{display:block}
+
+/* SEND MSG MODAL */
 .send-modal{background:var(--paper);border:2px solid var(--rule);padding:2rem;width:360px;max-width:92vw;box-shadow:6px 6px 0 var(--rule)}
-.send-modal h2{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:900;margin-bottom:.2rem}
+.send-modal h2{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;font-weight:900;margin-bottom:.2rem}
 .send-modal p{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #c8bba0}
 .send-modal label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
-.send-modal input,.send-modal textarea{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",serif;font-size:.88rem;color:var(--ink);outline:none;display:block;margin-bottom:.7rem}
-.send-modal input:focus,.send-modal textarea:focus{border-color:var(--theme-primary)}
+.send-modal input,.send-modal textarea{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",Georgia,serif;font-size:.88rem;color:var(--ink);outline:none;display:block;margin-bottom:.7rem}
+.send-modal input:focus,.send-modal textarea:focus{border-color:var(--tp)}
 .send-modal textarea{resize:vertical;min-height:80px}
-.comments-section{max-width:680px;margin:1rem auto 2rem;padding:0 1.2rem}
-.comments-title{font-family:"Bebas Neue",sans-serif;font-size:.75rem;letter-spacing:.2em;color:var(--theme-primary);border-bottom:2px solid var(--theme-primary);padding-bottom:.2rem;margin-bottom:.8rem}
-.comment-row{padding:.5rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;align-items:center;gap:.5rem}
-.comment-row:last-of-type{border-bottom:none}
-.comment-row-author{font-family:"Bebas Neue",sans-serif;font-size:.78rem;letter-spacing:.1em;color:var(--ink);white-space:nowrap;transition:color .15s}
-.comment-row:hover .comment-row-author{color:var(--theme-primary)}
-.comment-row-preview{font-size:.75rem;color:var(--muted);font-style:italic;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.comment-del{background:var(--theme-primary);color:#fff;border:none;cursor:pointer;font-size:.6rem;padding:.15rem .4rem;flex-shrink:0;display:none}
-.admin-on .comment-del{display:block}
-.comment-detail{background:var(--cream);border:1px solid #c8bba0;padding:.7rem;margin-top:.3rem;font-size:.82rem;line-height:1.6;display:none}
-.comment-detail.open{display:block}
-.comment-form{margin-top:.9rem;display:flex;gap:.5rem;align-items:flex-end}
-.comment-form textarea{flex:1;background:var(--cream);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",serif;font-size:.82rem;color:var(--ink);outline:none;resize:none;height:2.6rem;transition:border-color .15s}
-.comment-form textarea:focus{border-color:var(--theme-primary)}
-.comment-form button{background:var(--ink);color:var(--paper);border:none;padding:.4rem .9rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.78rem;letter-spacing:.1em;white-space:nowrap}
-.comment-form button:hover{background:var(--theme-primary)}
-.bookmark-item{padding:.5rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-.bookmark-item:last-child{border-bottom:none}
-.bookmark-item-title{font-family:"Playfair Display",serif;font-size:.88rem;font-weight:700;transition:color .15s}
-.bookmark-item:hover .bookmark-item-title{color:var(--theme-primary)}
-.bookmark-item-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;padding:.1rem .3rem}
-.profile-section{margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid #c8bba0}
-.profile-section:last-child{border-bottom:none}
-.profile-section h3{font-family:"Bebas Neue",sans-serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted);margin-bottom:.5rem}
-.profile-item{padding:.3rem 0;font-size:.82rem;border-bottom:1px dashed #e0d8c8;cursor:pointer;transition:color .15s}
-.profile-item:hover{color:var(--theme-primary)}
-.profile-item:last-child{border-bottom:none}
-.error-bar{background:#7a1a1a;color:#f8c8c8;padding:.4rem 1.5rem;text-align:center;font-size:.75rem;font-family:"Bebas Neue",sans-serif;letter-spacing:.12em;display:flex;align-items:center;justify-content:center;gap:.8rem}
-.error-bar button{background:none;border:1px solid #f8c8c8;color:#f8c8c8;padding:.1rem .5rem;cursor:pointer;font-size:.7rem;font-family:"Bebas Neue",sans-serif}
-.sync-indicator{font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-align:center;padding:.15rem;opacity:0;transition:opacity .3s;min-height:1.2em}
-.sync-indicator.visible{opacity:1}
+
+/* CONFIRM */
+.confirm-bg{position:fixed;inset:0;background:rgba(26,18,8,.6);z-index:600;display:flex;align-items:center;justify-content:center}
+.confirm-box{background:var(--paper);border:2px solid var(--rule);padding:1.8rem;width:300px;max-width:90vw;box-shadow:5px 5px 0 var(--rule);text-align:center}
+.confirm-box p{font-family:"Playfair Display",Georgia,serif;font-size:1.05rem;margin-bottom:1.4rem;line-height:1.4}
+.confirm-btns{display:flex;gap:.8rem;justify-content:center}
+.cbtn-yes{background:var(--tp);color:#fff;border:none;padding:.5rem 1.4rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.95rem;letter-spacing:.12em}
+.cbtn-no{background:none;border:1px solid var(--muted);color:var(--muted);padding:.45rem 1rem;cursor:pointer;font-family:"Source Serif 4",Georgia,serif;font-size:.82rem}
+
+/* FILTER BAR */
+.filter-bar{max-width:1050px;margin:0 auto;padding:.6rem 1.2rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.filter-label{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.68rem;letter-spacing:.15em;color:var(--muted)}
+.filter-btn{background:none;border:1px solid #c8bba0;color:var(--ink);padding:.2rem .65rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.68rem;letter-spacing:.1em;transition:all .15s}
+.filter-btn:hover,.filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filter-btn.cat-urheilu:hover,.filter-btn.cat-urheilu.active{background:#3a7fd4;border-color:#3a7fd4;color:#fff}
+.filter-btn.cat-kulttuuri:hover,.filter-btn.cat-kulttuuri.active{background:#a855c8;border-color:#a855c8;color:#fff}
+.filter-btn.cat-koulu:hover,.filter-btn.cat-koulu.active{background:#2ea85a;border-color:#2ea85a;color:#fff}
+.filter-btn.cat-muut:hover,.filter-btn.cat-muut.active{background:#d4820a;border-color:#d4820a;color:#fff}
+.filter-search-wrap{margin-left:auto}
+.filter-search{background:var(--cream);border:1px solid #c8bba0;padding:.22rem .6rem;font-family:"Source Serif 4",Georgia,serif;font-size:.78rem;color:var(--ink);outline:none;min-width:130px}
+.filter-search:focus{border-color:var(--tp)}
+
+/* GRID */
+.container{max-width:1050px;margin:0 auto;padding:0 1.2rem}
+.grid{display:grid;grid-template-columns:1fr 2px 2fr 2px 1fr;padding:1.2rem 0}
+.divider{background:repeating-linear-gradient(to bottom,var(--rule) 0,var(--rule) 5px,transparent 5px,transparent 9px);margin:0 .7rem}
+.col{padding:0 .9rem}
+.sec-label{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tp);border-bottom:2px solid var(--tp);padding-bottom:.18rem;margin-bottom:.7rem}
+.cat-badge{display:inline-block;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.58rem;letter-spacing:.12em;padding:.08rem .4rem;margin-bottom:.3rem;color:#fff}
+.cat-urheilu{background:#3a7fd4}.cat-kulttuuri{background:#a855c8}.cat-koulu{background:#2ea85a}.cat-muut{background:#d4820a}.cat-default{background:var(--muted)}
+.pop-badge{display:inline-block;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.58rem;letter-spacing:.12em;padding:.08rem .5rem;margin-bottom:.3rem;color:#fff;background:#8B0000;border:1px solid #C0392B;animation:ppulse 2s ease-in-out infinite}
+@keyframes ppulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* CARDS */
+.card{margin-bottom:1.1rem;padding-bottom:.9rem;border-bottom:1px dashed #b0a090;position:relative;cursor:pointer}
+.card:last-child{border-bottom:none}
+.card h3{font-family:"Playfair Display",Georgia,serif;font-size:.95rem;font-weight:700;line-height:1.2;margin-bottom:.2rem;transition:color .15s}
+.card.lead h2{font-family:"Playfair Display",Georgia,serif;font-size:clamp(1.3rem,2.3vw,1.9rem);font-weight:900;line-height:1.1;margin-bottom:.35rem;transition:color .15s}
+.card:hover h2,.card:hover h3{color:var(--tp)}
+.card .excerpt{font-size:.78rem;color:#3d3020;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.byline{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.25rem}
+.hint{font-size:.65rem;color:var(--tp);text-transform:uppercase;letter-spacing:.1em;margin-top:.35rem;display:inline-block}
+.card-meta{display:flex;gap:.8rem;align-items:center;margin-top:.25rem}
+.views,.readtime{font-size:.6rem;color:var(--muted);letter-spacing:.06em}
+.like-btn{background:none;border:none;cursor:pointer;font-size:.72rem;color:var(--muted);padding:0;transition:color .15s}
+.like-btn:hover,.like-btn.liked{color:var(--tp)}
+.card-thumb{width:100%;max-height:140px;object-fit:cover;margin-bottom:.5rem;display:block}
+.del-btn{background:var(--tp);color:#fff;border:none;cursor:pointer;font-size:.65rem;padding:.2rem .5rem;position:absolute;top:0;right:0;display:none}
+.edit-btn{background:var(--ink);color:#fff;border:none;cursor:pointer;font-size:.65rem;padding:.2rem .5rem;position:absolute;top:0;right:3.2rem;display:none;font-family:"Bebas Neue","Arial Narrow",sans-serif;letter-spacing:.08em}
+.bookmark-btn{background:none;border:none;cursor:pointer;font-size:.75rem;position:absolute;top:0;right:1.8rem;color:var(--muted);padding:.1rem .2rem;display:none;transition:color .15s}
+.bookmark-btn:hover,.bookmark-btn.bookmarked{color:var(--tp)}
+.admin-on .del-btn,.admin-on .edit-btn{display:block}
+.admin-on .bookmark-btn{display:block;right:5rem}
+.logged-in .bookmark-btn{display:block}
+.empty{font-style:italic;font-size:.78rem;color:#b0a090;text-align:center;padding:1.5rem .5rem;border:1px dashed #c8bba0}
+.divh{border:none;border-top:2px solid var(--rule);margin:1rem 0}
 .skeleton{background:linear-gradient(90deg,#e8e0d0 25%,#f0e8d8 50%,#e8e0d0 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:2px;display:block;margin-bottom:.5rem}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ARTICLE */
+.art-wrap{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 2rem}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);cursor:pointer;border:none;background:none;padding:.4rem 0;margin-bottom:1.8rem;border-bottom:1px solid transparent;transition:color .15s,border-color .15s}
+.back-btn:hover{color:var(--tp);border-bottom-color:var(--tp)}
+.art-badge{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.68rem;letter-spacing:.2em;color:#fff;padding:.18rem .6rem;display:inline-block;margin-bottom:.9rem}
+.art-title{font-family:"Playfair Display",Georgia,serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:900;line-height:1.05;margin-bottom:.9rem}
+.art-byline{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding-bottom:1rem;margin-bottom:1.5rem;border-bottom:2px solid var(--rule);display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.art-like-btn,.art-bm-btn,.art-edit-btn{background:none;border:1px solid var(--muted);color:var(--muted);padding:.2rem .6rem;cursor:pointer;font-size:.7rem;transition:all .15s}
+.art-like-btn:hover,.art-like-btn.liked,.art-bm-btn:hover,.art-bm-btn.bookmarked{background:var(--tp);border-color:var(--tp);color:#fff}
+.art-edit-btn{display:none;font-family:"Bebas Neue","Arial Narrow",sans-serif;letter-spacing:.1em}
+.art-edit-btn:hover{background:var(--tp);border-color:var(--tp);color:#fff}
+.admin-on .art-edit-btn{display:inline-block}
+.art-bm-btn{display:none}
+.logged-in .art-bm-btn,.admin-on .art-bm-btn{display:inline-block}
+.art-hero{width:100%;max-height:420px;object-fit:cover;margin-bottom:1.5rem;display:block}
+.art-hero-video{width:100%;max-height:420px;margin-bottom:1.5rem;display:block;background:#000}
+.art-body{font-size:1rem;line-height:1.82;color:#2c2416;hyphens:auto}
+.art-body p{margin-bottom:1.2em}
+.art-body p:first-child::first-letter{font-family:"Playfair Display",Georgia,serif;font-size:3.5em;font-weight:900;float:left;line-height:.75;margin:.05em .1em 0 0;color:var(--tp)}
+.art-end{border:none;border-top:3px double var(--rule);margin:2rem 0 1.2rem}
+.art-del-btn{background:var(--tp);color:#fff;border:none;font-size:.78rem;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;letter-spacing:.1em;display:none}
+.admin-on .art-del-btn{display:inline-block}
+.related-section{max-width:680px;margin:0 auto 2rem;padding:0 1.2rem}
+.related-title{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.75rem;letter-spacing:.2em;color:var(--muted);border-bottom:1px solid #c8bba0;padding-bottom:.2rem;margin-bottom:.7rem}
+.related-item{padding:.4rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;font-family:"Playfair Display",Georgia,serif;font-size:.88rem;font-weight:700;transition:color .15s}
+.related-item:last-child{border-bottom:none}
+.related-item:hover{color:var(--tp)}
+
+/* EDITOR */
+.add-btn{display:none;margin:1.2rem auto 0;background:var(--ink);color:var(--paper);border:none;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.95rem;letter-spacing:.15em;padding:.55rem 1.8rem;transition:background .2s}
+.admin-on .add-btn,.logged-in .add-btn{display:block}
+.add-btn:hover{background:var(--tp)}
+.editor{display:none;background:var(--cream);border-top:3px double var(--rule);border-bottom:3px double var(--rule);padding:1.3rem 1.5rem}
+.editor.open{display:block}
+.editor h2{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;margin-bottom:.9rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.3rem}
+.fields .fw{grid-column:1/-1}
+.fields label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
+.fields input,.fields select,.fields textarea{width:100%;background:var(--paper);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",Georgia,serif;font-size:.85rem;color:var(--ink);outline:none;transition:border-color .15s}
+.fields input:focus,.fields select:focus,.fields textarea:focus{border-color:var(--tp)}
+.fields textarea{resize:vertical;min-height:110px}
+.media-area{grid-column:1/-1;border:2px dashed #b0a090;padding:1rem;text-align:center;transition:border-color .2s}
+.media-area:hover{border-color:var(--tp)}
+.media-area p{font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
+.media-area input[type=file]{cursor:pointer;font-family:"Source Serif 4",Georgia,serif;font-size:.78rem;color:var(--muted)}
+.ea{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
+.pub-btns{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+.btn-direct{background:#1a5c2e;color:#fff;border:none;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.9rem;letter-spacing:.1em}
+.btn-direct:hover{background:#0f3d1e}
+.btn-via{background:var(--ink);color:var(--paper);border:none;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.9rem;letter-spacing:.1em}
+.btn-via:hover{background:var(--tp)}
+
+/* COMMENTS */
+.comments-section{max-width:680px;margin:1rem auto 2rem;padding:0 1.2rem}
+.comments-title{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.75rem;letter-spacing:.2em;color:var(--tp);border-bottom:2px solid var(--tp);padding-bottom:.2rem;margin-bottom:.8rem}
+.crow{padding:.5rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.crow-author{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.1em;color:var(--ink);white-space:nowrap;transition:color .15s}
+.crow:hover .crow-author{color:var(--tp)}
+.crow-preview{font-size:.75rem;color:var(--muted);font-style:italic;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdel{background:var(--tp);color:#fff;border:none;cursor:pointer;font-size:.6rem;padding:.15rem .4rem;flex-shrink:0;display:none}
+.admin-on .cdel{display:block}
+.cdetail{background:var(--cream);border:1px solid #c8bba0;padding:.7rem;margin-top:.3rem;font-size:.82rem;line-height:1.6;display:none}
+.cdetail.open{display:block}
+.comment-form{margin-top:.9rem;display:flex;gap:.5rem;align-items:flex-end}
+.comment-form textarea{flex:1;background:var(--cream);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",Georgia,serif;font-size:.82rem;color:var(--ink);outline:none;resize:none;height:2.6rem;transition:border-color .15s}
+.comment-form textarea:focus{border-color:var(--tp)}
+.comment-form button{background:var(--ink);color:var(--paper);border:none;padding:.4rem .9rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.1em;white-space:nowrap}
+.comment-form button:hover{background:var(--tp)}
+
+/* BOOKMARKS / PROFILE */
+.bm-item{padding:.5rem 0;border-bottom:1px dashed #c8bba0;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.bm-item:last-child{border-bottom:none}
+.bm-item-title{font-family:"Playfair Display",Georgia,serif;font-size:.88rem;font-weight:700;transition:color .15s}
+.bm-item:hover .bm-item-title{color:var(--tp)}
+.bm-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.7rem;padding:.1rem .3rem}
+.ps{margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid #c8bba0}
+.ps:last-child{border-bottom:none}
+.ps h3{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.72rem;letter-spacing:.18em;color:var(--muted);margin-bottom:.5rem}
+.pi{padding:.3rem 0;font-size:.82rem;border-bottom:1px dashed #e0d8c8;cursor:pointer;transition:color .15s}
+.pi:hover{color:var(--tp)}
+.pi:last-child{border-bottom:none}
+
+/* MISC */
+.err-bar{background:#7a1a1a;color:#f8c8c8;padding:.4rem 1.5rem;text-align:center;font-size:.75rem;font-family:"Bebas Neue","Arial Narrow",sans-serif;letter-spacing:.12em;display:flex;align-items:center;justify-content:center;gap:.8rem}
+.err-bar button{background:none;border:1px solid #f8c8c8;color:#f8c8c8;padding:.1rem .5rem;cursor:pointer;font-size:.7rem;font-family:"Bebas Neue","Arial Narrow",sans-serif}
+.notif{font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-align:center;padding:.15rem;opacity:0;transition:opacity .3s;min-height:1.2em}
+.notif.show{opacity:1}
+.theme-btn{background:none;border:2px solid currentColor;padding:.2rem .7rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.72rem;letter-spacing:.1em;transition:all .2s}
+.tbr{color:#C0392B;border-color:#C0392B}.tbr:hover,.tbr.act{background:#C0392B;color:#fff}
+.tbb{color:#2980B9;border-color:#2980B9}.tbb:hover,.tbb.act{background:#2980B9;color:#fff}
+.tbg{color:#1E8449;border-color:#1E8449}.tbg:hover,.tbg.act{background:#1E8449;color:#fff}
 footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.58rem;color:var(--muted);letter-spacing:.06em}
-
-/* ===== LOADING SCREEN ===== */
-.loading-screen{position:fixed;inset:0;background:var(--paper);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .5s ease;overflow:hidden}
-.loading-screen.fade-out{opacity:0;pointer-events:none}
-.loading-logo{font-family:"Playfair Display",serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:900;line-height:.9;text-align:center;opacity:0;animation:logoReveal .5s ease 1.2s forwards;}
-@keyframes logoReveal{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-.loading-logo em{font-style:italic;color:var(--theme-primary)}
-.loading-rule{display:flex;align-items:center;gap:.8rem;width:min(300px,80vw);opacity:0;animation:logoReveal .5s ease 1.4s forwards;}
-.loading-rule::before,.loading-rule::after{content:"";flex:1;height:1px;background:var(--rule)}
-.loading-rule span{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-.loading-bar{width:min(200px,60vw);height:2px;background:#ddd;overflow:hidden;opacity:0;animation:logoReveal .3s ease 1.1s forwards;}
-.loading-bar-inner{height:100%;background:var(--theme-primary);width:0%;transition:width .05s linear}
-.loading-bar-inner.go{width:100%;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
-
-/* Laser beams on loading screen */
-.loading-laser{position:absolute;top:0;left:-120%;width:40%;height:100%;opacity:0;}
-.loading-laser.beam1{background:linear-gradient(90deg,transparent,rgba(192,57,43,0.25),rgba(255,200,180,0.6),rgba(255,255,255,0.8),rgba(255,200,180,0.6),rgba(192,57,43,0.25),transparent);animation:loadLaser1 0.6s ease-out 0.05s forwards;}
-.loading-laser.beam2{background:linear-gradient(90deg,transparent,rgba(150,30,20,0.15),rgba(220,150,130,0.45),rgba(255,230,220,0.65),rgba(220,150,130,0.45),rgba(150,30,20,0.15),transparent);animation:loadLaser1 0.6s ease-out 0.2s forwards;}
-.loading-laser.beam3{background:linear-gradient(90deg,transparent,rgba(192,57,43,0.1),rgba(255,180,160,0.35),rgba(255,255,255,0.55),rgba(255,180,160,0.35),rgba(192,57,43,0.1),transparent);animation:loadLaser1 0.6s ease-out 0.38s forwards;}
-@keyframes loadLaser1{0%{left:-120%;opacity:1}100%{left:200%;opacity:1}}
-
-/* Värivaihtonapit pääkäyttäjälle */
-.theme-btn{background:none;border:2px solid currentColor;padding:.2rem .7rem;cursor:pointer;font-family:"Bebas Neue",sans-serif;font-size:.72rem;letter-spacing:.1em;transition:all .2s}
-.theme-btn-red{color:#C0392B;border-color:#C0392B}.theme-btn-red:hover,.theme-btn-red.active{background:#C0392B;color:#fff}
-.theme-btn-blue{color:#2980B9;border-color:#2980B9}.theme-btn-blue:hover,.theme-btn-blue.active{background:#2980B9;color:#fff}
-.theme-btn-green{color:#1E8449;border-color:#1E8449}.theme-btn-green:hover,.theme-btn-green.active{background:#1E8449;color:#fff}
-
-/* Käyttäjärivin julkaisulupamerkintä */
-.perm-badge{display:inline-block;font-size:.6rem;padding:.05rem .3rem;margin-left:.4rem;background:#1a5c2e;color:#fff;font-family:"Bebas Neue",sans-serif;letter-spacing:.08em}
-
-@media(max-width:650px){.grid{grid-template-columns:1fr}.divider{display:none}.col{padding:.4rem 0;border-bottom:1px dashed #b0a090}.masthead{flex-direction:column;gap:.2rem}.fields{grid-template-columns:1fr}footer{flex-direction:column;gap:.2rem;text-align:center}.top-bar{gap:.5rem}.filter-bar{gap:.3rem}}
+@media(max-width:650px){
+  .grid{grid-template-columns:1fr}
+  .divider{display:none}
+  .col{padding:.4rem 0;border-bottom:1px dashed #b0a090}
+  .masthead{flex-direction:column;gap:.2rem}
+  .fields{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:.2rem;text-align:center}
+  .top-bar{gap:.5rem}
+  .filter-bar{gap:.3rem}
+}
 </style>
 </head>
 <body>
-<div id="loading-screen" class="loading-screen">
-  <div class="loading-laser beam1"></div>
-  <div class="loading-laser beam2"></div>
-  <div class="loading-laser beam3"></div>
-  <div class="loading-logo">Martsan <em>Uutiset</em></div>
-  <div class="loading-rule"><span>ladataan</span></div>
-  <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+<div id="ls" class="ls">
+  <div class="llas b1"></div>
+  <div class="llas b2"></div>
+  <div class="llas b3"></div>
+  <div class="ll">Martsan <em>Uutiset</em></div>
+  <div class="lr"><span>ladataan</span></div>
+  <div class="lb"><div class="lbi" id="lbi"></div></div>
 </div>
 <div id="app"></div>
 <script>
-var ADMIN_USER="martsa",ADMIN_PASS="weekly2026";
-var SUPABASE_URL="https://jjtlhmbfrjtapksynyit.supabase.co";
-var SUPABASE_KEY="sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC";
-var SB={"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY};
+"use strict";
+// ===== VAKIOT =====
+var AU="martsa", AP="weekly2026";
 var CATS=["Urheilu","Kulttuuri","Koulu","Muut"];
-var CAT_CLS={"Urheilu":"cat-urheilu","Kulttuuri":"cat-kulttuuri","Koulu":"cat-koulu","Muut":"cat-muut"};
-var POPULAR_THRESHOLD=300; // klikit joilla merkitään suosituksi
+var CCL={Urheilu:"cat-urheilu",Kulttuuri:"cat-kulttuuri",Koulu:"cat-koulu",Muut:"cat-muut"};
+var POP=300;
+var THEMES={red:{p:"#c0392b",s:"#922b21"},blue:{p:"#2980B9",s:"#1a5276"},green:{p:"#1E8449",s:"#145a32"}};
 
-// Sivun väritema: red/blue/green
+// ===== TILA =====
+var articles=[], nextId=1, admin=false, loggedIn=false, cu="";
+var page="front", openId=null, editId=null;
+var showLogin=false, loginErr="", showReg=false, regErr="";
+var showEditor=false, showMod=false, showInbox=false, showMsgs=false;
+var showSend=false, showBm=false, showLang=false, showProf=false;
+var openMsg=null, openCmt={};
+var fCat="", fSearch="", msgSearch="", uSearch="";
+var confirmP=null, tapN=0, tapT=null, dataLoaded=false;
+var syncT=null, errMsg="", lang="fi";
+var pendMedia=[];
 var siteTheme="red";
-var THEME_COLORS={
-  red:  {primary:"#c0392b",secondary:"#922b21"},
-  blue: {primary:"#2980B9",secondary:"#1a5276"},
-  green:{primary:"#1E8449",secondary:"#145a32"}
+var sessStart=null;
+
+// ===== KIELET =====
+var L={
+  fi:{all:"Kaikki",news:"Uutiset",main:"P\u00e4\u00e4uutinen",more:"Lis\u00e4\u00e4",read:"Lue artikkeli",back:"Takaisin",login:"Kirjaudu",logout:"Kirjaudu ulos",reg:"Luo tunnus",send:"L\u00e4het\u00e4",cancel:"Peruuta",pub:"Julkaise",filter:"Suodata:",search:"Hae uutisia\u2026",bm:"Kirjanmerkit",msg:"Viesti toimitukselle",saved:"Tallennettu",save:"Tallenna",cmts:"Kommentit",noArt:"Ei artikkeleita viel\u00e4.",noRes:"Ei tuloksia.",founded:"Perustettu",tagline:"\u201eKaikki mit\u00e4 sinun tarvitsee tiet\u00e4\u00e4 \u2014 ja hieman enemm\u00e4n\u201d",motto:"Viikon t\u00e4rkeimm\u00e4t uutiset \u2014 Totuus ennen kaikkea",install:"Asenna",loginErr:"V\u00e4\u00e4r\u00e4 k\u00e4ytt\u00e4j\u00e4tunnus tai salasana.",welcome:"Tervetuloa Martsan Uutisiin",approved:"Artikkeli l\u00e4hetetty tarkastettavaksi!",art1:"artikkeli julkaistu",artN:"artikkelia julkaistu",edit:"Muokkaa",prof:"Profiili",related:"Aiheeseen liittyv\u00e4\u00e4",rt:"min lukuaika",like:"Tykk\u00e4\u00e4",liked:"Tyk\u00e4tty",media:"Lis\u00e4\u00e4 kuvia tai videoita",pdirect:"Julkaise suoraan",pvia:"Julkaise p\u00e4\u00e4k\u00e4ytt\u00e4jien kautta"},
+  en:{all:"All",news:"News",main:"Main Story",more:"More",read:"Read article",back:"Back",login:"Log in",logout:"Log out",reg:"Register",send:"Send",cancel:"Cancel",pub:"Publish",filter:"Filter:",search:"Search\u2026",bm:"Bookmarks",msg:"Message editors",saved:"Saved",save:"Save",cmts:"Comments",noArt:"No articles yet.",noRes:"No results.",founded:"Founded",tagline:"\"Everything you need to know\"",motto:"Truth above all",install:"Install",loginErr:"Wrong username or password.",welcome:"Welcome",approved:"Sent for review!",art1:"article published",artN:"articles published",edit:"Edit",prof:"Profile",related:"Related articles",rt:"min read",like:"Like",liked:"Liked",media:"Add images or videos",pdirect:"Publish directly",pvia:"Send via admin"},
+  sv:{all:"Alla",news:"Nyheter",main:"Huvudnyhet",more:"Mer",read:"L\u00e4s artikel",back:"Tillbaka",login:"Logga in",logout:"Logga ut",reg:"Skapa konto",send:"Skicka",cancel:"Avbryt",pub:"Publicera",filter:"Filtrera:",search:"S\u00f6k\u2026",bm:"Bokhyllm\u00e4rken",msg:"Meddelande",saved:"Sparad",save:"Spara",cmts:"Kommentarer",noArt:"Inga artiklar.",noRes:"Inga resultat.",founded:"Grundad",tagline:"\"Allt du beh\u00f6ver veta\"",motto:"Sanningen f\u00f6rst",install:"Installera",loginErr:"Fel l\u00f6senord.",welcome:"V\u00e4lkommen",approved:"Skickad!",art1:"artikel",artN:"artiklar",edit:"Redigera",prof:"Profil",related:"Relaterade artiklar",rt:"min l\u00e4sning",like:"Gilla",liked:"Gillad",media:"L\u00e4gg till bilder eller videor",pdirect:"Publicera direkt",pvia:"Skicka via admin"}
 };
+function T(k){return(L[lang]&&L[lang][k])||L.fi[k]||k;}
 
-// Istunnon aloitusaika (kirjautumishetki)
-var sessionStartTime=null;
-var colorCycleInterval=null;
+// ===== PAIKALLINEN DATA =====
+function getUsers(){try{return JSON.parse(localStorage.getItem("mu_u")||"[]");}catch(e){return[];}}
+function saveUsers(u){try{localStorage.setItem("mu_u",JSON.stringify(u));}catch(e){}}
+function getArticles(){try{return JSON.parse(localStorage.getItem("mu_arts")||"[]");}catch(e){return[];}}
+function saveArticles(a){try{localStorage.setItem("mu_arts",JSON.stringify(a));}catch(e){}}
+function getPending(){try{return JSON.parse(localStorage.getItem("mu_pend")||"[]");}catch(e){return[];}}
+function savePending(p){try{localStorage.setItem("mu_pend",JSON.stringify(p));}catch(e){}}
+function getMessages(){try{return JSON.parse(localStorage.getItem("mu_msgs")||"[]");}catch(e){return[];}}
+function saveMessages(m){try{localStorage.setItem("mu_msgs",JSON.stringify(m));}catch(e){}}
+function getComments(){try{return JSON.parse(localStorage.getItem("mu_cmts")||"[]");}catch(e){return[];}}
+function saveComments(c){try{localStorage.setItem("mu_cmts",JSON.stringify(c));}catch(e){}}
+function getViews(){try{return JSON.parse(localStorage.getItem("mu_views")||"{}"); }catch(e){return {};}}
+function saveViews(v){try{localStorage.setItem("mu_views",JSON.stringify(v));}catch(e){}}
+function getLikes(){try{return JSON.parse(localStorage.getItem("mu_likes")||"[]");}catch(e){return[];}}
+function saveLikes(l){try{localStorage.setItem("mu_likes",JSON.stringify(l));}catch(e){}}
+function getBm(){try{return JSON.parse(localStorage.getItem("mu_bm_"+(cu||"g"))||"[]");}catch(e){return[];}}
+function saveBm(b){try{localStorage.setItem("mu_bm_"+(cu||"g"),JSON.stringify(b));}catch(e){}}
+function getNextId(){var n=parseInt(localStorage.getItem("mu_nid")||"1");localStorage.setItem("mu_nid",n+1);return n;}
 
-var LANGS={fi:{all:"Kaikki",news:"Uutiset",main:"Päiuutinen",more:"Lisää",readMore:"Lue artikkeli",back:"Takaisin",login:"Kirjaudu",logout:"Kirjaudu ulos",register:"Luo tunnus",send:"Lähetä",cancel:"Peruuta",publish:"Julkaise",filter:"Suodata:",search:"Hae uutisia…",bookmarks:"Kirjanmerkit",msgTo:"Viesti toimitukselle",saved:"Tallennettu",save:"Tallenna",comments:"Kommentit",noArticles:"Ei artikkeleita vielä.",noResults:"Ei tuloksia.",founded:"Perustettu",tagline:"„Kaikki mitä sinun tarvitsee tietää — ja hieman enemmän"",motto:"Viikon tärkeimmät uutiset — Totuus ennen kaikkea",install:"Asenna",loginErr:"Väärä käyttäjätunnus tai salasana.",welcome:"Tervetuloa Martsan Uutisiin",approved:"Artikkeli lähetetty tarkastettavaksi!",art1:"artikkeli julkaistu",artN:"artikkelia julkaistu",edit:"Muokkaa",profile:"Profiili",related:"Aiheeseen liittyvää",readtime:"min lukuaika",like:"Tykkää",liked:"Tykätty",addMedia:"Lisää kuvia tai videoita",publishDirect:"Julkaise suoraan",publishVia:"Julkaise pääkäyttäjien kautta"},
-en:{all:"All",news:"News",main:"Main Story",more:"More",readMore:"Read article",back:"Back",login:"Log in",logout:"Log out",register:"Register",send:"Send",cancel:"Cancel",publish:"Publish",filter:"Filter:",search:"Search…",bookmarks:"Bookmarks",msgTo:"Message editors",saved:"Saved",save:"Save",comments:"Comments",noArticles:"No articles yet.",noResults:"No results.",founded:"Founded",tagline:"\"Everything you need to know — and a little more\"",motto:"Week's top news — Truth above all",install:"Install",loginErr:"Wrong username or password.",welcome:"Welcome",approved:"Article sent for review!",art1:"article published",artN:"articles published",edit:"Edit",profile:"Profile",related:"Related articles",readtime:"min read",like:"Like",liked:"Liked",addMedia:"Add images or videos",publishDirect:"Publish directly",publishVia:"Send via admin"},
-sv:{all:"Alla",news:"Nyheter",main:"Huvudnyhet",more:"Mer",readMore:"Läs artikel",back:"Tillbaka",login:"Logga in",logout:"Logga ut",register:"Skapa konto",send:"Skicka",cancel:"Avbryt",publish:"Publicera",filter:"Filtrera:",search:"Sök…",bookmarks:"Bokhyllmärken",msgTo:"Meddelande",saved:"Sparad",save:"Spara",comments:"Kommentarer",noArticles:"Inga artiklar.",noResults:"Inga resultat.",founded:"Grundad",tagline:"\"Allt du behöver veta\"",motto:"Sanningen först",install:"Installera",loginErr:"Fel lösenord.",welcome:"Välkommen",approved:"Skickad!",art1:"artikel",artN:"artiklar",edit:"Redigera",profile:"Profil",related:"Relaterade artiklar",readtime:"min läsning",like:"Gilla",liked:"Gillad",addMedia:"Lägg till bilder eller videor",publishDirect:"Publicera direkt",publishVia:"Skicka via admin"}};
-
-var articles=[],nextId=1,admin=false,loggedIn=false,currentUser="";
-var page="front",openId=null,editId=null;
-var showLogin=false,loginErr="",showRegister=false,regErr="";
-var showEditor=false,showModPanel=false,showInbox=false,showMsgList=false,showSendMsg=false,showBookmarks=false,showLangMenu=false,showProfile=false;
-var openMsgId=null,openCommentIds={};
-var filterCat="",filterSearch="",msgSearch="",userSearch="";
-var confirmPending=null,tapCount=0,tapTimer=null,deferredPrompt=null,dataLoaded=false;
-var syncTimer=null,errorMsg="",lang="fi";
-var pendingMedia=[];
-
-// Käyttäjien tallennus paikallisesti (ei tarvita Supabasea peruskäyttäjille)
-function getUsers(){
-  try{return JSON.parse(localStorage.getItem("mu_users")||"[]");}catch(e){return[];}
-}
-function saveUsers(u){
-  try{localStorage.setItem("mu_users",JSON.stringify(u));}catch(e){}
-  save();
-}
-
-window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredPrompt=e;});
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
-
-function T(k){return(LANGS[lang]&&LANGS[lang][k])||LANGS.fi[k]||k;}
-function isMod(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.moderator===true;}
-function hasDirectPublish(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.canPublishDirect===true;}
-function canSeeMsgs(){return admin||isMod(currentUser);}
+// ===== APUFUNKTIOT =====
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function dateFI(){return new Date().toLocaleDateString("fi-FI",{weekday:"long",year:"numeric",month:"long",day:"numeric"});}
 function todayFI(){return new Date().toLocaleDateString("fi-FI");}
-function getCatCls(s){if(!s)return "cat-default";var k=CATS.find(function(c){return c.toLowerCase()===s.toLowerCase();});return k?CAT_CLS[k]:"cat-default";}
-function readTime(body){return Math.max(1,Math.round((body||"").split(/\s+/).length/200));}
-function getLikes(){try{return JSON.parse(localStorage.getItem("mu_likes")||"[]");}catch(e){return[];}}
+function getCls(s){if(!s)return"cat-default";var k=CATS.find(function(c){return c.toLowerCase()===s.toLowerCase();});return k?CCL[k]:"cat-default";}
+function rt(b){return Math.max(1,Math.round((b||"").split(/\s+/).length/200));}
 function isLiked(id){return getLikes().indexOf(id)!==-1;}
+function isBm(id){return getBm().indexOf(id)!==-1;}
+function isMod(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.moderator===true;}
+function canDirect(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.direct===true;}
+function canMsg2(){return admin||isMod(cu);}
+function viewCount(id){return getViews()[id]||0;}
+function isPopular(id){return viewCount(id)>=POP;}
+function checkSess(){if(!sessStart||!loggedIn)return false;return(Date.now()-sessStart)/3600000>=5;}
 
 function applyTheme(t){
   siteTheme=t||"red";
-  var c=THEME_COLORS[siteTheme]||THEME_COLORS.red;
-  document.documentElement.style.setProperty("--theme-primary",c.primary);
-  document.documentElement.style.setProperty("--theme-secondary",c.secondary);
-  document.documentElement.style.setProperty("--red",c.primary);
+  var c=THEMES[siteTheme]||THEMES.red;
+  document.documentElement.style.setProperty("--tp",c.p);
+  document.documentElement.style.setProperty("--red",c.p);
   try{localStorage.setItem("mu_theme",siteTheme);}catch(e){}
 }
-
-function getViewCount(id){
-  try{
-    var vd=JSON.parse(localStorage.getItem("mu_views")||"{}");
-    return vd[id]||0;
-  }catch(e){return 0;}
-}
-function isPopular(id){return getViewCount(id)>=POPULAR_THRESHOLD;}
-
-function toggleLike(id){
-  var ls=getLikes(),i=ls.indexOf(id);
-  if(i===-1){ls.push(id);}else{ls.splice(i,1);}
-  try{localStorage.setItem("mu_likes",JSON.stringify(ls));}catch(e){}
-  window._likes=window._likes||{};
-  if(i===-1){window._likes[id]=(window._likes[id]||0)+1;}
-  else{window._likes[id]=Math.max(0,(window._likes[id]||1)-1);}
-  save();render();
-}
-function getBookmarks(){try{return JSON.parse(localStorage.getItem("mu_bm_"+(currentUser||"guest"))||"[]");}catch(e){return[];}}
-function setBookmarks(bms){try{localStorage.setItem("mu_bm_"+(currentUser||"guest"),JSON.stringify(bms));}catch(e){}}
-function isBookmarked(id){return getBookmarks().indexOf(id)!==-1;}
-function toggleBookmark(id){var bms=getBookmarks(),i=bms.indexOf(id);if(i===-1)bms.push(id);else bms.splice(i,1);setBookmarks(bms);render();}
-function doInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}else{var s=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);alert(s?"Safarilla: paina jakamispainike → Lisää Koti-valikkoon.":"Avaa Chrome, osoitepalkin oikeassa reunassa on asennuskuvake.");}}
-function showNotif(msg){var el=document.getElementById("sync-ind");if(el){el.textContent=msg;el.classList.add("visible");setTimeout(function(){el.classList.remove("visible");},3500);}}
-function startAutoRefresh(){if(syncTimer)clearInterval(syncTimer);syncTimer=setInterval(silentRefresh,30000);}
-function silentRefresh(){
-  fetch(SUPABASE_URL+"/rest/v1/articles?select=*&order=id.asc",{headers:SB})
-    .then(function(r){return r.json();})
-    .then(function(rows){
-      if(!rows||rows.error)return;
-      var na=rows.map(sbToArt);
-      var changed=JSON.stringify(na)!==JSON.stringify(articles);
-      articles=na;
-      if(changed){showNotif("↻ Päivitetty "+new Date().toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"}));render();}
-    }).catch(function(){});
-}
-
-// Tarkistaa onko käyttäjä ollut sisäänkirjautuneena yli 5 tuntia
-function checkSessionTime(){
-  if(!sessionStartTime||!loggedIn)return false;
-  var elapsed=(Date.now()-sessionStartTime)/1000/60/60; // tunnit
-  return elapsed>=5;
-}
+function showNotif(m){var el=document.getElementById("notif");if(el){el.textContent=m;el.classList.add("show");setTimeout(function(){el.classList.remove("show");},3000);}}
+function trackView(id){var v=getViews();v[id]=(v[id]||0)+1;saveViews(v);}
+function toggleLike(id){var l=getLikes(),i=l.indexOf(id);if(i===-1)l.push(id);else l.splice(i,1);saveLikes(l);render();}
+function toggleBm(id){var b=getBm(),i=b.indexOf(id);if(i===-1)b.push(id);else b.splice(i,1);saveBm(b);render();}
 
 function buildMediaHtml(media){
-  if(!media||!media.length)return "";
+  if(!media||!media.length)return"";
   return media.map(function(m){
-    if(m.type==="video"){
-      return "<video class=\"art-hero-video\" controls><source src=\""+m.url+"\"></video>";
-    } else {
-      return "<img class=\"art-hero\" src=\""+m.url+"\" alt=\"\"/>";
-    }
+    return m.type==="video"
+      ?"<video class='art-hero-video' controls><source src='"+m.url+"'></video>"
+      :"<img class='art-hero' src='"+m.url+"' alt=''/>";
   }).join("");
 }
-
 function buildThumb(media){
-  if(!media||!media.length)return "";
+  if(!media||!media.length)return"";
   var img=media.find(function(m){return m.type==="image";});
-  if(!img)return "";
-  return "<img class=\"card-thumb\" src=\""+img.url+"\" alt=\"\"/>";
+  return img?"<img class='card-thumb' src='"+img.url+"' alt=''/>":"";
 }
 
-function buildComments(aid){
-  var all=(window._comments||[]).filter(function(c){return c.articleId===aid;});
-  var rows=all.map(function(c){var op=openCommentIds[c.id];return "<div><div class=\"comment-row\" id=\"crow-"+c.id+"\"><span class=\"comment-row-author\">"+esc(c.author)+"</span><span class=\"comment-row-preview\">"+esc(c.text.substring(0,50))+(c.text.length>50?"…":"")+"</span><button class=\"comment-del\" id=\"cdel-"+c.id+"\">✕</button></div><div class=\"comment-detail"+(op?" open":"")+"\">"+esc(c.text)+"<div style=\"font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em\">"+esc(c.author)+" · "+esc(c.date)+"</div></div></div>";}).join("");
-  var form=loggedIn?"<div class=\"comment-form\"><textarea id=\"comment-input\" placeholder=\""+T("comments")+"...\"></textarea><button id=\"comment-submit\" data-artid=\""+aid+"\">"+T("send")+"</button></div>":"<p style=\"font-size:.72rem;color:var(--muted);font-style:italic;margin-top:.6rem\">Kirjaudu sisään kommentoidaksesi.</p>";
-  return "<div class=\"comments-section\"><div class=\"comments-title\">"+T("comments")+" ("+all.length+")</div>"+rows+form+"</div>";
-}
-function buildRelated(a){
-  if(!a.section)return "";
-  var related=articles.filter(function(x){return x.id!==a.id&&x.section===a.section;}).slice(0,3);
-  if(!related.length)return "";
-  var items=related.map(function(x){return "<div class=\"related-item\" id=\"rel-"+x.id+"\">"+esc(x.title)+"</div>";}).join("");
-  return "<div class=\"related-section\"><div class=\"related-title\">"+T("related")+"</div>"+items+"</div>";
-}
-function restoreFocus(id,val){var el=document.getElementById(id);if(el){el.focus();try{el.setSelectionRange(val.length,val.length);}catch(e){}}}
-
-function updateMediaPreview(){
-  var prev=document.getElementById("media-preview-wrap");
-  if(!prev)return;
-  if(!pendingMedia.length){prev.innerHTML="";return;}
-  prev.innerHTML=pendingMedia.map(function(m,i){
-    var thumb=m.type==="video"
-      ?"<video style=\"height:80px;width:auto\" controls><source src=\""+m.url+"\"></video>"
-      :"<img src=\""+m.url+"\" style=\"height:80px;width:auto;object-fit:cover\">";
-    return "<div style=\"position:relative;display:inline-block;margin:.2rem\">"+thumb
-      +"<button onclick=\"pendingMedia.splice("+i+",1);updateMediaPreview()\" style=\"position:absolute;top:-6px;right:-6px;background:var(--theme-primary);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:.6rem\">✕</button></div>";
-  }).join("");
+// ===== RENDERÖINTI =====
+function renderCol(col){
+  var list=articles
+    .filter(function(a){return a.col===col;})
+    .filter(function(a){return !fCat||(a.sec||"")===fCat;})
+    .filter(function(a){
+      if(!fSearch)return true;
+      var q=fSearch.toLowerCase();
+      return(a.title||"").toLowerCase().includes(q)||(a.body||"").toLowerCase().includes(q)||(a.author||"").toLowerCase().includes(q);
+    });
+  if(!list.length&&!dataLoaded)return "<div class='skeleton' style='height:1.4rem;width:75%'></div><div class='skeleton' style='height:.7rem;width:90%'></div><div class='skeleton' style='height:.7rem;width:60%'></div>";
+  if(!list.length)return "<div class='empty'>"+(fCat||fSearch?T("noRes"):T("noArt"))+"</div>";
+  return list.map(function(a){
+    var lead=col==="center",tag=lead?"h2":"h3";
+    var ex=(a.body||"").replace(/\n/g," ").substring(0,150)+((a.body||"").length>150?"\u2026":"");
+    var bl=[a.author,a.sec,a.date].filter(Boolean).map(esc).join(" \u00b7 ");
+    var cls=getCls(a.sec);
+    var bm=isBm(a.id),lk=isLiked(a.id);
+    var views=viewCount(a.id),likes=(a.likes||0);
+    var pop=isPopular(a.id)?"<span class='pop-badge'>\ud83d\udd25 Suosittu</span> ":"";
+    return "<div class='card"+(lead?" lead":"")+"' data-open='"+a.id+"'>"
+      +"<button class='del-btn' data-del='"+a.id+"'>Poista</button>"
+      +"<button class='edit-btn' data-edit='"+a.id+"'>\u270e</button>"
+      +"<button class='bookmark-btn"+(bm?" bookmarked":"")+"' data-bm='"+a.id+"'>"+(bm?"\u2605":"\u2606")+"</button>"
+      +pop+(a.sec?"<div class='cat-badge "+cls+"'>"+esc(a.sec)+"</div>":"")
+      +buildThumb(a.media||[])
+      +"<"+tag+">"+esc(a.title)+"</"+tag+">"
+      +(bl?"<p class='byline'>"+bl+"</p>":"")
+      +"<p class='excerpt'>"+esc(ex)+"</p>"
+      +"<div class='card-meta'>"
+      +"<span class='readtime'>\ud83d\udcd6 "+rt(a.body)+" "+T("rt")+"</span>"
+      +"<span class='views'>\ud83d\udc41 "+views+"</span>"
+      +"<button class='like-btn"+(lk?" liked":"")+"' data-like='"+a.id+"'>"+(lk?"\u2665":"\u2661")+" "+likes+"</button>"
+      +"</div>"
+      +"<span class='hint'>"+T("read")+" \u2192</span></div>";
+  }).join(col==="center"?"<hr class='divh'>":"");
 }
 
 function render(){
   var app=document.getElementById("app");
-  var isAdmin=admin,isMU=isMod(currentUser),canMsg=canSeeMsgs();
-  var canDirect=hasDirectPublish(currentUser);
-  app.className=(isAdmin||isMU)?"admin-on":(loggedIn?"logged-in":"");
+  if(!app)return;
+  var isA=admin,isMU=isMod(cu),cMsg=canMsg2(),cDirect=canDirect(cu);
+  app.className=(isA||isMU)?"admin-on":(loggedIn?"logged-in":"");
+  var longSess=checkSess();
 
-  // Admin-palkin värisykli: yli 5h sisään
-  var longSession=checkSessionTime();
+  // CONFIRM
+  var confirmHtml=confirmP
+    ?"<div class='confirm-bg'><div class='confirm-box'><p>Poistetaanko artikkeli pysyv\u00e4sti?</p><div class='confirm-btns'><button class='cbtn-yes' id='cy'>Poista</button><button class='cbtn-no' id='cn'>Peruuta</button></div></div></div>":"";
 
-  var confirmHtml=confirmPending?"<div class=\"confirm-bg\"><div class=\"confirm-box\"><p>Poistetaanko artikkeli pysyvästi?</p><div class=\"confirm-btns\"><button class=\"cbtn-yes\" id=\"cbtn-yes\">Poista</button><button class=\"cbtn-no\" id=\"cbtn-no\">Peruuta</button></div></div></div>":"";
-  var errorHtml=errorMsg?"<div class=\"error-bar\"><span>"+esc(errorMsg)+"</span><button id=\"err-dismiss\">✕</button></div>":"";
+  // ERROR
+  var errHtml=errMsg?"<div class='err-bar'><span>"+esc(errMsg)+"</span><button id='errd'>\u2715</button></div>":"";
 
-  // === INBOX ===
+  // INBOX
   var inboxHtml="";
-  if(showInbox&&isAdmin){
-    var pend=window._pending||[];
-    var pr=pend.map(function(a){return "<div style=\"border:1px solid #c8bba0;padding:.8rem;margin-bottom:.8rem\"><strong style=\"font-family:'Playfair Display',serif\">"+esc(a.title)+"</strong><p style=\"font-size:.72rem;color:var(--muted);margin:.2rem 0\">"+esc(a.author||"")+" · "+esc(a.date)+"</p><p style=\"font-size:.8rem;margin:.4rem 0\">"+esc(a.body.substring(0,120))+"…</p><div style=\"display:flex;gap:.5rem;margin-top:.5rem\"><button id=\"approve-"+a.id+"\" style=\"background:var(--ink);color:var(--paper);border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem\">Hyväksy</button><button id=\"reject-"+a.id+"\" style=\"background:var(--theme-primary);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.8rem\">Hylkää</button></div></div>";}).join("");
-    inboxHtml="<div class=\"modal-bg\"><div class=\"inbox-modal\"><h2>Saapuneet artikkelit</h2>"+(pend.length===0?"<p style=\"font-size:.8rem;color:var(--muted);font-style:italic;margin-bottom:1rem\">Ei odottavia artikkeleita.</p>":pr)+"<button class=\"btn-secondary\" id=\"close-inbox-btn\">Sulje</button></div></div>";
-  }
-
-  // === VIESTIT ===
-  var msgListHtml="";
-  if(showMsgList&&canMsg){
-    var allMsgs=window._messages||[];
-    var msgs=msgSearch?allMsgs.filter(function(m){var q=msgSearch.toLowerCase();return(m.from||"").toLowerCase().includes(q)||(m.subject||"").toLowerCase().includes(q)||(m.text||"").toLowerCase().includes(q);}):allMsgs;
-    var mrows=msgs.length===0?"<p style=\"font-size:.8rem;color:var(--muted);font-style:italic\">Ei viestejä.</p>":msgs.map(function(m){var op=openMsgId===m.id;return "<div><div class=\"msg-row\" id=\"mrow-"+m.id+"\"><span class=\"msg-row-from\">"+esc(m.from)+"</span><span class=\"msg-row-subject\">"+esc(m.subject||m.text.substring(0,40))+"</span><button class=\"msg-row-del\" id=\"mdel-"+m.id+"\">✕</button></div><div class=\"msg-detail"+(op?" open":"")+"\">"+esc(m.text)+"<div style=\"font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em\">"+esc(m.from)+" · "+esc(m.date)+"</div></div></div>";}).join("");
-    msgListHtml="<div class=\"modal-bg\"><div class=\"msg-list-modal\"><h2>Viestit ("+allMsgs.length+")</h2><input class=\"admin-search\" id=\"msg-search-inp\" placeholder=\"Hae…\" value=\""+esc(msgSearch)+"\">"+mrows+"<div style=\"margin-top:1rem\"><button class=\"btn-secondary\" id=\"close-msgs-btn\">Sulje</button></div></div></div>";
-  }
-
-  var sendMsgHtml="";
-  if(showSendMsg&&loggedIn&&!canMsg){
-    sendMsgHtml="<div class=\"modal-bg\"><div class=\"send-modal\"><h2>"+T("msgTo")+"</h2><p>Yksityinen viesti toimitukselle</p><label>Aihe</label><input id=\"msg-subject\" placeholder=\"Aihe…\"><label>Viesti</label><textarea id=\"msg-text\" placeholder=\"Kirjoita viesti…\"></textarea><div class=\"modal-btns\"><button class=\"btn-primary\" id=\"send-msg-btn\">"+T("send")+"</button><button class=\"btn-secondary\" id=\"cancel-msg-btn\">"+T("cancel")+"</button></div></div></div>";
-  }
-
-  // === KÄYTTÄJÄHALLINTA — pääkäyttäjä voi antaa julkaisuluvan ===
-  var modHtml="";
-  if(showModPanel&&isAdmin){
-    var allU=getUsers().filter(function(u){return u.user!==ADMIN_USER;});
-    var filtU=userSearch?allU.filter(function(u){return u.user.toLowerCase().includes(userSearch.toLowerCase());}):allU;
-    var ur=filtU.map(function(u){
-      var modBtn="<button id=\"mod-toggle-"+esc(u.user)+"\" style=\"background:"+(u.moderator?"var(--theme-primary)":"var(--ink)")+";color:var(--paper);border:none;padding:.2rem .7rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.72rem\">"+(u.moderator?"Poista mod":"Mod")+"</button>";
-      var pubBtn="<button id=\"pub-perm-"+esc(u.user)+"\" style=\"background:"+(u.canPublishDirect?"#1E8449":"#555")+";color:#fff;border:none;padding:.2rem .7rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:.72rem;margin-left:.3rem\" title=\"Lupa julkaista suoraan\">"+(u.canPublishDirect?"✓ Suorajulkaisu":"Suorajulkaisu")+"</button>";
-      var delBtn="<button id=\"del-user-"+esc(u.user)+"\" style=\"background:none;border:1px solid var(--theme-primary);color:var(--theme-primary);padding:.2rem .6rem;cursor:pointer;font-size:.68rem;margin-left:.3rem\">Poista</button>";
-      return "<div style=\"display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid #c8bba0;flex-wrap:wrap;gap:.3rem\"><span style=\"font-size:.85rem\">"+esc(u.user)+(u.canPublishDirect?"<span class=\"perm-badge\">Suora</span>":"")+"</span><div style=\"display:flex;flex-wrap:wrap;gap:.3rem\">"+modBtn+pubBtn+delBtn+"</div></div>";
+  if(showInbox&&isA){
+    var pend=getPending();
+    var pr=pend.map(function(a){
+      return "<div style='border:1px solid #c8bba0;padding:.8rem;margin-bottom:.8rem'>"
+        +"<strong style='font-family:\"Playfair Display\",Georgia,serif'>"+esc(a.title)+"</strong>"
+        +"<p style='font-size:.72rem;color:var(--muted);margin:.2rem 0'>"+esc(a.author||"")+" \u00b7 "+esc(a.date)+"</p>"
+        +"<p style='font-size:.8rem;margin:.4rem 0'>"+esc(a.body.substring(0,120))+"\u2026</p>"
+        +"<div style='display:flex;gap:.5rem;margin-top:.5rem'>"
+        +"<button id='appr-"+a.id+"' style='background:var(--ink);color:var(--paper);border:none;padding:.3rem .9rem;cursor:pointer;font-family:\"Bebas Neue\",\"Arial Narrow\",sans-serif;font-size:.8rem'>Hyv\u00e4ksy</button>"
+        +"<button id='rej-"+a.id+"' style='background:var(--tp);color:#fff;border:none;padding:.3rem .9rem;cursor:pointer;font-family:\"Bebas Neue\",\"Arial Narrow\",sans-serif;font-size:.8rem'>Hylk\u00e4\u00e4</button>"
+        +"</div></div>";
     }).join("");
+    inboxHtml="<div class='modal-bg'><div class='big-modal'><h2>Saapuneet artikkelit</h2>"
+      +(pend.length===0?"<p style='font-size:.8rem;color:var(--muted);font-style:italic;margin-bottom:1rem'>Ei odottavia artikkeleita.</p>":pr)
+      +"<button class='btn-s' id='close-inbox'>Sulje</button></div></div>";
+  }
 
-    // Värinvaihtopainikkeet
-    var themeButtons="<div style=\"margin-top:1.2rem;padding-top:.8rem;border-top:1px solid #c8bba0\"><p style=\"font-family:'Bebas Neue',sans-serif;font-size:.68rem;letter-spacing:.15em;color:var(--muted);margin-bottom:.5rem\">SIVUN VÄRI</p><div style=\"display:flex;gap:.5rem\">"
-      +"<button class=\"theme-btn theme-btn-red"+(siteTheme==="red"?" active":"")+"\" id=\"theme-red\">🔴 Punainen</button>"
-      +"<button class=\"theme-btn theme-btn-blue"+(siteTheme==="blue"?" active":"")+"\" id=\"theme-blue\">🔵 Sininen</button>"
-      +"<button class=\"theme-btn theme-btn-green"+(siteTheme==="green"?" active":"")+"\" id=\"theme-green\">🟢 Vihreä</button>"
+  // MESSAGES
+  var msgsHtml="";
+  if(showMsgs&&cMsg){
+    var allMsgs=getMessages();
+    var filtered=msgSearch?allMsgs.filter(function(m){var q=msgSearch.toLowerCase();return(m.from||"").toLowerCase().includes(q)||(m.subject||"").toLowerCase().includes(q)||(m.text||"").toLowerCase().includes(q);}):allMsgs;
+    var mrows=filtered.length===0?"<p style='font-size:.8rem;color:var(--muted);font-style:italic'>Ei viestej\u00e4.</p>":filtered.map(function(m){
+      var op=openMsg===m.id;
+      return "<div><div class='mrow' id='mr-"+m.id+"'><span class='mrow-from'>"+esc(m.from)+"</span><span class='mrow-sub'>"+esc(m.subject||m.text.substring(0,40))+"</span><button class='mrow-del' id='md-"+m.id+"'>\u2715</button></div>"
+        +"<div class='mdetail"+(op?" open":"")+"'>"+esc(m.text)+"<div style='font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em'>"+esc(m.from)+" \u00b7 "+esc(m.date)+"</div></div></div>";
+    }).join("");
+    msgsHtml="<div class='modal-bg'><div class='big-modal'><h2>Viestit ("+allMsgs.length+")</h2>"
+      +"<input class='msearch' id='ms-inp' placeholder='Hae\u2026' value='"+esc(msgSearch)+"'>"+mrows
+      +"<div style='margin-top:1rem'><button class='btn-s' id='close-msgs'>Sulje</button></div></div></div>";
+  }
+
+  // SEND MESSAGE
+  var sendHtml="";
+  if(showSend&&loggedIn&&!cMsg){
+    sendHtml="<div class='modal-bg'><div class='send-modal'><h2>"+T("msg")+"</h2><p>Yksityinen viesti toimitukselle</p>"
+      +"<label>Aihe</label><input id='ms-subj' placeholder='Aihe\u2026'>"
+      +"<label>Viesti</label><textarea id='ms-body' placeholder='Kirjoita viesti\u2026'></textarea>"
+      +"<div class='modal-btns'><button class='btn-p' id='do-send'>"+T("send")+"</button><button class='btn-s' id='cancel-send'>"+T("cancel")+"</button></div>"
       +"</div></div>";
-
-    modHtml="<div class=\"modal-bg\"><div class=\"users-modal\"><h2>Hallitse käyttäjiä ("+allU.length+")</h2><input class=\"admin-search\" id=\"user-search-inp\" placeholder=\"Hae käyttäjää…\" value=\""+esc(userSearch)+"\">"+ur+themeButtons+"<div style=\"margin-top:1rem\"><button class=\"btn-secondary\" id=\"close-mod-btn\">Sulje</button></div></div></div>";
   }
 
-  // === KIRJANMERKIT ===
+  // MOD PANEL
+  var modHtml="";
+  if(showMod&&isA){
+    var allU=getUsers().filter(function(u){return u.user!==AU;});
+    var filtU=uSearch?allU.filter(function(u){return u.user.toLowerCase().includes(uSearch.toLowerCase());}):allU;
+    var ur=filtU.map(function(u){
+      return "<div class='urow'>"
+        +"<span>"+esc(u.user)+(u.direct?"<span class='ubadge'>Suora</span>":"")+"</span>"
+        +"<div style='display:flex;gap:.3rem;flex-wrap:wrap'>"
+        +"<button id='mod-"+esc(u.user)+"' class='ub"+(u.moderator?" red":"")+"'>"+(u.moderator?"Poista mod":"Mod")+"</button>"
+        +"<button id='dp-"+esc(u.user)+"' class='ub"+(u.direct?" green":" dim")+"'>"+(u.direct?"\u2713 Suorajulkaisu":"Suorajulkaisu")+"</button>"
+        +"<button id='du-"+esc(u.user)+"' class='ub outline'>Poista</button>"
+        +"</div></div>";
+    }).join("");
+    var themeH="<div style='margin-top:1.2rem;padding-top:.8rem;border-top:1px solid #c8bba0'>"
+      +"<p style='font-family:\"Bebas Neue\",\"Arial Narrow\",sans-serif;font-size:.68rem;letter-spacing:.15em;color:var(--muted);margin-bottom:.5rem'>SIVUN V\u00c4RI</p>"
+      +"<div style='display:flex;gap:.5rem'>"
+      +"<button class='theme-btn tbr"+(siteTheme==="red"?" act":"")+"' id='th-red'>\ud83d\udd34 Punainen</button>"
+      +"<button class='theme-btn tbb"+(siteTheme==="blue"?" act":"")+"' id='th-blue'>\ud83d\udd35 Sininen</button>"
+      +"<button class='theme-btn tbg"+(siteTheme==="green"?" act":"")+"' id='th-green'>\ud83d\udfe2 Vihre\u00e4</button>"
+      +"</div></div>";
+    modHtml="<div class='modal-bg'><div class='big-modal'><h2>K\u00e4ytt\u00e4j\u00e4t ("+allU.length+")</h2>"
+      +"<input class='msearch' id='us-inp' placeholder='Hae k\u00e4ytt\u00e4j\u00e4\u00e4\u2026' value='"+esc(uSearch)+"'>"+ur+themeH
+      +"<div style='margin-top:1rem'><button class='btn-s' id='close-mod'>Sulje</button></div></div></div>";
+  }
+
+  // BOOKMARKS
   var bmHtml="";
-  if(showBookmarks&&loggedIn){
-    var bms=getBookmarks();
+  if(showBm&&loggedIn){
+    var bms=getBm();
     var bmArts=bms.map(function(id){return articles.find(function(a){return a.id===id;});}).filter(Boolean);
-    var bmRows=bmArts.length===0?"<p style=\"font-size:.8rem;color:var(--muted);font-style:italic\">Ei kirjanmerkkejä.</p>":bmArts.map(function(a){return "<div class=\"bookmark-item\" id=\"bm-open-"+a.id+"\"><span class=\"bookmark-item-title\">"+esc(a.title)+"</span><button class=\"bookmark-item-del\" id=\"bm-del-"+a.id+"\">✕</button></div>";}).join("");
-    bmHtml="<div class=\"modal-bg\"><div class=\"bookmarks-modal\"><h2>"+T("bookmarks")+"</h2>"+bmRows+"<div style=\"margin-top:1rem\"><button class=\"btn-secondary\" id=\"close-bm-btn\">Sulje</button></div></div></div>";
+    var bmRows=bmArts.length===0?"<p style='font-size:.8rem;color:var(--muted);font-style:italic'>Ei kirjanmerkkej\u00e4.</p>"
+      :bmArts.map(function(a){return "<div class='bm-item' id='bmo-"+a.id+"'><span class='bm-item-title'>"+esc(a.title)+"</span><button class='bm-del' id='bmd-"+a.id+"'>\u2715</button></div>";}).join("");
+    bmHtml="<div class='modal-bg'><div class='big-modal'><h2>"+T("bm")+"</h2>"+bmRows
+      +"<div style='margin-top:1rem'><button class='btn-s' id='close-bm'>Sulje</button></div></div></div>";
   }
 
-  // === PROFIILI ===
-  var profileHtml="";
-  if(showProfile&&loggedIn){
-    var myComments=(window._comments||[]).filter(function(c){return c.author===currentUser;});
-    var myPending=(window._pending||[]).filter(function(a){return a.author===currentUser;});
-    var myBms=getBookmarks();
-    var cRows=myComments.length===0?"<p style=\"font-size:.78rem;color:var(--muted);font-style:italic\">Ei kommentteja.</p>":myComments.map(function(c){return "<div class=\"profile-item\" id=\"prof-art-"+c.articleId+"\">"+esc(c.text.substring(0,60))+(c.text.length>60?"…":"")+"<span style=\"font-size:.6rem;color:var(--muted);margin-left:.4rem\">"+esc(c.date)+"</span></div>";}).join("");
-    var pRows=myPending.length===0?"<p style=\"font-size:.78rem;color:var(--muted);font-style:italic\">Ei odottavia artikkeleita.</p>":myPending.map(function(a){return "<div class=\"profile-item\">"+esc(a.title)+"<span style=\"font-size:.6rem;color:var(--muted);margin-left:.4rem\">Odottaa hyväksyntää</span></div>";}).join("");
-    profileHtml="<div class=\"modal-bg\"><div class=\"profile-modal\"><h2>"+T("profile")+": "+esc(currentUser)+"</h2><div class=\"profile-section\"><h3>Kirjanmerkit ("+myBms.length+")</h3>"+(myBms.length===0?"<p style=\"font-size:.78rem;color:var(--muted);font-style:italic\">Ei kirjanmerkkejä.</p>":myBms.map(function(id){var a=articles.find(function(x){return x.id===id;});return a?"<div class=\"profile-item\" id=\"prof-bm-"+a.id+"\">"+esc(a.title)+"</div>":"";}).join(""))+"</div><div class=\"profile-section\"><h3>Kommentit ("+myComments.length+")</h3>"+cRows+"</div><div class=\"profile-section\"><h3>Odottavat artikkelit ("+myPending.length+")</h3>"+pRows+"</div><div style=\"margin-top:1rem\"><button class=\"btn-secondary\" id=\"close-profile-btn\">Sulje</button></div></div></div>";
+  // PROFILE
+  var profHtml="";
+  if(showProf&&loggedIn){
+    var myCmts=getComments().filter(function(c){return c.author===cu;});
+    var myPend=getPending().filter(function(a){return a.author===cu;});
+    var myBms=getBm();
+    var cRows=myCmts.length===0?"<p style='font-size:.78rem;color:var(--muted);font-style:italic'>Ei kommentteja.</p>"
+      :myCmts.map(function(c){return "<div class='pi' id='pc-"+c.artId+"'>"+esc(c.text.substring(0,60))+(c.text.length>60?"\u2026":"")+"<span style='font-size:.6rem;color:var(--muted);margin-left:.4rem'>"+esc(c.date)+"</span></div>";}).join("");
+    var pRows=myPend.length===0?"<p style='font-size:.78rem;color:var(--muted);font-style:italic'>Ei odottavia.</p>"
+      :myPend.map(function(a){return "<div class='pi'>"+esc(a.title)+"<span style='font-size:.6rem;color:var(--muted);margin-left:.4rem'>Odottaa hyv\u00e4ksynt\u00e4\u00e4</span></div>";}).join("");
+    profHtml="<div class='modal-bg'><div class='big-modal'><h2>"+T("prof")+": "+esc(cu)+"</h2>"
+      +"<div class='ps'><h3>Kirjanmerkit ("+myBms.length+")</h3>"
+      +(myBms.length===0?"<p style='font-size:.78rem;color:var(--muted);font-style:italic'>Ei kirjanmerkkej\u00e4.</p>"
+        :myBms.map(function(id){var a=articles.find(function(x){return x.id===id;});return a?"<div class='pi' id='pb-"+a.id+"'>"+esc(a.title)+"</div>":""}).join(""))
+      +"</div><div class='ps'><h3>Kommentit ("+myCmts.length+")</h3>"+cRows+"</div>"
+      +"<div class='ps'><h3>Odottavat ("+myPend.length+")</h3>"+pRows+"</div>"
+      +"<div style='margin-top:1rem'><button class='btn-s' id='close-prof'>Sulje</button></div></div></div>";
   }
 
-  // === KIRJAUTUMINEN ===
+  // LOGIN / REGISTER
   var loginHtml="";
   if(showLogin){
-    loginHtml="<div class=\"modal-bg\"><div class=\"modal\"><h2>"+T("login")+"</h2><p>Kirjaudu Martsan Uutisiin</p>"
-      +"<label>Käyttäjätunnus</label><input id=\"lu\" type=\"text\" placeholder=\"käyttäjätunnus\"><label>Salasana</label><input id=\"lp\" type=\"password\" placeholder=\"••••••••\">"
-      +"<div class=\"modal-err\">"+esc(loginErr)+"</div>"
-      +"<div class=\"modal-btns\"><button class=\"btn-primary\" id=\"lbtn\">"+T("login")+"</button><button class=\"btn-secondary\" id=\"lcbtn\">"+T("cancel")+"</button></div>"
-      +"<p style=\"margin-top:1rem;font-size:.72rem;color:var(--muted);border:none;padding:0\">Ei tiliä? <span id=\"go-reg\" style=\"color:var(--theme-primary);cursor:pointer;text-decoration:underline\">"+T("register")+"</span></p>"
+    loginHtml="<div class='modal-bg'><div class='modal'><h2>"+T("login")+"</h2><p class='sub'>Kirjaudu Martsan Uutisiin</p>"
+      +"<label>K\u00e4ytt\u00e4j\u00e4tunnus</label><input id='lu' type='text' autocomplete='username' placeholder='k\u00e4ytt\u00e4j\u00e4tunnus'>"
+      +"<label>Salasana</label><input id='lp' type='password' autocomplete='current-password' placeholder='\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'>"
+      +"<div class='modal-err'>"+esc(loginErr)+"</div>"
+      +"<div class='modal-btns'><button class='btn-p' id='lbtn'>"+T("login")+"</button><button class='btn-s' id='lcbtn'>"+T("cancel")+"</button></div>"
+      +"<p style='margin-top:1rem;font-size:.72rem;color:var(--muted)'>Ei tili\u00e4? <span id='go-reg' style='color:var(--tp);cursor:pointer;text-decoration:underline'>"+T("reg")+"</span></p>"
       +"</div></div>";
-  } else if(showRegister){
-    loginHtml="<div class=\"modal-bg\"><div class=\"modal\"><h2>"+T("register")+"</h2><p>Luo oma käyttäjätunnus</p>"
-      +"<label>Käyttäjätunnus</label><input id=\"ru\" type=\"text\" placeholder=\"käyttäjätunnus\"><label>Salasana</label><input id=\"rp\" type=\"password\" placeholder=\"••••••••\"><label>Salasana uudelleen</label><input id=\"rp2\" type=\"password\" placeholder=\"••••••••\">"
-      +"<div class=\"modal-err\">"+esc(regErr)+"</div>"
-      +"<div class=\"modal-btns\"><button class=\"btn-primary\" id=\"rbtn\">"+T("register")+"</button><button class=\"btn-secondary\" id=\"rcbtn\">"+T("cancel")+"</button></div>"
-      +"<p style=\"margin-top:1rem;font-size:.72rem;color:var(--muted);border:none;padding:0\">Onko jo tunnus? <span id=\"go-login\" style=\"color:var(--theme-primary);cursor:pointer;text-decoration:underline\">"+T("login")+"</span></p>"
+  } else if(showReg){
+    loginHtml="<div class='modal-bg'><div class='modal'><h2>"+T("reg")+"</h2><p class='sub'>Luo oma k\u00e4ytt\u00e4j\u00e4tunnus</p>"
+      +"<label>K\u00e4ytt\u00e4j\u00e4tunnus</label><input id='ru' type='text' autocomplete='username' placeholder='k\u00e4ytt\u00e4j\u00e4tunnus'>"
+      +"<label>Salasana</label><input id='rp' type='password' autocomplete='new-password' placeholder='\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'>"
+      +"<label>Salasana uudelleen</label><input id='rp2' type='password' autocomplete='new-password' placeholder='\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'>"
+      +"<div class='modal-err'>"+esc(regErr)+"</div>"
+      +"<div class='modal-btns'><button class='btn-p' id='rbtn'>"+T("reg")+"</button><button class='btn-s' id='rcbtn'>"+T("cancel")+"</button></div>"
+      +"<p style='margin-top:1rem;font-size:.72rem;color:var(--muted)'>Onko jo tunnus? <span id='go-login' style='color:var(--tp);cursor:pointer;text-decoration:underline'>"+T("login")+"</span></p>"
       +"</div></div>";
   }
 
-  // === ADMIN-PALKKI ===
-  var adminBarHtml="";
-  if(isAdmin||isMU){
-    var ic=(window._pending||[]).length,mc=(window._messages||[]).length;
-    var barClass="admin-bar"+(longSession?" color-cycling":"");
-    adminBarHtml="<div class=\""+barClass+"\"><span>"+(isAdmin?"HALLINTAMOODI":"MODERAATTORI")+" PÄÄLLÄ</span>"
-      +(isAdmin?"<button id=\"open-inbox-btn\">Saapuneet"+(ic>0?" ("+ic+")":"")+"</button>":"")
-      +(canMsg?"<button id=\"open-msgs-btn\">Viestit"+(mc>0?" ("+mc+")":"")+"</button>":"")
-      +(isAdmin?"<button id=\"open-mod-btn\">Käyttäjät</button>":"")
-      +"<button id=\"exit-admin-btn\">"+T("logout")+"</button></div>";
+  // ADMIN BAR
+  var abHtml="";
+  if(isA||isMU){
+    var ic=getPending().length, mc=getMessages().length;
+    var bcls="ab"+(longSess?" cc":"");
+    abHtml="<div class='"+bcls+"'><span>"+(isA?"HALLINTAMOODI":"MODERAATTORI")+" P\u00c4\u00c4LL\u00c4</span>"
+      +(isA?"<button id='open-inbox'>Saapuneet"+(ic>0?" ("+ic+")":"")+"</button>":"")
+      +(cMsg?"<button id='open-msgs'>Viestit"+(mc>0?" ("+mc+")":"")+"</button>":"")
+      +(isA?"<button id='open-mod'>K\u00e4ytt\u00e4j\u00e4t</button>":"")
+      +"<button id='do-logout'>"+T("logout")+"</button></div>";
   }
 
-  var langMenu="<div class=\"lang-wrap\"><button class=\"lang-btn\" id=\"lang-btn\">🌐 "+lang.toUpperCase()+"</button><div class=\"lang-dropdown"+(showLangMenu?" open":"")+"\"><button class=\"lang-option\" id=\"lang-fi\">🇫🇮 Suomi</button><button class=\"lang-option\" id=\"lang-en\">🇬🇧 English</button><button class=\"lang-option\" id=\"lang-sv\">🇸🇪 Svenska</button></div></div>";
-  var sendBtn=(!canMsg&&loggedIn)?"<button class=\"send-msg-top-btn\" id=\"open-send-msg-btn\">✉ "+T("msgTo")+"</button>":"";
-  var bmBtn=loggedIn?"<button class=\"bookmarks-btn\" id=\"open-bm-btn\">★ "+T("bookmarks")+"</button>":"";
-  var profBtn=loggedIn?"<button class=\"bookmarks-btn\" id=\"open-profile-btn\">📤 "+T("profile")+"</button>":"";
-  var topBar="<div class=\"top-bar\"><div class=\"dl-wrap\"><button class=\"dl-main-btn\" id=\"dl-main-btn\">⬇ "+T("install")+" <span class=\"dl-arrow\">▼</span></button><div class=\"dl-dropdown\" id=\"dl-dropdown\"><button id=\"dl-android\">Android</button><button id=\"dl-windows\">Windows</button><button id=\"dl-mac\">Mac</button></div></div>"+langMenu+sendBtn+bmBtn+profBtn+"</div>";
-  var ticker=articles.length>0?articles.map(function(a){return esc(a.title);}).join(" &nbsp;⬦&nbsp; "):T("welcome");
+  // TOP BAR
+  var langMenu="<div class='lang-wrap'><button class='lang-btn' id='lang-btn'>\ud83c\udf10 "+lang.toUpperCase()+"</button>"
+    +"<div class='lang-dropdown"+(showLang?" open":"")+"'>"
+    +"<button class='lang-option' id='lang-fi'>\ud83c\uddeb\ud83c\uddee Suomi</button>"
+    +"<button class='lang-option' id='lang-en'>\ud83c\uddec\ud83c\udde7 English</button>"
+    +"<button class='lang-option' id='lang-sv'>\ud83c\uddf8\ud83c\uddea Svenska</button>"
+    +"</div></div>";
+  var sendBtn=(!cMsg&&loggedIn)?"<button class='tbtn' id='open-send'>\u2709 "+T("msg")+"</button>":"";
+  var bmBtn=loggedIn?"<button class='tbtn' id='open-bm'>\u2605 "+T("bm")+"</button>":"";
+  var profBtn=loggedIn?"<button class='tbtn' id='open-prof'>\ud83d\udce4 "+T("prof")+"</button>":"";
+  var topBar="<div class='top-bar'>"
+    +"<div class='dl-wrap'><button class='dl-main-btn' id='dl-btn'>\u2b07 "+T("install")+" <span class='dl-arrow'>\u25bc</span></button>"
+    +"<div class='dl-dropdown' id='dl-dd'><button id='dl-a'>Android</button><button id='dl-w'>Windows</button><button id='dl-m'>Mac</button></div></div>"
+    +langMenu+sendBtn+bmBtn+profBtn+"</div>";
 
-  // === PÄÄNÄKYMÄ ===
+  // TICKER
+  var tickerTxt=articles.length>0?articles.map(function(a){return esc(a.title);}).join(" &nbsp;\u2b26&nbsp; "):T("welcome");
+
+  // MAIN CONTENT
   var mainHtml="";
   if(page==="article"){
     var a=articles.find(function(x){return x.id===openId;});
     if(!a){
-      mainHtml="<div style=\"max-width:680px;margin:3rem auto;padding:0 1.2rem;text-align:center\"><p style=\"font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1rem\">Artikkelia ei löydy.</p><button class=\"back-btn\" id=\"back-btn\">← "+T("back")+"</button></div>";
+      mainHtml="<div style='max-width:680px;margin:3rem auto;padding:0 1.2rem;text-align:center'>"
+        +"<p style='font-family:\"Playfair Display\",Georgia,serif;font-size:1.2rem;margin-bottom:1rem'>Artikkelia ei l\u00f6ydy.</p>"
+        +"<button class='back-btn' id='back-btn'>\u2190 "+T("back")+"</button></div>";
     } else {
-      var bl=[a.author,a.section,a.date].filter(Boolean).map(esc).join(" · ");
+      var bl=[a.author,a.sec,a.date].filter(Boolean).map(esc).join(" \u00b7 ");
       var bd=a.body.split(/\n\n+/).filter(function(p){return p.trim();}).map(function(p){return "<p>"+esc(p.trim().replace(/\n/g," "))+"</p>";}).join("");
-      var views=(window._views||{})[a.id]||0;
-      var likes=(window._likes||{})[a.id]||0;
-      var liked=isLiked(a.id);
-      var catCls=getCatCls(a.section);
-      var bm=isBookmarked(a.id);
-      var rt=readTime(a.body);
-      var mediaHtml=buildMediaHtml(a.media||[]);
-      var popTag=isPopular(a.id)?"<span class=\"popular-badge\">🔥 Suosittu</span> ":"";
-      mainHtml="<div class=\"art-wrap\"><button class=\"back-btn\" id=\"back-btn\">← "+T("back")+"</button>"
-        +popTag
-        +(a.section?"<div class=\"art-badge "+catCls+"\">"+esc(a.section)+"</div>":"")
-        +"<h1 class=\"art-title\">"+esc(a.title)+"</h1>"
-        +"<div class=\"art-byline\">"+(bl?"<span>"+bl+"</span>":"")
-        +"<span class=\"art-readtime\">📖 "+rt+" "+T("readtime")+"</span>"
-        +"<span class=\"art-views\">👁 "+views+"</span>"
-        +"<button class=\"art-like-btn"+(liked?" liked":"")+"\" id=\"art-like-btn\" data-id=\""+a.id+"\">"+(liked?"♥":"♡")+" "+likes+" "+T(liked?"liked":"like")+"</button>"
-        +"<button class=\"art-bookmark-btn"+(bm?" bookmarked":"")+"\" id=\"art-bm-btn\" data-id=\""+a.id+"\">"+(bm?"★ "+T("saved"):"☆ "+T("save"))+"</button>"
-        +"<button class=\"art-edit-btn\" id=\"art-edit-btn\" data-id=\""+a.id+"\">✎ "+T("edit")+"</button>"
+      var views=viewCount(a.id),likes=a.likes||0,lk=isLiked(a.id),bm=isBm(a.id);
+      var cls=getCls(a.sec);
+      var pop=isPopular(a.id)?"<span class='pop-badge'>\ud83d\udd25 Suosittu</span><br>":"";
+      // Kommentit
+      var allCmts=getComments().filter(function(c){return c.artId===a.id;});
+      var crows=allCmts.map(function(c){
+        var op=openCmt[c.id];
+        return "<div><div class='crow' id='cr-"+c.id+"'><span class='crow-author'>"+esc(c.author)+"</span><span class='crow-preview'>"+esc(c.text.substring(0,50))+(c.text.length>50?"\u2026":"")+"</span><button class='cdel' id='cd-"+c.id+"'>\u2715</button></div>"
+          +"<div class='cdetail"+(op?" open":"")+"'>"+esc(c.text)+"<div style='font-size:.62rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase'>"+esc(c.author)+" \u00b7 "+esc(c.date)+"</div></div></div>";
+      }).join("");
+      var cForm=loggedIn
+        ?"<div class='comment-form'><textarea id='c-inp' placeholder='"+T("cmts")+"...'></textarea><button id='c-sub' data-aid='"+a.id+"'>"+T("send")+"</button></div>"
+        :"<p style='font-size:.72rem;color:var(--muted);font-style:italic;margin-top:.6rem'>Kirjaudu sis\u00e4\u00e4n kommentoidaksesi.</p>";
+      // Related
+      var rel=articles.filter(function(x){return x.id!==a.id&&x.sec===a.sec;}).slice(0,3);
+      var relHtml=rel.length?"<div class='related-section'><div class='related-title'>"+T("related")+"</div>"+rel.map(function(x){return "<div class='related-item' id='ri-"+x.id+"'>"+esc(x.title)+"</div>";}).join("")+"</div>":"";
+      mainHtml="<div class='art-wrap'>"
+        +"<button class='back-btn' id='back-btn'>\u2190 "+T("back")+"</button>"
+        +pop
+        +(a.sec?"<div class='art-badge "+cls+"'>"+esc(a.sec)+"</div>":"")
+        +"<h1 class='art-title'>"+esc(a.title)+"</h1>"
+        +"<div class='art-byline'>"+(bl?"<span>"+bl+"</span>":"")
+        +"<span>\ud83d\udcd6 "+rt(a.body)+" "+T("rt")+"</span>"
+        +"<span>\ud83d\udc41 "+views+"</span>"
+        +"<button class='art-like-btn"+(lk?" liked":"")+"' id='art-like' data-id='"+a.id+"'>"+(lk?"\u2665":"\u2661")+" "+likes+" "+T(lk?"liked":"like")+"</button>"
+        +"<button class='art-bm-btn"+(bm?" bookmarked":"")+"' id='art-bm' data-id='"+a.id+"'>"+(bm?"\u2605 "+T("saved"):"\u2606 "+T("save"))+"</button>"
+        +"<button class='art-edit-btn' id='art-edit' data-id='"+a.id+"'>\u270e "+T("edit")+"</button>"
         +"</div>"
-        +mediaHtml
-        +"<div class=\"art-body\">"+bd+"</div><hr class=\"art-end\">"
-        +"<button class=\"art-del-btn\" id=\"art-del-btn\" data-id=\""+a.id+"\">Poista artikkeli</button>"
+        +buildMediaHtml(a.media||[])
+        +"<div class='art-body'>"+bd+"</div><hr class='art-end'>"
+        +"<button class='art-del-btn' id='art-del' data-id='"+a.id+"'>Poista artikkeli</button>"
         +"</div>"
-        +buildRelated(a)
-        +buildComments(a.id);
+        +relHtml
+        +"<div class='comments-section'><div class='comments-title'>"+T("cmts")+" ("+allCmts.length+")</div>"+crows+cForm+"</div>";
     }
   } else {
-    function renderCol(col){
-      var list=articles.filter(function(a){return a.column===col;})
-        .filter(function(a){return !filterCat||(a.section||"")=== filterCat;})
-        .filter(function(a){if(!filterSearch)return true;var q=filterSearch.toLowerCase();return(a.title||"").toLowerCase().includes(q)||(a.body||"").toLowerCase().includes(q)||(a.author||"").toLowerCase().includes(q);});
-      if(!list.length&&!dataLoaded){return "<div class=\"skeleton\" style=\"height:1.4rem;width:75%\"></div><div class=\"skeleton\" style=\"height:.7rem;width:100%\"></div><div class=\"skeleton\" style=\"height:.7rem;width:90%\"></div><div class=\"skeleton\" style=\"height:.7rem;width:60%\"></div>";}
-      if(!list.length)return "<div class=\"empty\">"+(filterCat||filterSearch?T("noResults"):T("noArticles"))+"</div>";
-      return list.map(function(a){
-        var iL=col==="center",tag=iL?"h2":"h3";
-        var ex=(a.body||"").replace(/\n/g," ").substring(0,150)+((a.body||"").length>150?"…":"");
-        var bl=[a.author,a.section,a.date].filter(Boolean).map(esc).join(" · ");
-        var catCls=getCatCls(a.section);
-        var bm=isBookmarked(a.id);
-        var views=(window._views||{})[a.id]||0;
-        var likes=(window._likes||{})[a.id]||0;
-        var liked=isLiked(a.id);
-        var rt=readTime(a.body);
-        var thumb=buildThumb(a.media||[]);
-        var popBadge=isPopular(a.id)?"<span class=\"popular-badge\">🔥 Suosittu</span> ":"";
-        return "<div class=\"card"+(iL?" lead":"")+"\" data-open=\""+a.id+"\">"
-          +"<button class=\"del-btn\" data-del=\""+a.id+"\">Poista</button>"
-          +"<button class=\"edit-btn\" data-edit=\""+a.id+"\">✎</button>"
-          +"<button class=\"bookmark-btn"+(bm?" bookmarked":"")+"\" data-bm=\""+a.id+"\">"+(bm?"★":"☆")+"</button>"
-          +popBadge
-          +(a.section?"<div class=\"cat-badge "+catCls+"\">"+esc(a.section)+"</div>":"")
-          +thumb
-          +"<"+tag+">"+esc(a.title)+"</"+tag+">"
-          +(bl?"<p class=\"byline\">"+bl+"</p>":"")
-          +"<p class=\"excerpt\">"+esc(ex)+"</p>"
-          +"<div class=\"card-meta\">"
-          +"<span class=\"readtime\">📖 "+rt+" "+T("readtime")+"</span>"
-          +"<span class=\"views\">👁 "+views+"</span>"
-          +"<button class=\"like-btn"+(liked?" liked":"")+"\" data-like=\""+a.id+"\">"+(liked?"♥":"♡")+" "+likes+"</button>"
-          +"</div>"
-          +"<span class=\"hint\">"+T("readMore")+" →</span></div>";
-      }).join(col==="center"?"<hr class=\"divh\">":"");
-    }
-    var filterBar="<div class=\"filter-bar\"><span class=\"filter-label\">"+T("filter")+"</span>"
-      +"<button class=\"filter-btn"+(filterCat===""?" active":"")+"\" id=\"fcat-all\">"+T("all")+"</button>"
-      +CATS.map(function(c){return "<button class=\"filter-btn"+(filterCat===c?" active":"")+" "+(CAT_CLS[c]||"")+"\" id=\"fcat-"+c+"\">"+c+"</button>";}).join("")
-      +"<span class=\"filter-search-wrap\"><input class=\"filter-search\" id=\"filter-search-inp\" placeholder=\""+T("search")+"\" value=\""+esc(filterSearch)+"\"></span></div>";
-    var edArticle=editId?articles.find(function(a){return a.id===editId;}):null;
-    var mediaPrevHtml=pendingMedia.map(function(m,i){
-      var thumb=m.type==="video"
-        ?"<video style=\"height:80px;width:auto\"><source src=\""+m.url+"\"></video>"
-        :"<img src=\""+m.url+"\" style=\"height:80px;width:auto;object-fit:cover\">";
-      return "<div style=\"position:relative;display:inline-block\">"+thumb+"<button class=\"media-preview-del\" data-mi=\""+i+"\">✕</button></div>";
+    // FRONT PAGE
+    var fBar="<div class='filter-bar'><span class='filter-label'>"+T("filter")+"</span>"
+      +"<button class='filter-btn"+(fCat===""?" active":"")+"' id='fa'>"+T("all")+"</button>"
+      +CATS.map(function(c){return "<button class='filter-btn"+(fCat===c?" active":"")+" "+(CCL[c]||"")+"' id='fc-"+c+"'>"+c+"</button>";}).join("")
+      +"<span class='filter-search-wrap'><input class='filter-search' id='fsrch' placeholder='"+T("search")+"' value='"+esc(fSearch)+"'></span></div>";
+
+    var edArt=editId?articles.find(function(a){return a.id===editId;}):null;
+    var mediaPrev=pendMedia.map(function(m,i){
+      var th=m.type==="video"
+        ?"<video style='height:80px;width:auto'><source src='"+m.url+"'></video>"
+        :"<img src='"+m.url+"' style='height:80px;width:auto;object-fit:cover'>";
+      return "<div style='position:relative;display:inline-block;margin:.2rem'>"+th
+        +"<button data-mi='"+i+"' style='position:absolute;top:-6px;right:-6px;background:var(--tp);color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:.6rem'>\u2715</button></div>";
     }).join("");
 
-    // Julkaisupainike(et): pääkäyttäjällä yksi, toimittajalla yksi tai kaksi
-    var pubBtnsHtml="";
+    var pubBtns="";
     if(editId){
-      pubBtnsHtml="<button class=\"btn-primary\" id=\"pub-btn\" style=\"flex:0;padding:.5rem 1.5rem\">"+T("edit")+"</button>";
+      pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("edit")+"</button>";
     } else if(admin){
-      pubBtnsHtml="<button class=\"btn-primary\" id=\"pub-btn\" style=\"flex:0;padding:.5rem 1.5rem\">"+T("publish")+"</button>";
-    } else if(canDirect){
-      // Toimittajalla suorajulkaisulupa: kaksi nappia
-      pubBtnsHtml="<div class=\"pub-btns-wrap\">"
-        +"<button class=\"btn-pub-direct\" id=\"pub-direct-btn\">✓ "+T("publishDirect")+"</button>"
-        +"<button class=\"btn-pub-via\" id=\"pub-btn\">→ "+T("publishVia")+"</button>"
+      pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";
+    } else if(cDirect){
+      pubBtns="<div class='pub-btns'>"
+        +"<button class='btn-direct' id='pub-direct'>\u2713 "+T("pdirect")+"</button>"
+        +"<button class='btn-via' id='pub-btn'>\u2192 "+T("pvia")+"</button>"
         +"</div>";
     } else {
-      pubBtnsHtml="<button class=\"btn-primary\" id=\"pub-btn\" style=\"flex:0;padding:.5rem 1.5rem\">"+T("publish")+"</button>";
+      pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";
     }
 
-    var ed="<button class=\"add-btn\" id=\"add-btn\">"+(showEditor?(editId?"Sulje muokkaus":"Sulje lomake"):"+ Lisää uutinen")+"</button>"
-      +"<div class=\"editor"+(showEditor?" open":"")+"\"><div style=\"max-width:1050px;margin:0 auto\">"
-      +"<h2>✍ "+(editId?"Muokkaa artikkelia":"Kirjoita uusi uutinen")+"</h2><div class=\"fields\">"
-      +"<div><label>Otsikko *</label><input id=\"ft\" placeholder=\"Otsikko…\" value=\""+(edArticle?esc(edArticle.title):"")+"\"></div>"
-      +"<div><label>Kirjoittaja</label><input id=\"fa\" placeholder=\"Toim. M. Salonen\" value=\""+(edArticle?esc(edArticle.author||""):"")+"\"></div>"
-      +"<div><label>Osasto</label><select id=\"fs\"><option value=\"\">-- Valitse --</option>"+CATS.map(function(c){return "<option value=\""+c+"\""+(edArticle&&edArticle.section===c?" selected":"")+">"+c+"</option>";}).join("")+"</select></div>"
-      +"<div><label>Palsta</label><select id=\"fc\"><option value=\"left\""+(edArticle&&edArticle.column==="left"?" selected":"")+">Vasen</option><option value=\"center\""+( (!edArticle||edArticle.column==="center")?" selected":"")+">Keskellä</option><option value=\"right\""+(edArticle&&edArticle.column==="right"?" selected":"")+">Oikea</option></select></div>"
-      +"<div class=\"fw\"><label>Teksti *</label><textarea id=\"fb\" placeholder=\"Kirjoita teksti tähän…\">"+(edArticle?esc(edArticle.body):"")+"</textarea></div>"
-      +"<div class=\"media-upload-area fw\"><p>📷 "+T("addMedia")+"</p><input type=\"file\" id=\"media-file-inp\" accept=\"image/*,video/*\" multiple style=\"margin-top:.5rem;width:100%;cursor:pointer\"></div>"
-      +"<div class=\"media-preview fw\" id=\"media-preview-wrap\">"+mediaPrevHtml+"</div>"
-      +"</div><div class=\"ea\">"+pubBtnsHtml
-      +"<button class=\"btn-secondary\" id=\"cancel-btn\">"+T("cancel")+"</button></div></div></div>";
+    var ed="<button class='add-btn' id='add-btn'>"+(showEditor?(editId?"Sulje muokkaus":"Sulje lomake"):"+ Lis\u00e4\u00e4 uutinen")+"</button>"
+      +"<div class='editor"+(showEditor?" open":"")+"'><div style='max-width:1050px;margin:0 auto'>"
+      +"<h2>\u270d "+(editId?"Muokkaa artikkelia":"Kirjoita uusi uutinen")+"</h2>"
+      +"<div class='fields'>"
+      +"<div><label>Otsikko *</label><input id='et' placeholder='Otsikko\u2026' value='"+(edArt?esc(edArt.title):"")+"'></div>"
+      +"<div><label>Kirjoittaja</label><input id='ea' placeholder='Toim. M. Salonen' value='"+(edArt?esc(edArt.author||""):"")+"'></div>"
+      +"<div><label>Osasto</label><select id='es'><option value=''>-- Valitse --</option>"
+      +CATS.map(function(c){return "<option value='"+c+"'"+(edArt&&edArt.sec===c?" selected":"")+">"+c+"</option>";}).join("")
+      +"</select></div>"
+      +"<div><label>Palsta</label><select id='ec'>"
+      +"<option value='left'"+(edArt&&edArt.col==="left"?" selected":"")+">Vasen</option>"
+      +"<option value='center'"+((!edArt||edArt.col==="center")?" selected":"")+">Keskell\u00e4</option>"
+      +"<option value='right'"+(edArt&&edArt.col==="right"?" selected":"")+">Oikea</option>"
+      +"</select></div>"
+      +"<div class='fw'><label>Teksti *</label><textarea id='eb' placeholder='Kirjoita teksti t\u00e4h\u00e4n\u2026'>"+(edArt?esc(edArt.body):"")+"</textarea></div>"
+      +"<div class='media-area fw'><p>\ud83d\udcf7 "+T("media")+"</p><input type='file' id='mf' accept='image/*,video/*' multiple></div>"
+      +"<div style='display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem;grid-column:1/-1' id='mprev'>"+mediaPrev+"</div>"
+      +"</div>"
+      +"<div class='ea'>"+pubBtns+"<button class='btn-s' id='cancel-ed'>"+T("cancel")+"</button></div>"
+      +"</div></div>";
 
-    mainHtml=filterBar+"<div class=\"container\"><div class=\"grid\">"
-      +"<div class=\"col\"><div class=\"sec-label\">"+T("news")+"</div>"+renderCol("left")+"</div>"
-      +"<div class=\"divider\"></div>"
-      +"<div class=\"col\"><div class=\"sec-label\">"+T("main")+"</div>"+renderCol("center")+"</div>"
-      +"<div class=\"divider\"></div>"
-      +"<div class=\"col\"><div class=\"sec-label\">"+T("more")+"</div>"+renderCol("right")+"</div>"
+    mainHtml=fBar+"<div class='container'><div class='grid'>"
+      +"<div class='col'><div class='sec-label'>"+T("news")+"</div>"+renderCol("left")+"</div>"
+      +"<div class='divider'></div>"
+      +"<div class='col'><div class='sec-label'>"+T("main")+"</div>"+renderCol("center")+"</div>"
+      +"<div class='divider'></div>"
+      +"<div class='col'><div class='sec-label'>"+T("more")+"</div>"+renderCol("right")+"</div>"
       +"</div></div>"+ed;
   }
 
   var n=articles.length;
   var mhr=loggedIn
     ?"<span>"+dateFI()+"</span>"
-    :"<span style=\"display:flex;flex-direction:column;align-items:flex-end;gap:.2rem\"><button class=\"masthead-login\" id=\"masthead-login-btn\">"+T("login")+"</button><span>"+dateFI()+"</span></span>";
+    :"<span style='display:flex;flex-direction:column;align-items:flex-end;gap:.2rem'><button class='mlogin' id='mlogin'>"+T("login")+"</button><span>"+dateFI()+"</span></span>";
   var fu=loggedIn
-    ?"<span>Kirjautunut: "+esc(currentUser)+(isMU&&!isAdmin?" ★":"")+" &nbsp;·&nbsp; <span id=\"logout-btn\" style=\"cursor:pointer;text-decoration:underline;color:var(--theme-primary)\">"+T("logout")+"</span></span>"
-    :"<span><span id=\"atrig\" style=\"cursor:default;user-select:none\">toimitus@martsanuutiset.fi</span> &nbsp;·&nbsp; <span id=\"login-link\" style=\"cursor:pointer;text-decoration:underline;color:var(--theme-primary)\">"+T("login")+" / "+T("register")+"</span></span>";
+    ?"<span>Kirjautunut: "+esc(cu)+(isMU&&!isA?" \u2605":"")+" &nbsp;\u00b7&nbsp; <span id='logout2' style='cursor:pointer;text-decoration:underline;color:var(--tp)'>"+T("logout")+"</span></span>"
+    :"<span><span id='atrig' style='cursor:default;user-select:none'>toimitus@martsanuutiset.fi</span> &nbsp;\u00b7&nbsp; <span id='ll' style='cursor:pointer;text-decoration:underline;color:var(--tp)'>"+T("login")+" / "+T("reg")+"</span></span>";
 
-  app.innerHTML=confirmHtml+errorHtml+inboxHtml+msgListHtml+sendMsgHtml+modHtml+bmHtml+profileHtml+loginHtml+adminBarHtml+topBar
-    +"<div id=\"sync-ind\" class=\"sync-indicator\"></div>"
-    +"<div class=\"masthead\"><span>"+T("founded")+" 2026</span><span style=\"flex:1;text-align:center\">★ Luotettavaa uutisointia joka viikko ★</span>"+mhr+"</div>"
-    +"<div class=\"nameplate\" id=\"nameplate\"><h1>Martsan <em>Uutiset</em></h1><div class=\"np-rule\"><span>"+T("motto")+"</span></div><p class=\"tagline\">"+T("tagline")+"</p></div>"
-    +"<div class=\"ticker-wrap\"><div class=\"ticker\"><span class=\"ticker-label\">UUTISET NYT</span><span class=\"ticker-inner\">"+ticker+" &nbsp;⬦&nbsp; </span></div></div>"
+  app.innerHTML=confirmHtml+errHtml+inboxHtml+msgsHtml+sendHtml+modHtml+bmHtml+profHtml+loginHtml+abHtml+topBar
+    +"<div id='notif' class='notif'></div>"
+    +"<div class='masthead'><span>"+T("founded")+" 2026</span><span style='flex:1;text-align:center'>\u2605 Luotettavaa uutisointia joka viikko \u2605</span>"+mhr+"</div>"
+    +"<div class='nameplate' id='nameplate'><h1>Martsan <em>Uutiset</em></h1><div class='np-rule'><span>"+T("motto")+"</span></div><p class='tagline'>"+T("tagline")+"</p></div>"
+    +"<div class='ticker-wrap'><div class='ticker'><span class='ticker-label'>UUTISET NYT</span><span class='ticker-inner'>"+tickerTxt+" &nbsp;\u2b26&nbsp; </span></div></div>"
     +mainHtml
-    +"<footer><span>© 2026 Martsan Uutiset</span><span>"+n+" "+(n===1?T("art1"):T("artN"))+"</span>"+fu+"</footer>";
+    +"<footer><span>\u00a9 2026 Martsan Uutiset</span><span>"+n+" "+(n===1?T("art1"):T("artN"))+"</span>"+fu+"</footer>";
 
   attachEvents();
-  if(showLogin)setTimeout(function(){var el=document.getElementById("lu");if(el)el.focus();},30);
-  if(showRegister)setTimeout(function(){var el=document.getElementById("ru");if(el)el.focus();},30);
-  if(showEditor)setTimeout(updateMediaPreview,10);
-}
-
-function doPublishArticle(direct){
-  var title=(document.getElementById("ft").value||"").trim();
-  var body=(document.getElementById("fb").value||"").trim();
-  if(!title){errorMsg="Kirjoita otsikko.";render();return;}
-  if(!body){errorMsg="Kirjoita teksti.";render();return;}
-  if(editId){
-    var idx=articles.findIndex(function(a){return a.id===editId;});
-    if(idx!==-1){
-      articles[idx].title=title;
-      articles[idx].author=(document.getElementById("fa").value||"").trim();
-      articles[idx].section=(document.getElementById("fs").value||"");
-      articles[idx].column=document.getElementById("fc").value;
-      articles[idx].body=body;
-      if(pendingMedia.length)articles[idx].media=(articles[idx].media||[]).concat(pendingMedia);
-    }
-    showEditor=false;editId=null;pendingMedia=[];save();showNotif("Artikkeli päivitetty!");render();return;
-  }
-  var capturedMedia=pendingMedia.slice();
-  var id=nextId++;
-  var art={id:id,title:title,author:(document.getElementById("fa").value||"").trim(),section:(document.getElementById("fs").value||""),column:document.getElementById("fc").value,body:body,date:todayFI(),media:capturedMedia};
-  var authH=_authSB();
-  if(admin||direct){
-    // Julkaistaan suoraan
-    fetch(SUPABASE_URL+"/rest/v1/articles",{method:"POST",headers:Object.assign({},authH,{"Prefer":"return=representation"}),body:JSON.stringify({title:art.title,author:art.author,section:art.section,col:art.column,body:art.body,media:JSON.stringify(capturedMedia)})})
-      .then(function(r){return r.json();}).then(function(rows){
-        if(rows&&rows[0]){art.id=rows[0].id;}
-        articles.push(art);showEditor=false;pendingMedia=[];page="article";openId=art.id;trackView(art.id);render();
-      }).catch(function(){errorMsg="Julkaisu epäonnistui.";render();});
-  } else {
-    // Lähetetään pääkäyttäjälle
-    fetch(SUPABASE_URL+"/rest/v1/pending",{method:"POST",headers:authH,body:JSON.stringify({title:art.title,author:art.author,section:art.section,col:art.column,body:art.body,media:JSON.stringify(capturedMedia),submitted_by:currentUser})})
-      .then(function(){window._pending=window._pending||[];window._pending.push(art);showEditor=false;pendingMedia=[];showNotif(T("approved"));render();})
-      .catch(function(){errorMsg="Lähetys epäonnistui.";render();});
-  }
+  if(showLogin)setTimeout(function(){var e=document.getElementById("lu");if(e)e.focus();},20);
+  if(showReg)setTimeout(function(){var e=document.getElementById("ru");if(e)e.focus();},20);
 }
 
 function attachEvents(){
-  function on(id,fn){var el=document.getElementById(id);if(el)el.addEventListener("click",fn);}
+  function on(id,fn){var e=document.getElementById(id);if(e)e.addEventListener("click",fn);}
+  function rf(id,v){var e=document.getElementById(id);if(e){e.focus();try{e.setSelectionRange(v.length,v.length);}catch(x){}}}
 
-  on("cbtn-yes",function(){if(confirmPending){var id=confirmPending.id,gb=confirmPending.goBack;confirmPending=null;
-    fetch(SUPABASE_URL+"/rest/v1/articles?id=eq."+id,{method:"DELETE",headers:_authSB()});
-    articles=articles.filter(function(a){return a.id!==id;});if(gb)page="front";render();}});
-  on("cbtn-no",function(){confirmPending=null;render();});
-  on("err-dismiss",function(){errorMsg="";render();});
-  on("lang-btn",function(e){e.stopPropagation();showLangMenu=!showLangMenu;render();});
-  on("lang-fi",function(){lang="fi";showLangMenu=false;render();});
-  on("lang-en",function(){lang="en";showLangMenu=false;render();});
-  on("lang-sv",function(){lang="sv";showLangMenu=false;render();});
-  on("dl-main-btn",function(e){
-    e.stopPropagation();
-    var btn=document.getElementById("dl-main-btn"),dd=document.getElementById("dl-dropdown");
-    if(!btn||!dd)return;
-    var op=!dd.classList.contains("open");
-    dd.classList.toggle("open");btn.classList.toggle("open");
-    if(op){setTimeout(function(){function c(e){if(!e.target.closest(".dl-wrap")){var d=document.getElementById("dl-dropdown"),b=document.getElementById("dl-main-btn");if(d)d.classList.remove("open");if(b)b.classList.remove("open");document.removeEventListener("click",c);}}document.addEventListener("click",c);},10);}
+  // Confirm
+  on("cy",function(){
+    if(!confirmP)return;
+    var id=confirmP.id,gb=confirmP.back;
+    confirmP=null;
+    articles=articles.filter(function(a){return a.id!==id;});
+    saveArticles(articles);
+    if(gb)page="front";
+    render();
   });
-  on("dl-android",doInstall);on("dl-windows",doInstall);on("dl-mac",doInstall);
+  on("cn",function(){confirmP=null;render();});
+  on("errd",function(){errMsg="";render();});
 
-  // === KIRJAUTUMINEN ===
-  on("lbtn",doLogin);on("lcbtn",function(){showLogin=false;render();});
+  // Lang
+  on("lang-btn",function(e){e.stopPropagation();showLang=!showLang;render();});
+  on("lang-fi",function(){lang="fi";showLang=false;render();});
+  on("lang-en",function(){lang="en";showLang=false;render();});
+  on("lang-sv",function(){lang="sv";showLang=false;render();});
+
+  // Install dropdown
+  on("dl-btn",function(e){
+    e.stopPropagation();
+    var b=document.getElementById("dl-btn"),d=document.getElementById("dl-dd");
+    if(!b||!d)return;
+    var op=!d.classList.contains("open");
+    d.classList.toggle("open");b.classList.toggle("open");
+    if(op)setTimeout(function(){
+      function c(e){if(!e.target.closest(".dl-wrap")){var d2=document.getElementById("dl-dd"),b2=document.getElementById("dl-btn");if(d2)d2.classList.remove("open");if(b2)b2.classList.remove("open");document.removeEventListener("click",c);}};
+      document.addEventListener("click",c);
+    },10);
+  });
+  on("dl-a",function(){alert("Avaa sivusto Chromella ja paina 'Lisää aloitusnäyttöön'.");});
+  on("dl-w",function(){alert("Avaa sivusto Chromella ja paina osoitepalkin asennuskuvaketta.");});
+  on("dl-m",function(){alert("Avaa sivusto Safarilla ja paina Jaa → Lisää Koti-valikkoon.");});
+
+  // Login
+  on("lbtn",doLogin);
+  on("lcbtn",function(){showLogin=false;render();});
   var lu=document.getElementById("lu"),lp=document.getElementById("lp");
   if(lu)lu.addEventListener("keydown",function(e){if(e.key==="Enter"&&lp)lp.focus();});
   if(lp)lp.addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
-  on("go-reg",function(){showLogin=false;showRegister=true;regErr="";render();});
-  on("go-login",function(){showRegister=false;showLogin=true;loginErr="";render();});
-  on("rbtn",doRegister);on("rcbtn",function(){showRegister=false;render();});
+  on("go-reg",function(){showLogin=false;showReg=true;regErr="";render();});
+  on("go-login",function(){showReg=false;showLogin=true;loginErr="";render();});
+  on("rbtn",doRegister);
+  on("rcbtn",function(){showReg=false;render();});
   var rp2=document.getElementById("rp2");if(rp2)rp2.addEventListener("keydown",function(e){if(e.key==="Enter")doRegister();});
 
-  function fl(){admin=false;loggedIn=false;currentUser="";sessionStartTime=null;showEditor=false;showInbox=false;showModPanel=false;showMsgList=false;showSendMsg=false;showBookmarks=false;showProfile=false;openMsgId=null;filterCat="";filterSearch="";editId=null;pendingMedia=[];render();}
-  on("exit-admin-btn",fl);on("logout-btn",fl);
+  // Logout
+  function doLogout(){admin=false;loggedIn=false;cu="";sessStart=null;showEditor=false;showInbox=false;showMod=false;showMsgs=false;showSend=false;showBm=false;showProf=false;openMsg=null;fCat="";fSearch="";editId=null;pendMedia=[];render();}
+  on("do-logout",doLogout);on("logout2",doLogout);
 
-  on("open-inbox-btn",function(){showInbox=true;render();});on("close-inbox-btn",function(){showInbox=false;render();});
-  on("open-msgs-btn",function(){showMsgList=true;render();});on("close-msgs-btn",function(){showMsgList=false;openMsgId=null;render();});
-  on("open-mod-btn",function(){showModPanel=true;render();});on("close-mod-btn",function(){showModPanel=false;render();});
-  on("open-bm-btn",function(){showBookmarks=true;render();});on("close-bm-btn",function(){showBookmarks=false;render();});
-  on("open-profile-btn",function(){showProfile=true;render();});on("close-profile-btn",function(){showProfile=false;render();});
+  // Admin buttons
+  on("open-inbox",function(){showInbox=true;render();});on("close-inbox",function(){showInbox=false;render();});
+  on("open-msgs",function(){showMsgs=true;render();});on("close-msgs",function(){showMsgs=false;openMsg=null;render();});
+  on("open-mod",function(){showMod=true;render();});on("close-mod",function(){showMod=false;render();});
+  on("open-bm",function(){showBm=true;render();});on("close-bm",function(){showBm=false;render();});
+  on("open-send",function(){showSend=true;render();});on("cancel-send",function(){showSend=false;render();});
+  on("open-prof",function(){showProf=true;render();});on("close-prof",function(){showProf=false;render();});
 
-  // Väri-napit
-  on("theme-red",function(){applyTheme("red");render();});
-  on("theme-blue",function(){applyTheme("blue");render();});
-  on("theme-green",function(){applyTheme("green");render();});
+  // Theme
+  on("th-red",function(){applyTheme("red");render();});
+  on("th-blue",function(){applyTheme("blue");render();});
+  on("th-green",function(){applyTheme("green");render();});
 
-  var msInp=document.getElementById("msg-search-inp");
-  if(msInp){msInp.addEventListener("input",function(){msgSearch=this.value;var v=this.value;render();restoreFocus("msg-search-inp",v);});}
-  var usInp=document.getElementById("user-search-inp");
-  if(usInp){usInp.addEventListener("input",function(){userSearch=this.value;var v=this.value;render();restoreFocus("user-search-inp",v);});}
-  var fsInp=document.getElementById("filter-search-inp");
-  if(fsInp){fsInp.addEventListener("input",function(){filterSearch=this.value;var v=this.value;render();restoreFocus("filter-search-inp",v);});fsInp.addEventListener("click",function(e){e.stopPropagation();});}
-  on("fcat-all",function(){filterCat="";render();});
-  CATS.forEach(function(c){on("fcat-"+c,function(){filterCat=(filterCat===c?"":c);render();});});
+  // Msg search
+  var msi=document.getElementById("ms-inp");
+  if(msi)msi.addEventListener("input",function(){msgSearch=this.value;var v=this.value;render();rf("ms-inp",v);});
+  var usi=document.getElementById("us-inp");
+  if(usi)usi.addEventListener("input",function(){uSearch=this.value;var v=this.value;render();rf("us-inp",v);});
+  var fsi=document.getElementById("fsrch");
+  if(fsi){fsi.addEventListener("input",function(){fSearch=this.value;var v=this.value;render();rf("fsrch",v);});fsi.addEventListener("click",function(e){e.stopPropagation();});}
 
-  // Hyväksy/hylkää pending
-  (window._pending||[]).forEach(function(a){
-    on("approve-"+a.id,function(){
-      var authH=_authSB();
-      fetch(SUPABASE_URL+"/rest/v1/articles",{method:"POST",headers:Object.assign({},authH,{"Prefer":"return=representation"}),body:JSON.stringify({title:a.title,author:a.author,section:a.section,col:a.column,body:a.body})})
-        .then(function(r){return r.json();}).then(function(rows){
-          if(rows&&rows[0]){a.id=rows[0].id;articles.push(a);}
-          fetch(SUPABASE_URL+"/rest/v1/pending?id=eq."+a.id,{method:"DELETE",headers:authH});
-          window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});render();
-        });
+  // Filter cats
+  on("fa",function(){fCat="";render();});
+  CATS.forEach(function(c){on("fc-"+c,function(){fCat=(fCat===c?"":c);render();});});
+
+  // Approve/reject pending
+  getPending().forEach(function(a){
+    on("appr-"+a.id,function(){
+      a.col=a.col||"center";
+      articles.push(a);
+      saveArticles(articles);
+      var p=getPending().filter(function(x){return x.id!==a.id;});
+      savePending(p);
+      render();
     });
-    on("reject-"+a.id,function(){
-      fetch(SUPABASE_URL+"/rest/v1/pending?id=eq."+a.id,{method:"DELETE",headers:_authSB()});
-      window._pending=(window._pending||[]).filter(function(p){return p.id!==a.id;});render();
+    on("rej-"+a.id,function(){
+      var p=getPending().filter(function(x){return x.id!==a.id;});
+      savePending(p);
+      render();
     });
   });
 
-  // Käyttäjien hallinta
-  getUsers().filter(function(u){return u.user!==ADMIN_USER;}).forEach(function(u){
-    on("mod-toggle-"+u.user,function(){var us=getUsers(),t=us.find(function(x){return x.user===u.user;});if(t)t.moderator=!t.moderator;saveUsers(us);render();});
-    on("pub-perm-"+u.user,function(){var us=getUsers(),t=us.find(function(x){return x.user===u.user;});if(t)t.canPublishDirect=!t.canPublishDirect;saveUsers(us);render();});
-    on("del-user-"+u.user,function(){var us=getUsers().filter(function(x){return x.user!==u.user;});saveUsers(us);render();});
+  // User management
+  getUsers().filter(function(u){return u.user!==AU;}).forEach(function(u){
+    on("mod-"+u.user,function(){var us=getUsers(),t=us.find(function(x){return x.user===u.user;});if(t)t.moderator=!t.moderator;saveUsers(us);render();});
+    on("dp-"+u.user,function(){var us=getUsers(),t=us.find(function(x){return x.user===u.user;});if(t)t.direct=!t.direct;saveUsers(us);render();});
+    on("du-"+u.user,function(){saveUsers(getUsers().filter(function(x){return x.user!==u.user;}));render();});
   });
 
-  // Viestit
-  (window._messages||[]).forEach(function(m){
-    on("mrow-"+m.id,function(){openMsgId=(openMsgId===m.id?null:m.id);render();});
-    on("mdel-"+m.id,function(){window._messages=(window._messages||[]).filter(function(x){return x.id!==m.id;});if(openMsgId===m.id)openMsgId=null;save();render();});
+  // Messages
+  getMessages().forEach(function(m){
+    on("mr-"+m.id,function(){openMsg=(openMsg===m.id?null:m.id);render();});
+    on("md-"+m.id,function(){saveMessages(getMessages().filter(function(x){return x.id!==m.id;}));if(openMsg===m.id)openMsg=null;render();});
   });
-  on("open-send-msg-btn",function(){showSendMsg=true;render();});
-  on("cancel-msg-btn",function(){showSendMsg=false;render();});
-  on("send-msg-btn",function(){
-    var subj=(document.getElementById("msg-subject").value||"").trim();
-    var txt=(document.getElementById("msg-text").value||"").trim();
+  on("do-send",function(){
+    var subj=(document.getElementById("ms-subj").value||"").trim();
+    var txt=(document.getElementById("ms-body").value||"").trim();
     if(!txt)return;
-    window._messages=window._messages||[];
-    window._messages.push({id:Date.now(),from:currentUser,subject:subj||"(ei aihetta)",text:txt,date:todayFI()});
-    showSendMsg=false;save();showNotif("Viesti lähetetty!");render();
+    var msgs=getMessages();
+    msgs.unshift({id:Date.now(),from:cu,subject:subj||"(ei aihetta)",text:txt,date:todayFI()});
+    saveMessages(msgs);
+    showSend=false;showNotif("Viesti lähetetty!");render();
   });
 
-  // Kommentit
-  (window._comments||[]).forEach(function(c){
-    on("crow-"+c.id,function(){openCommentIds[c.id]=!openCommentIds[c.id];render();});
-    on("cdel-"+c.id,function(){window._comments=(window._comments||[]).filter(function(x){return x.id!==c.id;});delete openCommentIds[c.id];save();render();});
+  // Comments
+  getComments().forEach(function(c){
+    on("cr-"+c.id,function(){openCmt[c.id]=!openCmt[c.id];render();});
+    on("cd-"+c.id,function(){saveComments(getComments().filter(function(x){return x.id!==c.id;}));delete openCmt[c.id];render();});
   });
-  on("comment-submit",function(){
-    var inp=document.getElementById("comment-input"),btn=document.getElementById("comment-submit");
+  on("c-sub",function(){
+    var inp=document.getElementById("c-inp"),btn=document.getElementById("c-sub");
     if(!inp||!btn)return;
-    var txt=inp.value.trim(),aid=parseInt(btn.getAttribute("data-artid"));
+    var txt=inp.value.trim(),aid=parseInt(btn.getAttribute("data-aid"));
     if(!txt)return;
-    window._comments=window._comments||[];
-    window._comments.push({id:Date.now(),articleId:aid,author:currentUser,text:txt,date:todayFI()});
-    save();render();
+    var cmts=getComments();
+    cmts.push({id:Date.now(),artId:aid,author:cu,text:txt,date:todayFI()});
+    saveComments(cmts);render();
   });
 
-  on("art-like-btn",function(){var btn=document.getElementById("art-like-btn");if(btn&&loggedIn)toggleLike(parseInt(btn.getAttribute("data-id")));else if(!loggedIn){showLogin=true;loginErr="";render();}});
-  on("art-bm-btn",function(){var btn=document.getElementById("art-bm-btn");if(btn)toggleBookmark(parseInt(btn.getAttribute("data-id")));});
-  on("art-edit-btn",function(){var btn=document.getElementById("art-edit-btn");if(btn){editId=parseInt(btn.getAttribute("data-id"));showEditor=true;page="front";render();}});
-  document.querySelectorAll("[data-like]").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();if(loggedIn)toggleLike(parseInt(btn.getAttribute("data-like")));else{showLogin=true;loginErr="";render();}});});
-  document.querySelectorAll("[data-bm]").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();toggleBookmark(parseInt(btn.getAttribute("data-bm")));});});
-  document.querySelectorAll("[data-edit]").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();editId=parseInt(btn.getAttribute("data-edit"));showEditor=true;render();});});
-  document.querySelectorAll("[id^=\"bm-open-\"]").forEach(function(el){el.addEventListener("click",function(e){if(e.target.closest("[id^=\"bm-del-\"]"))return;var id=parseInt(el.id.replace("bm-open-",""));showBookmarks=false;page="article";openId=id;trackView(id);render();});});
-  document.querySelectorAll("[id^=\"bm-del-\"]").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();var id=parseInt(btn.id.replace("bm-del-",""));var bms=getBookmarks(),i=bms.indexOf(id);if(i!==-1)bms.splice(i,1);setBookmarks(bms);render();});});
-  document.querySelectorAll("[id^=\"prof-art-\"]").forEach(function(el){el.addEventListener("click",function(){var aid=parseInt(el.id.replace("prof-art-",""));showProfile=false;page="article";openId=aid;trackView(aid);render();});});
-  document.querySelectorAll("[id^=\"prof-bm-\"]").forEach(function(el){el.addEventListener("click",function(){var id=parseInt(el.id.replace("prof-bm-",""));showProfile=false;page="article";openId=id;trackView(id);render();});});
-  document.querySelectorAll("[id^=\"rel-\"]").forEach(function(el){el.addEventListener("click",function(){var id=parseInt(el.id.replace("rel-",""));page="article";openId=id;trackView(id);render();});});
-  on("masthead-login-btn",function(){showLogin=true;loginErr="";render();});
-  on("login-link",function(){showLogin=true;loginErr="";render();});
-  on("nameplate",function(){page="front";render();});
-  var atrig=document.getElementById("atrig");
-  if(atrig)atrig.addEventListener("click",function(){tapCount++;clearTimeout(tapTimer);if(tapCount>=5){tapCount=0;showLogin=true;loginErr="";render();}else tapTimer=setTimeout(function(){tapCount=0;},2000);});
-  on("back-btn",function(){page="front";render();});
-  var ad=document.getElementById("art-del-btn");
-  if(ad)ad.addEventListener("click",function(){confirmPending={id:parseInt(ad.dataset.id),goBack:true};render();});
+  // Article like/bm/edit
+  on("art-like",function(){var b=document.getElementById("art-like");if(b&&loggedIn){var id=parseInt(b.getAttribute("data-id"));toggleLike(id);var a=articles.find(function(x){return x.id===id;});if(a){if(isLiked(id))a.likes=(a.likes||0)+1;else a.likes=Math.max(0,(a.likes||1)-1);saveArticles(articles);}render();}else if(!loggedIn){showLogin=true;loginErr="";render();}});
+  on("art-bm",function(){var b=document.getElementById("art-bm");if(b)toggleBm(parseInt(b.getAttribute("data-id")));});
+  on("art-edit",function(){var b=document.getElementById("art-edit");if(b){editId=parseInt(b.getAttribute("data-id"));showEditor=true;page="front";render();}});
+  on("art-del",function(){var b=document.getElementById("art-del");if(b)confirmP={id:parseInt(b.getAttribute("data-id")),back:true};render();});
+
+  // Card like/bm/edit/open/del
+  document.querySelectorAll("[data-like]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();if(loggedIn){var id=parseInt(b.getAttribute("data-like"));toggleLike(id);var a=articles.find(function(x){return x.id===id;});if(a){if(isLiked(id))a.likes=(a.likes||0)+1;else a.likes=Math.max(0,(a.likes||1)-1);saveArticles(articles);}render();}else{showLogin=true;loginErr="";render();}});});
+  document.querySelectorAll("[data-bm]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();toggleBm(parseInt(b.getAttribute("data-bm")));});});
+  document.querySelectorAll("[data-edit]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();editId=parseInt(b.getAttribute("data-edit"));showEditor=true;render();});});
+  document.querySelectorAll("[data-del]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();confirmP={id:parseInt(b.getAttribute("data-del")),back:false};render();});});
   document.querySelectorAll("[data-open]").forEach(function(el){
     el.addEventListener("click",function(e){
       if(e.target.closest("[data-del]")||e.target.closest("[data-bm]")||e.target.closest("[data-edit]")||e.target.closest("[data-like]"))return;
-      var id=parseInt(el.dataset.open);page="article";openId=id;trackView(id);render();
+      var id=parseInt(el.getAttribute("data-open"));page="article";openId=id;trackView(id);render();
     });
   });
-  document.querySelectorAll("[data-del]").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();confirmPending={id:parseInt(btn.dataset.del),goBack:false};render();});});
-  document.querySelectorAll("[data-mi]").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();var i=parseInt(btn.getAttribute("data-mi"));pendingMedia.splice(i,1);render();});});
 
-  // Media upload
-  var mfi=document.getElementById("media-file-inp");
-  if(mfi){
-    mfi.addEventListener("change",function(){
+  // Bookmarks modal clicks
+  document.querySelectorAll("[id^='bmo-']").forEach(function(el){el.addEventListener("click",function(e){if(e.target.closest("[id^='bmd-']"))return;var id=parseInt(el.id.replace("bmo-",""));showBm=false;page="article";openId=id;trackView(id);render();});});
+  document.querySelectorAll("[id^='bmd-']").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();var id=parseInt(b.id.replace("bmd-",""));var bms=getBm(),i=bms.indexOf(id);if(i!==-1)bms.splice(i,1);saveBm(bms);render();});});
+  document.querySelectorAll("[id^='pb-']").forEach(function(el){el.addEventListener("click",function(){var id=parseInt(el.id.replace("pb-",""));showProf=false;page="article";openId=id;trackView(id);render();});});
+  document.querySelectorAll("[id^='pc-']").forEach(function(el){el.addEventListener("click",function(){var aid=parseInt(el.id.replace("pc-",""));showProf=false;page="article";openId=aid;trackView(aid);render();});});
+  document.querySelectorAll("[id^='ri-']").forEach(function(el){el.addEventListener("click",function(){var id=parseInt(el.id.replace("ri-",""));page="article";openId=id;trackView(id);render();});});
+
+  // Media preview del
+  document.querySelectorAll("[data-mi]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();var i=parseInt(b.getAttribute("data-mi"));pendMedia.splice(i,1);render();});});
+
+  // Media file input — base64 (ei tarvita ulkoista tallennusta)
+  var mf=document.getElementById("mf");
+  if(mf){
+    mf.addEventListener("change",function(){
       var files=Array.from(this.files);
       if(!files.length)return;
       showNotif("Ladataan mediaa…");
-      var uploads=files.map(function(f){
-        return new Promise(function(resolve,reject){
-          var ext=f.name.split(".").pop();
-          var fname=Date.now()+"_"+Math.random().toString(36).slice(2)+"."+ext;
-          var t=f.type.startsWith("video")?"video":"image";
-          fetch(SUPABASE_URL+"/storage/v1/object/media/"+fname,{
-            method:"POST",
-            headers:Object.assign({},_authSB(),{"Content-Type":f.type,"x-upsert":"true"}),
-            body:f
-          }).then(function(r){
-            if(!r.ok)throw new Error("Upload failed: "+r.status);
-            var url=SUPABASE_URL+"/storage/v1/object/public/media/"+fname;
-            resolve({type:t,url:url});
-          }).catch(function(e){showNotif("Lataus epäonnistui: "+e.message);reject(e);});
-        });
+      var pending=files.length,done=0;
+      files.forEach(function(f){
+        var r=new FileReader();
+        var t=f.type.startsWith("video")?"video":"image";
+        r.onload=function(ev){
+          pendMedia.push({type:t,url:ev.target.result});
+          done++;
+          if(done>=pending){showNotif("Media ladattu! ("+pendMedia.length+")");render();}
+        };
+        r.readAsDataURL(f);
       });
-      Promise.all(uploads).then(function(items){
-        pendingMedia=pendingMedia.concat(items);
-        showNotif("Media ladattu! ("+pendingMedia.length+" tiedostoa)");
-        render();
-      }).catch(function(){showNotif("Lataus epäonnistui.");});
     });
   }
 
-  on("add-btn",function(){showEditor=!showEditor;if(!showEditor){editId=null;pendingMedia=[];}render();});
-  on("cancel-btn",function(){showEditor=false;editId=null;pendingMedia=[];render();});
+  on("mlogin",function(){showLogin=true;loginErr="";render();});
+  on("ll",function(){showLogin=true;loginErr="";render();});
+  on("nameplate",function(){page="front";render();});
+  var atrig=document.getElementById("atrig");
+  if(atrig)atrig.addEventListener("click",function(){tapN++;clearTimeout(tapT);if(tapN>=5){tapN=0;showLogin=true;loginErr="";render();}else tapT=setTimeout(function(){tapN=0;},2000);});
+  on("back-btn",function(){page="front";render();});
 
-  // Julkaisupainike(et)
-  on("pub-btn",function(){doPublishArticle(false);});
-  on("pub-direct-btn",function(){doPublishArticle(true);});
+  on("add-btn",function(){showEditor=!showEditor;if(!showEditor){editId=null;pendMedia=[];}render();});
+  on("cancel-ed",function(){showEditor=false;editId=null;pendMedia=[];render();});
+  on("pub-btn",function(){doPublish(false);});
+  on("pub-direct",function(){doPublish(true);});
 }
 
-function trackView(id){
-  // Tallennetaan localStorage:iin pysyvästi
-  try{
-    var vd=JSON.parse(localStorage.getItem("mu_views")||"{}");
-    vd[id]=(vd[id]||0)+1;
-    localStorage.setItem("mu_views",JSON.stringify(vd));
-    window._views=window._views||{};
-    window._views[id]=vd[id];
-  }catch(e){
-    window._views=window._views||{};
-    window._views[id]=(window._views[id]||0)+1;
-  }
-}
-
-// === KIRJAUTUMINEN: käyttäjätunnus TAI sähköposti ===
 function doLogin(){
   var uEl=document.getElementById("lu"),pEl=document.getElementById("lp");
   if(!uEl||!pEl)return;
   var u=uEl.value.trim(),p=pEl.value;
-
   // Pääkäyttäjä
-  if(u===ADMIN_USER&&p===ADMIN_PASS){
-    showLogin=false;admin=true;loggedIn=true;currentUser=u;
-    sessionStartTime=Date.now();
-    render();return;
-  }
-
-  // Paikalliset käyttäjät (localUsers) — ei vaadi sähköpostia
-  var users=getUsers();
-  var found=users.find(function(x){return x.user===u&&x.pass===p;});
-  if(found){
-    showLogin=false;loggedIn=true;currentUser=u;loginErr="";
-    sessionStartTime=Date.now();
-    if(found.moderator){window._userRole="mod";}
-    render();return;
-  }
-
-  // Supabase Auth (sähköpostilla)
-  fetch(SUPABASE_URL+"/auth/v1/token?grant_type=password",{
-    method:"POST",headers:SB,body:JSON.stringify({email:u,password:p})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.access_token){
-      window._sbToken=d.access_token;
-      currentUser=d.user.email;
-      loggedIn=true;showLogin=false;loginErr="";
-      sessionStartTime=Date.now();
-      fetch(SUPABASE_URL+"/rest/v1/user_roles?user_id=eq."+d.user.id+"&select=role",{
-        headers:Object.assign({},SB,{"Authorization":"Bearer "+d.access_token})
-      }).then(function(r){return r.json();}).then(function(roles){
-        window._userRole=(roles&&roles[0])?roles[0].role:"";
-        admin=window._userRole==="admin";
-        render();
-      });
-    } else {loginErr=T("loginErr");render();}
-  }).catch(function(){loginErr=T("loginErr");render();});
+  if(u===AU&&p===AP){showLogin=false;admin=true;loggedIn=true;cu=u;sessStart=Date.now();render();return;}
+  // Paikalliset käyttäjät
+  var found=getUsers().find(function(x){return x.user===u&&x.pass===p;});
+  if(found){showLogin=false;loggedIn=true;cu=u;loginErr="";sessStart=Date.now();render();return;}
+  loginErr=T("loginErr");render();
 }
 
-// === REKISTERÖINTI: toimii paikallisesti ilman Supabasea ===
 function doRegister(){
   var uEl=document.getElementById("ru"),pEl=document.getElementById("rp"),p2El=document.getElementById("rp2");
   if(!uEl||!pEl||!p2El)return;
   var u=uEl.value.trim(),p=pEl.value,p2=p2El.value;
-  if(!u||u.length<3){regErr="Käyttäjätunnus on liian lyhyt (väh. 3 merkkiä).";render();return;}
-  if(u===ADMIN_USER){regErr="Tämä käyttäjätunnus on varattu.";render();return;}
-  if(p.length<6){regErr="Salasanan pitää olla vähintään 6 merkkiä.";render();return;}
+  if(!u||u.length<3){regErr="Käyttäjätunnus liian lyhyt (väh. 3 merkkiä).";render();return;}
+  if(u===AU){regErr="Tämä tunnus on varattu.";render();return;}
+  if(p.length<6){regErr="Salasana liian lyhyt (väh. 6 merkkiä).";render();return;}
   if(p!==p2){regErr="Salasanat eivät täsmää.";render();return;}
   var users=getUsers();
-  if(users.find(function(x){return x.user===u;})){regErr="Käyttäjätunnus on jo käytössä.";render();return;}
-  users.push({user:u,pass:p,moderator:false,canPublishDirect:false,date:todayFI()});
+  if(users.find(function(x){return x.user===u;})){regErr="Tunnus on jo käytössä.";render();return;}
+  users.push({user:u,pass:p,moderator:false,direct:false,date:todayFI()});
   saveUsers(users);
-  showRegister=false;showNotif("Tunnus luotu! Kirjaudu sisään.");
-  showLogin=true;loginErr="";render();
+  showReg=false;showLogin=true;loginErr="";showNotif("Tunnus luotu! Kirjaudu sisään.");render();
 }
 
-function sbToArt(r){return {id:r.id,title:r.title,author:r.author||"",section:r.section||"",column:r.col||"center",body:r.body,date:r.created_at?r.created_at.substring(0,10):"",media:r.media?JSON.parse(r.media):[]};}
-var _authSB=function(){return Object.assign({},SB,{Authorization:"Bearer "+(window._sbToken||SUPABASE_KEY),"Prefer":"return=minimal"});};
-
-async function save(){/* Supabase: yksittäiset operaatiot tallentavat suoraan */}
-
-async function load(){
-  try{
-    var h=SB;
-    var results=await Promise.all([
-      fetch(SUPABASE_URL+"/rest/v1/articles?select=*&order=id.asc",{headers:h}).then(function(r){return r.json();}),
-      fetch(SUPABASE_URL+"/rest/v1/pending?select=*&order=id.asc",{headers:h}).then(function(r){return r.json();}),
-      fetch(SUPABASE_URL+"/rest/v1/messages?select=*&order=id.desc",{headers:h}).then(function(r){return r.json();}),
-      fetch(SUPABASE_URL+"/rest/v1/comments?select=*&order=id.asc",{headers:h}).then(function(r){return r.json();})
-    ]);
-    var arts=results[0],pend=results[1],msgs=results[2],cmts=results[3];
-    articles=(arts&&!arts.error)?arts.map(sbToArt):[];
-    window._pending=(pend&&!pend.error)?pend.map(function(p){return {id:p.id,title:p.title,author:p.author,section:p.section,column:p.col,body:p.body,date:p.created_at?p.created_at.substring(0,10):"",media:[]};}):[];
-    window._messages=(msgs&&!msgs.error)?msgs.map(function(m){return {id:m.id,from:m.from_user||"",subject:m.subject,text:m.body||"",date:m.created_at?m.created_at.substring(0,10):""};}):[];
-    window._comments=(cmts&&!cmts.error)?cmts.map(function(c){return {id:c.id,articleId:c.article_id,author:c.author,text:c.body||"",date:c.created_at?c.created_at.substring(0,10):""};}):[];
-    // Lataa views localStoragesta
-    try{window._views=JSON.parse(localStorage.getItem("mu_views")||"{}");}catch(e){window._views={};}
-    window._likes={};
-    dataLoaded=true;
-  }catch(e){errorMsg="Tietojen lataus epäonnistui. Tarkista yhteys.";dataLoaded=true;}
+function doPublish(direct){
+  var title=(document.getElementById("et").value||"").trim();
+  var body=(document.getElementById("eb").value||"").trim();
+  if(!title){errMsg="Kirjoita otsikko.";render();return;}
+  if(!body){errMsg="Kirjoita teksti.";render();return;}
+  if(editId){
+    var idx=articles.findIndex(function(a){return a.id===editId;});
+    if(idx!==-1){
+      articles[idx].title=title;
+      articles[idx].author=(document.getElementById("ea").value||"").trim();
+      articles[idx].sec=(document.getElementById("es").value||"");
+      articles[idx].col=document.getElementById("ec").value;
+      articles[idx].body=body;
+      if(pendMedia.length)articles[idx].media=(articles[idx].media||[]).concat(pendMedia);
+    }
+    saveArticles(articles);showEditor=false;editId=null;pendMedia=[];showNotif("Artikkeli päivitetty!");render();return;
+  }
+  var media=pendMedia.slice();
+  var art={id:getNextId(),title:title,author:(document.getElementById("ea").value||"").trim(),sec:(document.getElementById("es").value||""),col:document.getElementById("ec").value,body:body,date:todayFI(),media:media,likes:0};
+  if(admin||direct){
+    articles.push(art);saveArticles(articles);showEditor=false;pendMedia=[];page="article";openId=art.id;trackView(art.id);render();
+  } else {
+    var p=getPending();p.push(art);savePending(p);
+    showEditor=false;pendMedia=[];showNotif(T("approved"));render();
+  }
 }
 
-// Ladataan tallennettu teema
-try{var savedTheme=localStorage.getItem("mu_theme");if(savedTheme)applyTheme(savedTheme);}catch(e){}
-
+// ===== KÄYNNISTYS =====
+try{var st=localStorage.getItem("mu_theme");if(st)applyTheme(st);}catch(e){}
+articles=getArticles();
+dataLoaded=true;
 render();
-setTimeout(function(){var b=document.querySelector(".loading-bar-inner");if(b)b.classList.add("go");},30);
-var dataReady=false,barDone=false;
-function tryHide(){
-  if(!dataReady||!barDone)return;
-  var ls=document.getElementById("loading-screen");
-  if(ls){ls.classList.add("fade-out");setTimeout(function(){ls.style.display="none";},500);}
-  startAutoRefresh();
-}
-setTimeout(function(){barDone=true;tryHide();},1450);
-load().then(function(){render();dataReady=true;tryHide();}).catch(function(){render();dataReady=true;tryHide();});
+
+// Loading screen
+setTimeout(function(){var b=document.getElementById("lbi");if(b)b.classList.add("go");},30);
+setTimeout(function(){
+  var ls=document.getElementById("ls");
+  if(ls){ls.classList.add("out");setTimeout(function(){ls.style.display="none";},500);}
+},1500);
+
+// Autorefresh (paikallinen — tarkistaa muutokset 30s välein)
+setInterval(function(){
+  var fresh=getArticles();
+  if(JSON.stringify(fresh)!==JSON.stringify(articles)){
+    articles=fresh;showNotif("Päivitetty");render();
+  }
+},30000);
 </script>
 </body>
 </html>
