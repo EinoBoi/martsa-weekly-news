@@ -87,16 +87,7 @@ body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georg
 .btn-p{flex:1;background:var(--ink);color:var(--paper);border:none;padding:.55rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.95rem;letter-spacing:.12em}
 .btn-p:hover{background:var(--tp)}
 .btn-s{background:none;border:1px solid var(--muted);color:var(--muted);padding:.5rem .9rem;cursor:pointer;font-family:"Source Serif 4",Georgia,serif;font-size:.75rem}
-.btn-s:hover{border-color:var(--ink);color:var(--ink)}
-.big-modal{background:var(--paper);border:2px solid var(--rule);padding:1.5rem;box-shadow:6px 6px 0 var(--rule);max-height:80vh;overflow-y:auto;width:480px;max-width:95vw}
-.big-modal h2{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;font-weight:900;margin-bottom:.6rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
-.msearch{width:100%;background:var(--cream);border:1px solid #b0a090;padding:.35rem .6rem;font-family:"Source Serif 4",Georgia,serif;font-size:.82rem;color:var(--ink);outline:none;margin-bottom:.8rem}
-.msearch:focus{border-color:var(--tp)}
-.urow{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid #c8bba0;flex-wrap:wrap;gap:.3rem}
-.urow span{font-size:.85rem}
-.ubadge{display:inline-block;font-size:.6rem;padding:.05rem .3rem;margin-left:.4rem;background:#1a5c2e;color:#fff;font-family:"Bebas Neue","Arial Narrow",sans-serif;letter-spacing:.08em}
-.ub{background:var(--ink);color:var(--paper);border:none;padding:.2rem .7rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.72rem}
-.ub.red{background:var(--tp)}
+.btn-s:hover
 .ub.green{background:#1E8449}
 .ub.dim{background:#555}
 .ub.outline{background:none;border:1px solid var(--tp);color:var(--tp)}
@@ -195,11 +186,7 @@ body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georg
 .add-btn{display:none;margin:1.2rem auto 0;background:var(--ink);color:var(--paper);border:none;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.95rem;letter-spacing:.15em;padding:.55rem 1.8rem;transition:background .2s}
 .admin-on .add-btn,.logged-in .add-btn{display:block}
 .add-btn:hover{background:var(--tp)}
-.editor{display:none;background:var(--cream);border-top:3px double var(--rule);border-bottom:3px double var(--rule);padding:1.3rem 1.5rem}
-.editor.open{display:block}
-.editor h2{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;margin-bottom:.9rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.3rem}
-.fields .fw{grid-column:1/-1}
+.editor{display:n
 .fields label{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.2rem}
 .fields input,.fields select,.fields textarea{width:100%;background:var(--paper);border:1px solid #b0a090;padding:.4rem .55rem;font-family:"Source Serif 4",Georgia,serif;font-size:.85rem;color:var(--ink);outline:none;transition:border-color .15s}
 .fields input:focus,.fields select:focus,.fields textarea:focus{border-color:var(--tp)}
@@ -282,18 +269,7 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 </div>
 <div id="app"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-"use strict";
-
-// ===== SUPABASE =====
-const SB_URL = "https://jjtlhmbfrjtapksynyit.supabase.co";
-const SB_KEY = "sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC";
-const sb = supabase.createClient(SB_URL, SB_KEY);
-
-// ===== STATE =====
-let articles = [];
-let pending = [];
-let users = [];
-let messages = [];
+"use stric
 let comments = [];
 let views = {};
 let likes = [];
@@ -438,10 +414,6 @@ async function delArticle(id){
 }
 
 // ===== VIEWS =====
-function view(id){
-  views[id]=(views[id]||0)+1;
-}
-
 // ===== RENDER (MINIMAL FIXED CORE) =====
 function render(){
   const app=document.getElementById("app");
@@ -461,9 +433,7 @@ function render(){
         <div id="media">
           <div class="media-row">
             <input class="mf" placeholder="file.jpg">
-            <input class="mc" placeholder="caption">
-          </div>
-        </div>
+            <input 
 
         <button onclick="publish()">Julkaise</button>
       </div>
@@ -507,8 +477,7 @@ sb.channel('articles')
   )
   .subscribe();
 
-// ===== INIT =====
-loadAll();
+// =dAll();
 window.login=login;
 window.publish=publish;
 window.render=render;
