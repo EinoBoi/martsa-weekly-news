@@ -304,7 +304,6 @@ function mediaPath(filename) {
 }
 
 // ===== VAKIOT =====
-var AU = "martsa", AP = "weekly2026";
 var CATS = ["Urheilu","Kulttuuri","Koulu","Muut"];
 var CCL = {Urheilu:"cat-urheilu",Kulttuuri:"cat-kulttuuri",Koulu:"cat-koulu",Muut:"cat-muut"};
 var POP = 300;
@@ -833,14 +832,30 @@ function attachEvents(){
 }
 
 // ===== SUPABASE TOIMINNOT =====
-function doLogin(){
+async function doLogin(){
   var uEl=document.getElementById("lu"),pEl=document.getElementById("lp");
   if(!uEl||!pEl)return;
   var u=uEl.value.trim(),p=pEl.value;
-  if(u===AU&&p===AP){showLogin=false;admin=true;loggedIn=true;cu=u;render();return;}
-  var found=getUsers().find(function(x){return x.user===u&&x.pass===p;});
-  if(found){showLogin=false;loggedIn=true;cu=u;loginErr="";render();return;}
-  loginErr=T("loginErr");render();
+  if(!u||!p){loginErr=T("loginErr");render();return;}
+
+  var res=await sb.from("users")
+    .select("user, moderator, direct, superadmin, date")
+    .eq("user",u)
+    .eq("pass",p)
+    .maybeSingle();
+
+  if(res.data){
+    showLogin=false;
+    loggedIn=true;
+    cu=u;
+    admin=!!res.data.superadmin;
+    loginErr="";
+    render();
+    return;
+  }
+
+  loginErr=T("loginErr");
+  render();
 }
 
 function doRegister(){
@@ -1005,7 +1020,7 @@ async function initApp(){
 
     var results=await Promise.all([
       sb.from("articles").select("*").order("id",{ascending:true}),
-      sb.from("users").select("*"),
+      sb.from("users").select("user, moderator, direct, admin, date"),
       sb.from("pending").select("*").order("id",{ascending:true}),
       sb.from("messages").select("*").order("created_at",{ascending:false}),
       sb.from("comments").select("*").order("id",{ascending:true}),
