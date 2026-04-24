@@ -905,7 +905,39 @@ async function doPublish(direct){
   var body=(document.getElementById("eb").value||"").trim();
   if(!title){errMsg="Kirjoita otsikko.";render();return;}
   if(!body){errMsg="Kirjoita teksti.";render();return;}
-  var media=collectImages();
+  var media=pendMedia.slice();
+
+  if(editId){
+    var idx=articles.findIndex(function(a){return a.id===editId;});
+    if(idx!==-1){
+      var upd={title:title,author:(document.getElementById("ea").value||"").trim(),sec:(document.getElementById("es").value||""),col:document.getElementById("ec").value,body:body};
+      if(media.length)upd.media=JSON.stringify((articles[idx].media||[]).concat(media));
+      await sb.from("articles").update(upd).eq("id",editId);
+      Object.assign(articles[idx],upd);
+      if(upd.media)articles[idx].media=JSON.parse(upd.media);
+    }
+    showEditor=false;editId=null;pendMedia=[];showNotif("Artikkeli päivitetty!");render();return;
+  }
+
+  var art={title:title,author:(document.getElementById("ea").value||"").trim(),sec:(document.getElementById("es").value||""),col:document.getElementById("ec").value,body:body,date:todayFI(),media:JSON.stringify(media),likes:0};
+
+  if(admin||direct){
+    var res=await sb.from("articles").insert(art);
+    if(res.error){errMsg="Julkaisu epäonnistui: "+(res.error.message||"tuntematon virhe");render();return;}
+    var reloadRes=await reloadArticles();
+    if(reloadRes.error){errMsg="Julkaistu, mutta listan päivitys epäonnistui: "+(reloadRes.error.message||"tuntematon virhe");render();return;}
+    var inserted=articles.length?articles[articles.length-1]:null;
+    showEditor=false;pendMedia=[];page=inserted?"article":"front";openId=inserted?inserted.id:null;
+    if(inserted)trackView(inserted.id);
+    render();
+  } else {
+    var pArt=Object.assign({},art,{submitted_by:cu});
+    var pendingRes=await sb.from("pending").insert(pArt);
+    if(pendingRes.error){errMsg="Lähetys epäonnistui: "+(pendingRes.error.message||"tuntematon virhe");render();return;}
+    gPending.push(Object.assign({},art,{id:Date.now(),author:art.author,media:media}));
+    showEditor=false;pendMedia=[];showNotif(T("approved"));render();
+  }
+}
 
   if(editId){
     var idx=articles.findIndex(function(a){return a.id===editId;});
