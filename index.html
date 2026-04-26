@@ -16,36 +16,22 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--ink:#1a1208;--paper:#f5f0e8;--cream:#ede7d6;--red:#c0392b;--muted:#6b5f4e;--rule:#2c2416;--tp:#c0392b}
 body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georgia,serif;font-size:15px;line-height:1.6;min-height:100vh}
-.ls{position:fixed;inset:0;background:#f5f0e8;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease,transform .6s ease;overflow:hidden}
-.ls.out{opacity:0;transform:translateY(-12px);pointer-events:none}
-.ls-bg{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(44,36,22,.04) 27px,rgba(44,36,22,.04) 28px);opacity:0;animation:lsFi .8s ease .1s both}
-.ls-corner{position:absolute;width:26px;height:26px;z-index:2;opacity:0;animation:lsFi .4s ease 1.9s both}
-.ls-tl{top:14px;left:14px;border-top:2px solid #1a1208;border-left:2px solid #1a1208}
-.ls-tr{top:14px;right:14px;border-top:2px solid #1a1208;border-right:2px solid #1a1208}
-.ls-bl{bottom:14px;left:14px;border-bottom:2px solid #1a1208;border-left:2px solid #1a1208}
-.ls-br{bottom:14px;right:14px;border-bottom:2px solid #1a1208;border-right:2px solid #1a1208}
-.ls-inner{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;width:100%}
-.ls-rule{height:3px;background:#1a1208;width:0;margin-bottom:.85rem;animation:lsEx .55s cubic-bezier(.4,0,.2,1) .4s both}
-.ls-rule.b{height:1px;margin-bottom:0;margin-top:1.2rem;animation-delay:.5s}
-.ls-ed{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.6rem;letter-spacing:.28em;color:#6b5f4e;text-transform:uppercase;margin-bottom:.65rem;opacity:0;animation:lsFi .4s ease .78s both}
-.ls-title{display:flex;align-items:baseline;gap:.1em;font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:clamp(2.2rem,7vw,3.6rem);line-height:1;color:#1a1208;margin-bottom:.25rem}
-.ls-it{color:#c0392b;font-style:italic}
-.ls-ch{display:inline-block;opacity:0;transform:translateY(-17px) scaleY(1.25);animation:lsSt .38s cubic-bezier(.15,.85,.25,1.35) calc(.92s + var(--i)*.065s) both}
-.ls-orn{display:flex;align-items:center;gap:.55rem;margin:.38rem 0 .3rem;opacity:0;animation:lsFi .4s ease 2.1s both}
-.ls-ol{height:1px;background:#2c2416;width:0;animation:lsExS .45s ease 2.15s both}
-.ls-dia{font-size:.48rem;color:#c0392b;line-height:1}
-.ls-tg{font-family:"Source Serif 4",Georgia,serif;font-style:italic;font-size:.78rem;color:#6b5f4e;letter-spacing:.03em;margin-bottom:1.5rem;opacity:0;animation:lsFi .5s ease 2.3s both}
-.ls-pw{display:flex;flex-direction:column;align-items:center;gap:.4rem;opacity:0;animation:lsFi .4s ease 1.05s both}
-.ls-pt{width:200px;height:3px;background:#d0c9bc;position:relative}
-.ls-pf{position:absolute;inset:0;background:#c0392b;width:0}
-.ls-pf.go{width:100%;transition:width 2.6s cubic-bezier(.42,0,.58,1)}
-.ls-pr{position:absolute;top:-4px;left:0;width:11px;height:11px;background:#1a1208;border-radius:50%;box-shadow:0 0 0 2px #f5f0e8;transform:translateX(0)}
-.ls-pr.go{transform:translateX(189px);transition:transform 2.6s cubic-bezier(.42,0,.58,1)}
-.ls-pl{font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.56rem;letter-spacing:.22em;color:#6b5f4e;text-transform:uppercase}
-@keyframes lsSt{0%{opacity:0;transform:translateY(-17px) scaleY(1.25)}55%{opacity:1;transform:translateY(4px) scaleY(.94)}78%{transform:translateY(-2px) scaleY(1.02)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
-@keyframes lsFi{to{opacity:1}}
-@keyframes lsEx{to{width:min(260px,65vw)}}
-@keyframes lsExS{to{width:68px}}
+.ls{position:fixed;inset:0;background:var(--paper);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .5s;overflow:hidden}
+.ls.out{opacity:0;pointer-events:none}
+.ll{font-family:"Playfair Display",Georgia,serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:900;line-height:.9;text-align:center;opacity:0;animation:rv .5s ease 1s forwards}
+.ll em{font-style:italic;color:var(--tp)}
+.lr{display:flex;align-items:center;gap:.8rem;width:min(300px,80vw);opacity:0;animation:rv .5s ease 1.2s forwards}
+.lr::before,.lr::after{content:"";flex:1;height:1px;background:var(--rule)}
+.lr span{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.lb{width:min(200px,60vw);height:2px;background:#ddd;overflow:hidden;opacity:0;animation:rv .3s ease .9s forwards}
+.lbi{height:100%;background:var(--tp);width:0%;transition:width .05s}
+.lbi.go{width:100%;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.llas{position:absolute;top:0;left:-120%;width:40%;height:100%;opacity:0}
+.llas.b1{background:linear-gradient(90deg,transparent,rgba(192,57,43,.25),rgba(255,200,180,.6),rgba(255,255,255,.8),rgba(255,200,180,.6),rgba(192,57,43,.25),transparent);animation:ll1 .6s ease-out .05s forwards}
+.llas.b2{background:linear-gradient(90deg,transparent,rgba(150,30,20,.15),rgba(220,150,130,.45),rgba(255,230,220,.65),rgba(220,150,130,.45),rgba(150,30,20,.15),transparent);animation:ll1 .6s ease-out .2s forwards}
+.llas.b3{background:linear-gradient(90deg,transparent,rgba(192,57,43,.1),rgba(255,180,160,.35),rgba(255,255,255,.55),rgba(255,180,160,.35),rgba(192,57,43,.1),transparent);animation:ll1 .6s ease-out .38s forwards}
+@keyframes ll1{0%{left:-120%;opacity:1}100%{left:200%;opacity:1}}
+@keyframes rv{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
 .ab{background:var(--ink);color:#e8c070;padding:.4rem 1.5rem;display:flex;justify-content:center;align-items:center;gap:1rem;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.78rem;letter-spacing:.12em;position:sticky;top:0;z-index:200;flex-wrap:wrap}
 .ab button{background:var(--tp);color:#fff;border:none;padding:.2rem .8rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.74rem;letter-spacing:.1em}
 .masthead{border-top:4px solid var(--rule);border-bottom:1px solid var(--rule);padding:.35rem 1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;background:var(--paper);position:relative;z-index:85}
@@ -59,10 +45,9 @@ body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georg
 .np-rule::before,.np-rule::after{content:"";flex:1;max-width:160px;height:1px;background:var(--rule)}
 .tagline{font-style:italic;font-size:.82rem;color:var(--muted);margin-bottom:.3rem}
 .ticker-wrap{overflow:hidden;white-space:nowrap;border-bottom:2px solid var(--rule)}
-.ticker{background:var(--tp);color:#fff;padding:.35rem 0;display:flex;align-items:center}
-.ticker-label{display:inline-block;background:var(--ink);color:#fff;padding:0 .8rem;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.85rem;letter-spacing:.1em;flex-shrink:0;position:relative;z-index:2}
-.ticker-scroll{flex:1;overflow:hidden;position:relative}
-.ticker-inner{display:inline-block;animation:tick 28s linear infinite;font-size:.75rem;white-space:nowrap}
+.ticker{background:var(--tp);color:#fff;padding:.35rem 0;display:block}
+.ticker-label{display:inline-block;background:var(--ink);color:#fff;padding:0 .8rem;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.85rem;letter-spacing:.1em;margin-right:.8rem;vertical-align:middle}
+.ticker-inner{display:inline-block;animation:tick 28s linear infinite;font-size:.75rem}
 @keyframes tick{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 .top-bar{display:flex;justify-content:center;align-items:center;gap:.8rem;padding:.5rem 1.5rem;background:var(--cream);border-bottom:1px solid #c8bba0;position:relative;z-index:150;flex-wrap:wrap}
 .dl-wrap,.lang-wrap{position:relative;display:inline-block}
@@ -290,30 +275,10 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 </head>
 <body>
 <div id="ls" class="ls">
-  <div class="ls-bg"></div>
-  <div class="ls-corner ls-tl"></div><div class="ls-corner ls-tr"></div>
-  <div class="ls-corner ls-bl"></div><div class="ls-corner ls-br"></div>
-  <div class="ls-inner">
-    <div class="ls-rule"></div>
-    <div class="ls-ed">Painos 2026 &middot; Espoo, Uusimaa</div>
-    <div class="ls-title">
-      <span><span class="ls-ch" style="--i:0">M</span><span class="ls-ch" style="--i:1">a</span><span class="ls-ch" style="--i:2">r</span><span class="ls-ch" style="--i:3">t</span><span class="ls-ch" style="--i:4">s</span><span class="ls-ch" style="--i:5">a</span><span class="ls-ch" style="--i:6">n</span></span>
-      &thinsp;
-      <span class="ls-it"><span class="ls-ch" style="--i:8">U</span><span class="ls-ch" style="--i:9">u</span><span class="ls-ch" style="--i:10">t</span><span class="ls-ch" style="--i:11">i</span><span class="ls-ch" style="--i:12">s</span><span class="ls-ch" style="--i:13">e</span><span class="ls-ch" style="--i:14">t</span></span>
-    </div>
-    <div class="ls-orn">
-      <div class="ls-ol"></div><span class="ls-dia">&#9670;</span><div class="ls-ol"></div>
-    </div>
-    <div class="ls-tg">Totuus ennen kaikkea</div>
-    <div class="ls-pw">
-      <div class="ls-pt">
-        <div class="ls-pf" id="lbi"></div>
-        <div class="ls-pr" id="ls-pr"></div>
-      </div>
-      <div class="ls-pl">ladataan...</div>
-    </div>
-    <div class="ls-rule b"></div>
-  </div>
+  <div class="llas b1"></div><div class="llas b2"></div><div class="llas b3"></div>
+  <div class="ll">Martsan <em>Uutiset</em></div>
+  <div class="lr"><span>ladataan</span></div>
+  <div class="lb"><div class="lbi" id="lbi"></div></div>
 </div>
 <div id="app"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -321,13 +286,8 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 "use strict";
 // ===== SUPABASE =====
 var SB_URL = "https://jjtlhmbfrjtapksynyit.supabase.co";
-var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // oikea avain tähän
-var sb;
-try {
-  sb = supabase.createClient(SB_URL, SB_KEY);
-} catch(e) {
-  sb = { from: function(){ return { select: function(){ return Promise.resolve({data:[],error:e}); }, upsert: function(){ return Promise.resolve({}); }, insert: function(){ return Promise.resolve({data:null,error:e}); }, update: function(){ return { eq: function(){ return Promise.resolve({}); } }; }, delete: function(){ return { eq: function(){ return Promise.resolve({}); } }; } }; } };
-}
+var SB_KEY = "sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC";
+var sb = supabase.createClient(SB_URL, SB_KEY);
 
 // ===== MEDIA HAKEMISTO =====
 // Kuvat ja videot haetaan tästä alihakemistosta
@@ -344,6 +304,7 @@ function mediaPath(filename) {
 }
 
 // ===== VAKIOT =====
+var AU = "martsa", AP = "weekly2026";
 var CATS = ["Urheilu","Kulttuuri","Koulu","Muut"];
 var CCL = {Urheilu:"cat-urheilu",Kulttuuri:"cat-kulttuuri",Koulu:"cat-koulu",Muut:"cat-muut"};
 var POP = 300;
@@ -479,18 +440,6 @@ function buildThumb(media){
        +(cap?"<p class='card-caption'>"+esc(cap)+"</p>":"");
 }
 
-async function reloadArticles(){
-  var res=await sb.from("articles").select("*").order("id",{ascending:true});
-  if(res.error)return res;
-  articles=(res.data||[]).map(function(r){
-    var m=[];
-    try{if(r.media)m=JSON.parse(r.media);}catch(e){}
-    return Object.assign({},r,{sec:r.sec||"",col:r.col||"center",media:m});
-  });
-  return res;
-}
-
-
 // ===== KUVARIVIT EDITORISSA =====
 function renderImageRows(){
   var rows = pendImages.map(function(img,i){
@@ -606,14 +555,14 @@ function render(){
 
   // SEND MSG
   var sendHtml="";
-  if(showSend&&loggedIn){
+  if(showSend&&loggedIn&&!cMsg){
     sendHtml="<div class='modal-bg'><div class='send-modal'><h2>"+T("msg")+"</h2><p>Yksityinen viesti toimitukselle</p><label>Aihe</label><input id='ms-subj' placeholder='Aihe\u2026'><label>Viesti</label><textarea id='ms-body' placeholder='Kirjoita viesti\u2026'></textarea><div class='modal-btns'><button class='btn-p' id='do-send'>"+T("send")+"</button><button class='btn-s' id='cancel-send'>"+T("cancel")+"</button></div></div></div>";
   }
 
   // MOD PANEL
   var modHtml="";
   if(showMod&&isA){
-    var allU=getUsers().filter(function(u){return u.user!==cu;});
+    var allU=getUsers().filter(function(u){return u.user!==AU;});
     var filtU=uSearch?allU.filter(function(u){return u.user.toLowerCase().includes(uSearch.toLowerCase());}):allU;
     var ur=filtU.map(function(u){return "<div class='urow'><span>"+esc(u.user)+(u.direct?"<span class='ubadge'>Suora</span>":"")+"</span><div style='display:flex;gap:.3rem;flex-wrap:wrap'><button id='mod-"+esc(u.user)+"' class='ub"+(u.moderator?" red":"")+"'>"+(u.moderator?"Poista mod":"Mod")+"</button><button id='dp-"+esc(u.user)+"' class='ub"+(u.direct?" green":" dim")+"'>"+(u.direct?"\u2713 Suorajulkaisu":"Suorajulkaisu")+"</button><button id='du-"+esc(u.user)+"' class='ub outline'>Poista</button></div></div>";}).join("");
     var themeH="<div style='margin-top:1.2rem;padding-top:.8rem;border-top:1px solid #c8bba0'><p style='font-family:\"Bebas Neue\",sans-serif;font-size:.68rem;letter-spacing:.15em;color:var(--muted);margin-bottom:.5rem'>SIVUN VÄRI</p><div style='display:flex;gap:.5rem'><button class='theme-btn tbr"+(siteTheme==="red"?" act":"")+"' id='th-red'>\ud83d\udd34 Punainen</button><button class='theme-btn tbb"+(siteTheme==="blue"?" act":"")+"' id='th-blue'>\ud83d\udd35 Sininen</button><button class='theme-btn tbg"+(siteTheme==="green"?" act":"")+"' id='th-green'>\ud83d\udfe2 Vihreä</button></div></div>";
@@ -654,7 +603,7 @@ function render(){
 
   // TOP BAR
   var langMenu="<div class='lang-wrap'><button class='lang-btn' id='lang-btn'>\ud83c\udf10 "+lang.toUpperCase()+"</button><div class='lang-dropdown"+(showLang?" open":"")+"'><button class='lang-option' id='lang-fi'>\ud83c\uddeb\ud83c\uddee Suomi</button><button class='lang-option' id='lang-en'>\ud83c\uddec\ud83c\udde7 English</button><button class='lang-option' id='lang-sv'>\ud83c\uddf8\ud83c\uddea Svenska</button></div></div>";
-  var sendBtn=loggedIn?"<button class='tbtn' id='open-send'>✉ "+T("msg")+"</button>":"";
+  var sendBtn=(!cMsg&&loggedIn)?"<button class='tbtn' id='open-send'>\u2709 "+T("msg")+"</button>":"";
   var bmBtn=loggedIn?"<button class='tbtn' id='open-bm'>\u2605 "+T("bm")+"</button>":"";
   var profBtn=loggedIn?"<button class='tbtn' id='open-prof'>\ud83d\udce4 "+T("prof")+"</button>":"";
   var topBar="<div class='top-bar'><div class='dl-wrap'><button class='dl-main-btn' id='dl-btn'>\u2b07 "+T("install")+" <span class='dl-arrow'>\u25bc</span></button><div class='dl-dropdown' id='dl-dd'><button id='dl-a'>Android</button><button id='dl-w'>Windows</button><button id='dl-m'>Mac</button></div></div>"+langMenu+sendBtn+bmBtn+profBtn+"</div>";
@@ -712,7 +661,7 @@ function render(){
     +"<div id='notif' class='notif'></div>"
     +"<div class='masthead'><span>"+T("founded")+" 2026</span><span style='flex:1;text-align:center'>\u2605 Luotettavaa uutisointia joka viikko \u2605</span>"+mhr+"</div>"
     +"<div class='nameplate' id='nameplate'><h1>Martsan <em>Uutiset</em></h1><div class='np-rule'><span>"+T("motto")+"</span></div><p class='tagline'>"+T("tagline")+"</p></div>"
-    +"<div class='ticker-wrap'><div class='ticker'><span class='ticker-label'>UUTISET NYT</span><div class='ticker-scroll'><span class='ticker-inner'>"+tickerTxt+" &nbsp;\u2b26&nbsp; </span></div></div></div>"
+    +"<div class='ticker-wrap'><div class='ticker'><span class='ticker-label'>UUTISET NYT</span><span class='ticker-inner'>"+tickerTxt+" &nbsp;\u2b26&nbsp; </span></div></div>"
     +(page!=="article"?navTabs:"")
     +mainHtml
     +"<footer><span>\u00a9 2026 Martsan Uutiset</span><span>"+n+" "+(n===1?T("art1"):T("artN"))+"</span>"+fu+"</footer>";
@@ -824,7 +773,7 @@ function attachEvents(){
   });
 
   // Users
-  getUsers().filter(function(u){return u.user!==cu;}).forEach(function(u){
+  getUsers().filter(function(u){return u.user!==AU;}).forEach(function(u){
     on("mod-"+u.user,function(){var us=getUsers(),t=us.find(function(x){return x.user===u.user;});if(t)t.moderator=!t.moderator;saveUsers(us);render();});
     on("dp-"+u.user,function(){var us=getUsers(),t=us.find(function(x){return x.user===u.user;});if(t)t.direct=!t.direct;saveUsers(us);render();});
     on("du-"+u.user,function(){saveUsers(getUsers().filter(function(x){return x.user!==u.user;}));render();});
@@ -884,30 +833,14 @@ function attachEvents(){
 }
 
 // ===== SUPABASE TOIMINNOT =====
-async function doLogin(){
+function doLogin(){
   var uEl=document.getElementById("lu"),pEl=document.getElementById("lp");
   if(!uEl||!pEl)return;
   var u=uEl.value.trim(),p=pEl.value;
-  if(!u||!p){loginErr=T("loginErr");render();return;}
-
-  var res=await sb.from("users")
-    .select("user, moderator, direct, admin, date")
-    .eq("user",u)
-    .eq("pass",p)
-    .maybeSingle();
-
-  if(res.data){
-    showLogin=false;
-    loggedIn=true;
-    cu=u;
-    admin=!!res.data.admin;
-    loginErr="";
-    render();
-    return;
-  }
-
-  loginErr=T("loginErr");
-  render();
+  if(u===AU&&p===AP){showLogin=false;admin=true;loggedIn=true;cu=u;render();return;}
+  var found=getUsers().find(function(x){return x.user===u&&x.pass===p;});
+  if(found){showLogin=false;loggedIn=true;cu=u;loginErr="";render();return;}
+  loginErr=T("loginErr");render();
 }
 
 function doRegister(){
@@ -915,6 +848,7 @@ function doRegister(){
   if(!uEl||!pEl||!p2El)return;
   var u=uEl.value.trim(),p=pEl.value,p2=p2El.value;
   if(!u||u.length<3){regErr="Käyttäjätunnus liian lyhyt (väh. 3 merkkiä).";render();return;}
+  if(u===AU){regErr="Tämä tunnus on varattu.";render();return;}
   if(p.length<6){regErr="Salasana liian lyhyt (väh. 6 merkkiä).";render();return;}
   if(p!==p2){regErr="Salasanat eivät täsmää.";render();return;}
   var users=getUsers();
@@ -950,57 +884,37 @@ async function doPublish(direct){
   if(editId){
     var idx=articles.findIndex(function(a){return a.id===editId;});
     if(idx!==-1){
-      var upd={
-        title:title,
-        author:(document.getElementById("ea").value||"").trim(),
-        sec:(document.getElementById("es").value||""),
-        col:document.getElementById("ec").value,
-        body:body,
-        media:JSON.stringify(media)
-      };
+      var upd={title:title,author:(document.getElementById("ea").value||"").trim(),sec:(document.getElementById("es").value||""),col:document.getElementById("ec").value,body:body};
+      if(media.length)upd.media=JSON.stringify((articles[idx].media||[]).concat(media));
       await sb.from("articles").update(upd).eq("id",editId);
       Object.assign(articles[idx],upd);
-      articles[idx].media=media;
+      if(upd.media)articles[idx].media=JSON.parse(upd.media);
     }
     showEditor=false;editId=null;pendImages=[];showNotif("Artikkeli päivitetty!");render();return;
   }
 
-  var art={
-    title:title,
-    author:(document.getElementById("ea").value||"").trim(),
-    sec:(document.getElementById("es").value||""),
-    col:document.getElementById("ec").value,
-    body:body,
-    date:todayFI(),
-    media:JSON.stringify(media),
-    likes:0
-  };
+  var art={title:title,author:(document.getElementById("ea").value||"").trim(),sec:(document.getElementById("es").value||""),col:document.getElementById("ec").value,body:body,date:todayFI(),media:JSON.stringify(media),likes:0};
 
   if(admin||direct){
-    var res=await sb.from("articles").insert(art);
-    if(res.error){errMsg="Julkaisu epäonnistui: "+(res.error.message||"tuntematon virhe");render();return;}
-    var reloadRes=await reloadArticles();
-    if(reloadRes.error){errMsg="Julkaistu, mutta listan päivitys epäonnistui: "+(reloadRes.error.message||"tuntematon virhe");render();return;}
-    var inserted=articles.length?articles[articles.length-1]:null;
-    showEditor=false;pendImages=[];page=inserted?"article":"front";openId=inserted?inserted.id:null;
-    if(inserted)trackView(inserted.id);
-    render();
+    var res=await sb.from("articles").insert(art).select().single();
+    if(res.error){errMsg="Julkaisu epäonnistui.";render();return;}
+    var inserted=res.data;
+    inserted.media=media;
+    articles.push(inserted);
+    showEditor=false;pendImages=[];page="article";openId=inserted.id;trackView(inserted.id);render();
   } else {
     var pArt=Object.assign({},art,{submitted_by:cu});
-    var pendingRes=await sb.from("pending").insert(pArt);
-    if(pendingRes.error){errMsg="Lähetys epäonnistui: "+(pendingRes.error.message||"tuntematon virhe");render();return;}
+    await sb.from("pending").insert(pArt);
     gPending.push(Object.assign({},art,{id:Date.now(),author:art.author,media:media}));
     showEditor=false;pendImages=[];showNotif(T("approved"));render();
   }
 }
 
 async function doApprove(a){
-  var originalId = a.id;
-  var res=await sb.from("articles").insert({title:a.title,author:a.author,sec:a.sec,col:a.col||"center",body:a.body,date:a.date,media:JSON.stringify(a.media||[]),likes:0});
-  if(res.error){errMsg="Hyväksyntä epäonnistui: "+(res.error.message||"tuntematon virhe");render();return;}
-  await reloadArticles();
-  await sb.from("pending").delete().eq("id",originalId);
-  gPending=gPending.filter(function(x){return x.id!==originalId;});
+  var res=await sb.from("articles").insert({title:a.title,author:a.author,sec:a.sec,col:a.col||"center",body:a.body,date:a.date,media:JSON.stringify(a.media||[]),likes:0}).select().single();
+  if(res.data){a.id=res.data.id;articles.push(a);}
+  await sb.from("pending").delete().eq("id",a.id);
+  gPending=gPending.filter(function(x){return x.id!==a.id;});
   render();
 }
 
@@ -1082,26 +996,16 @@ async function doDeleteVideo(idx){
 
 // ===== KÄYNNISTYS =====
 try{var st=localStorage.getItem("mu_theme");if(st)applyTheme(st);}catch(e){}
-
-// Varmistusajastin: piilottaa latausruudun viim. 6s kuluttua
-setTimeout(function(){
-  var ls=document.getElementById("ls");
-  if(ls&&!ls.classList.contains("out")){
-    ls.classList.add("out");
-    setTimeout(function(){ls.style.display="none";},500);
-  }
-}, 6000);
-
-try { render(); } catch(e) { console.error("render virhe:", e); }
+render();
 
 async function initApp(){
   try{
-    var b=document.getElementById("lbi"),r=document.getElementById("ls-pr");
-if(b)setTimeout(function(){b.classList.add("go");if(r)r.classList.add("go");},30);
+    var b=document.getElementById("lbi");
+    if(b)setTimeout(function(){b.classList.add("go");},30);
 
     var results=await Promise.all([
       sb.from("articles").select("*").order("id",{ascending:true}),
-      sb.from("users").select("user, moderator, direct, admin, date"),
+      sb.from("users").select("*"),
       sb.from("pending").select("*").order("id",{ascending:true}),
       sb.from("messages").select("*").order("created_at",{ascending:false}),
       sb.from("comments").select("*").order("id",{ascending:true}),
@@ -1128,7 +1032,8 @@ if(b)setTimeout(function(){b.classList.add("go");if(r)r.classList.add("go");},30
 
   setTimeout(function(){
     var ls=document.getElementById("ls");
-    if(ls){ls.classList.add("out");setTimeout(function(){ls.style.display="none";},500);e.targ3000);
+    if(ls){ls.classList.add("out");setTimeout(function(){ls.style.display="none";},500);}
+  },1500);
 
   // Autorefresh 30s
   setInterval(async function(){
@@ -1139,7 +1044,7 @@ if(b)setTimeout(function(){b.classList.add("go");if(r)r.classList.add("go");},30
         articles=mapped;showNotif("Päivitetty \u21bb");render();
       }
     }
-  },2000);
+  },30000);
 }
 
 initApp();
