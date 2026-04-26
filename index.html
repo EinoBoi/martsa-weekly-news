@@ -321,8 +321,13 @@ footer{border-top:4px double var(--rule);padding:.4rem 1.5rem;display:flex;justi
 "use strict";
 // ===== SUPABASE =====
 var SB_URL = "https://jjtlhmbfrjtapksynyit.supabase.co";
-var SB_KEY = "sb_publishable_YSbh6A-qu7fjMiC1xSniXA_oXz81UWC";
-var sb = supabase.createClient(SB_URL, SB_KEY);
+var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // oikea avain tähän
+var sb;
+try {
+  sb = supabase.createClient(SB_URL, SB_KEY);
+} catch(e) {
+  sb = { from: function(){ return { select: function(){ return Promise.resolve({data:[],error:e}); }, upsert: function(){ return Promise.resolve({}); }, insert: function(){ return Promise.resolve({data:null,error:e}); }, update: function(){ return { eq: function(){ return Promise.resolve({}); } }; }, delete: function(){ return { eq: function(){ return Promise.resolve({}); } }; } }; } };
+}
 
 // ===== MEDIA HAKEMISTO =====
 // Kuvat ja videot haetaan tästä alihakemistosta
@@ -1077,7 +1082,17 @@ async function doDeleteVideo(idx){
 
 // ===== KÄYNNISTYS =====
 try{var st=localStorage.getItem("mu_theme");if(st)applyTheme(st);}catch(e){}
-render();
+
+// Varmistusajastin: piilottaa latausruudun viim. 6s kuluttua
+setTimeout(function(){
+  var ls=document.getElementById("ls");
+  if(ls&&!ls.classList.contains("out")){
+    ls.classList.add("out");
+    setTimeout(function(){ls.style.display="none";},500);
+  }
+}, 6000);
+
+try { render(); } catch(e) { console.error("render virhe:", e); }
 
 async function initApp(){
   try{
