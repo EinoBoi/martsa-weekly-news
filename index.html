@@ -414,7 +414,7 @@ function rt(b){return Math.max(1,Math.round((b||"").split(/\s+/).length/200));}
 function isLiked(id){return getLikes().indexOf(id)!==-1;}
 function isBm(id){return getBm().indexOf(id)!==-1;}
 function isMod(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.moderator===true;}
-function canDirect(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.direct===true;}
+function canDirect(u){var x=getUsers().find(function(y){return y.user===u;});return x&&(x.direct===true||x.moderator===true);}
 function canMsg2(){return admin||isMod(cu);}
 function viewCount(id){return getViews()[id]||0;}
 function isPopular(id){return viewCount(id)>=POP;}
@@ -691,7 +691,7 @@ function render(){
 
     var pubBtns="";
     if(editId){pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("edit")+"</button>";}
-    else if(admin){pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";}
+    else if(admin||isMU){pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";}
     else if(cDir){pubBtns="<button class='btn-direct' id='pub-direct'>\u2713 "+T("pdirect")+"</button><button class='btn-via' id='pub-btn'>\u2192 "+T("pvia")+"</button>";}
     else{pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";}
     var ed="<button class='add-btn' id='add-btn'>"+(showEditor?(editId?"Sulje muokkaus":"Sulje lomake"):"+ Lisää uutinen")+"</button><div class='editor"+(showEditor?" open":"")+"'><div style='max-width:1050px;margin:0 auto'><h2>\u270d "+(editId?"Muokkaa artikkelia":"Kirjoita uusi uutinen")+"</h2><div class='fields'><div><label>Otsikko *</label><input id='et' placeholder='Otsikko\u2026' value='"+(edArt?esc(edArt.title):"")+"'></div><div><label>Kirjoittaja</label><input id='ea' placeholder='Toim. M. Salonen' value='"+(edArt?esc(edArt.author||""):"")+"'></div><div><label>Osasto</label><select id='es'><option value=''>-- Valitse --</option>"+CATS.map(function(c){return "<option value='"+c+"'"+(edArt&&edArt.sec===c?" selected":"")+">"+c+"</option>";}).join("")+"</select></div><div><label>Palsta</label><select id='ec'><option value='left'"+(edArt&&edArt.col==="left"?" selected":"")+">Vasen</option><option value='center'"+((!edArt||edArt.col==="center")?" selected":"")+">Keskellä</option><option value='right'"+(edArt&&edArt.col==="right"?" selected":"")+">Oikea</option></select></div><div class='fw'><label>Teksti *</label><textarea id='eb' placeholder='Kirjoita teksti tähän\u2026'>"+(edArt?esc(edArt.body):"")+"</textarea></div>"+imgEditorHtml+"</div><div class='ea'>"+pubBtns+"<button class='btn-s' id='cancel-ed'>"+T("cancel")+"</button></div></div></div>";
@@ -970,7 +970,7 @@ async function doPublish(direct){
     likes:0
   };
 
-  if(admin||direct){
+  if(admin||isMod(cu)||direct){
     var res=await sb.from("articles").insert(art);
     if(res.error){errMsg="Julkaisu epäonnistui: "+(res.error.message||"tuntematon virhe");render();return;}
     var reloadRes=await reloadArticles();
