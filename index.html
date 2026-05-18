@@ -414,7 +414,7 @@ function rt(b){return Math.max(1,Math.round((b||"").split(/\s+/).length/200));}
 function isLiked(id){return getLikes().indexOf(id)!==-1;}
 function isBm(id){return getBm().indexOf(id)!==-1;}
 function isMod(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.moderator===true;}
-function canDirect(u){var x=getUsers().find(function(y){return y.user===u;});return x&&(x.direct===true||x.moderator===true);}
+function canDirect(u){var x=getUsers().find(function(y){return y.user===u;});return x&&x.direct===true;}
 function canMsg2(){return admin||isMod(cu);}
 function viewCount(id){return getViews()[id]||0;}
 function isPopular(id){return viewCount(id)>=POP;}
@@ -970,7 +970,7 @@ async function doPublish(direct){
     likes:0
   };
 
-  if(admin||isMod(cu)||direct){
+  if(admin||direct){
     var res=await sb.from("articles").insert(art);
     if(res.error){errMsg="Julkaisu epäonnistui: "+(res.error.message||"tuntematon virhe");render();return;}
     var reloadRes=await reloadArticles();
