@@ -960,15 +960,15 @@ async function doPublish(direct){
   }
 
   var art={
-    title:title,
-    author:(document.getElementById("ea").value||"").trim(),
-    sec:(document.getElementById("es").value||""),
-    col:document.getElementById("ec").value,
-    body:body,
-    date:todayFI(),
-    media:JSON.stringify(media),
-    likes:0
-  };
+  title:title,
+  author:(document.getElementById("ea").value||"").trim(),
+  sec:(document.getElementById("es").value||""),
+  col:document.getElementById("ec").value,
+  body:body,
+  date:todayFI(),
+  media:JSON.stringify(media)
+};
+
 
   if(admin||direct){
     var res=await sb.from("articles").insert(art);
@@ -990,7 +990,7 @@ async function doPublish(direct){
 
 async function doApprove(a){
   var originalId = a.id;
-  var res=await sb.from("articles").insert({title:a.title,author:a.author,sec:a.sec,col:a.col||"center",body:a.body,date:a.date,media:JSON.stringify(a.media||[]),likes:0});
+  var res=await sb.from("articles").insert({title:a.title,author:a.author,sec:a.sec,col:a.col||"center",body:a.body,date:a.date,media:JSON.stringify(a.media||[])});
   if(res.error){errMsg="Hyväksyntä epäonnistui: "+(res.error.message||"tuntematon virhe");render();return;}
   await reloadArticles();
   await sb.from("pending").delete().eq("id",originalId);
