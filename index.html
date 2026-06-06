@@ -207,7 +207,7 @@ body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georg
 .related-item:last-child{border-bottom:none}
 .related-item:hover{color:var(--tp)}
 .add-btn{display:none;margin:1.2rem auto 0;background:var(--ink);color:var(--paper);border:none;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.95rem;letter-spacing:.15em;padding:.55rem 1.8rem;transition:background .2s}
-.admin-on .add-btn,.logged-in .add-btn{display:block}
+.admin-on .add-btn{display:block}
 .add-btn:hover{background:var(--tp)}
 .editor{display:none;background:var(--cream);border-top:3px double var(--rule);border-bottom:3px double var(--rule);padding:1.3rem 1.5rem}
 .editor.open{display:block}
@@ -224,7 +224,7 @@ body{background:var(--paper);color:var(--ink);font-family:"Source Serif 4",Georg
 .media-row span{font-size:.65rem;color:var(--muted);white-space:nowrap}
 .media-row button{background:var(--tp);color:#fff;border:none;cursor:pointer;padding:.1rem .4rem;font-size:.6rem;flex-shrink:0}
 .add-media-btn{background:none;border:1px dashed #b0a090;color:var(--muted);padding:.35rem .8rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.72rem;letter-spacing:.1em;width:100%;transition:all .15s;margin-top:.2rem}
-.add-media-btn:hover{border-color:var(--tp);color:var(--tp)}
+.add-media-btn:hover,.add-media-btn.drag-over{border-color:var(--tp);color:var(--tp);background:rgba(192,57,43,.08)}
 .media-prev-img{width:60px;height:45px;object-fit:cover;flex-shrink:0}
 .ea{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
 .btn-direct{background:#1a5c2e;color:#fff;border:none;padding:.5rem 1.2rem;cursor:pointer;font-family:"Bebas Neue","Arial Narrow",sans-serif;font-size:.9rem;letter-spacing:.1em}
@@ -489,15 +489,15 @@ async function reloadArticles(){
 function renderImageRows(){
   var rows = pendImages.map(function(img,i){
     var src = img.file ? mediaPath(img.file) : "";
-    var prev = src ? "<img class='media-prev-img' src='"+esc(src)+"' onerror=\"this.style.display='none'\" alt=''/>" : "<span style='width:60px;flex-shrink:0;font-size:.6rem;color:var(--muted);display:flex;align-items:center;justify-content:center'>JPG</span>";
+    var prev = src ? "<img class='media-prev-img' src='"+esc(src)+"' onerror=\"this.style.display='none'\" alt=''/>" : "<span style='width:60px;flex-shrink:0;font-size:.6rem;color:var(--muted);display:flex;align-items:center;justify-content:center'>MEDIA</span>";
     return "<div class='media-row'>"
       + prev
-      + "<input type='text' id='img-file-"+i+"' placeholder='kuva.jpg' value='"+esc(img.file||"")+"' style='max-width:140px'>"
-      + "<input type='text' id='img-cap-"+i+"' placeholder='Kuvateksti...' value='"+esc(img.caption||"")+"'>"
+      + "<input type='text' id='img-file-"+i+"' placeholder='kuva.jpg tai video.mp4' value='"+esc(img.file||"")+"' style='max-width:160px'>"
+      + "<input type='text' id='img-cap-"+i+"' placeholder='Kuva-/videoteksti...' value='"+esc(img.caption||"")+"'>"
       + "<button data-rmimg='"+i+"'>\u2715</button>"
       + "</div>";
   }).join("");
-  return rows + "<button class='add-media-btn' id='add-img-btn'>+ "+T("addimage")+"</button>";
+  return rows + "<button class='add-media-btn' id='add-img-btn' type='button'>+ Pudota tai valitse media</button><input type='file' id='media-file-input' accept='image/*,video/*' multiple style='display:none'>";
 }
 
 // ===== RENDER =====
@@ -688,13 +688,15 @@ function render(){
 
     // Rakenna kuvaeditorin html
     var imgEditorHtml="<div class='fw'><label>"+T("addimage")+" (JPG-tiedostot \u2014 kirjoita tiedostonimi)</label>"+renderImageRows()+"</div>";
-
+    
+    var canWrite=isA||isMU||cDir;
+    
     var pubBtns="";
     if(editId){pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("edit")+"</button>";}
     else if(admin||isMU){pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";}
     else if(cDir){pubBtns="<button class='btn-direct' id='pub-direct'>\u2713 "+T("pdirect")+"</button><button class='btn-via' id='pub-btn'>\u2192 "+T("pvia")+"</button>";}
     else{pubBtns="<button class='btn-p' id='pub-btn' style='flex:0;padding:.5rem 1.5rem'>"+T("pub")+"</button>";}
-    var ed="<button class='add-btn' id='add-btn'>"+(showEditor?(editId?"Sulje muokkaus":"Sulje lomake"):"+ Lisää uutinen")+"</button><div class='editor"+(showEditor?" open":"")+"'><div style='max-width:1050px;margin:0 auto'><h2>\u270d "+(editId?"Muokkaa artikkelia":"Kirjoita uusi uutinen")+"</h2><div class='fields'><div><label>Otsikko *</label><input id='et' placeholder='Otsikko\u2026' value='"+(edArt?esc(edArt.title):"")+"'></div><div><label>Kirjoittaja</label><input id='ea' placeholder='Toim. M. Salonen' value='"+(edArt?esc(edArt.author||""):"")+"'></div><div><label>Osasto</label><select id='es'><option value=''>-- Valitse --</option>"+CATS.map(function(c){return "<option value='"+c+"'"+(edArt&&edArt.sec===c?" selected":"")+">"+c+"</option>";}).join("")+"</select></div><div><label>Palsta</label><select id='ec'><option value='left'"+(edArt&&edArt.col==="left"?" selected":"")+">Vasen</option><option value='center'"+((!edArt||edArt.col==="center")?" selected":"")+">Keskellä</option><option value='right'"+(edArt&&edArt.col==="right"?" selected":"")+">Oikea</option></select></div><div class='fw'><label>Teksti *</label><textarea id='eb' placeholder='Kirjoita teksti tähän\u2026'>"+(edArt?esc(edArt.body):"")+"</textarea></div>"+imgEditorHtml+"</div><div class='ea'>"+pubBtns+"<button class='btn-s' id='cancel-ed'>"+T("cancel")+"</button></div></div></div>";
+   var ed=canWrite?"<button class='add-btn' id='add-btn' style='display:block'>"+(showEditor?(editId?"Sulje muokkaus":"Sulje lomake"):"+ Lisää uutinen")+"</button><div class='editor"+(showEditor?" open":"")+"'><div style='max-width:1050px;margin:0 auto'><h2>✍ "+(editId?"Muokkaa artikkelia":"Kirjoita uusi uutinen")+"</h2><div class='fields'><div><label>Otsikko *</label><input id='et' placeholder='Otsikko…' value='"+(edArt?esc(edArt.title):"")+"'></div><div><label>Kirjoittaja</label><input id='ea' placeholder='Toim. M. Salonen' value='"+(edArt?esc(edArt.author||""):"")+"'></div><div><label>Osasto</label><select id='es'><option value=''>-- Valitse --</option>"+CATS.map(function(c){return "<option value='"+c+"'"+(edArt&&edArt.sec===c?" selected":"")+">"+c+"</option>";}).join("")+"</select></div><div><label>Palsta</label><select id='ec'><option value='left'"+(edArt&&edArt.col==="left"?" selected":"")+">Vasen</option><option value='center'"+((!edArt||edArt.col==="center")?" selected":"")+">Keskellä</option><option value='right'"+(edArt&&edArt.col==="right"?" selected":"")+">Oikea</option></select></div><div class='fw'><label>Teksti *</label><textarea id='eb' placeholder='Kirjoita teksti tähän…'>"+(edArt?esc(edArt.body):"")+"</textarea></div><div class='media-area fw' id='media-drop'><p>📷 "+T("media")+"</p><input type='file' id='mf' accept='image/*,video/*' multiple></div><div style='display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem;grid-column:1/-1' id='mprev'>"+mediaPrev+"</div></div><div class='ea'>"+pubBtns+"<button class='btn-s' id='cancel-ed'>"+T("cancel")+"</button></div></div></div>":"";
     mainHtml=fBar+"<div class='container'><div class='grid'><div class='col'><div class='sec-label'>"+T("news")+"</div>"+renderCol("left")+"</div><div class='divider'></div><div class='col'><div class='sec-label'>"+T("main")+"</div>"+renderCol("center")+"</div><div class='divider'></div><div class='col'><div class='sec-label'>"+T("more")+"</div>"+renderCol("right")+"</div></div></div>"+ed;
   }
 
@@ -766,8 +768,51 @@ function attachEvents(){
   on("fa",function(){fCat="";render();});
   CATS.forEach(function(c){on("fc-"+c,function(){fCat=(fCat===c?"":c);render();});});
 
-  // Kuvaeditori: lisää kuvarivi
-  on("add-img-btn",function(){pendImages.push({file:"",caption:""});render();});
+  // Mediaeditori: lisää käsin tai valitse tiedostot
+on("add-img-btn",function(){
+  var inp=document.getElementById("media-file-input");
+  if(inp)inp.click();
+  else{pendImages.push({file:"",caption:""});render();}
+});
+
+  var mediaBtn=document.getElementById("add-img-btn");
+var mediaInput=document.getElementById("media-file-input");
+
+function addDroppedMedia(files){
+  Array.from(files||[]).forEach(function(f){
+    if(!f.type || !/^image\/|^video\//.test(f.type))return;
+    pendImages.push({file:f.name,caption:""});
+  });
+  if(files&&files.length)render();
+}
+
+if(mediaInput){
+  mediaInput.addEventListener("change",function(){
+    addDroppedMedia(this.files);
+    this.value="";
+  });
+}
+
+if(mediaBtn){
+  ["dragenter","dragover"].forEach(function(ev){
+    mediaBtn.addEventListener(ev,function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      mediaBtn.classList.add("drag-over");
+    });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    mediaBtn.addEventListener(ev,function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      mediaBtn.classList.remove("drag-over");
+    });
+  });
+  mediaBtn.addEventListener("drop",function(e){
+    addDroppedMedia(e.dataTransfer&&e.dataTransfer.files);
+  });
+}
+
 
   // Kuvaeditori: poista kuvarivi
   document.querySelectorAll("[data-rmimg]").forEach(function(b){
